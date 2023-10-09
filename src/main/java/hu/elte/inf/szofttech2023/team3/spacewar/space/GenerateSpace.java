@@ -16,20 +16,26 @@ public class GenerateSpace extends Space {
      * Generates the {@code Space} in which the game is played.
      */
     public static void run() {
-        int i = 0;
-        for (int j = 0; j < numOfPlanets; j++) {
-            final int size = rnd.nextInt(minPlanetSize,maxPlanetSize);
-            final int temp = rnd.nextInt(minPlanetTemp,maxPlanetTemp);
+        create(numOfPlanets, Planet.class);
+        create(numOfBlackHoles, BlackHole.class);
+        create(numOfAsteroids, Asteroid.class);
+    }
+
+    /**
+     * Creates SpaceObjects in Space.
+     * @param numOfObjects the number of objects to generate
+     * @param objectType the type of the object to generate
+     */
+    private static void create(int numOfObjects, Class<? extends SpaceObject> objectType) {
+        for (int j = 0; j < numOfObjects; j++) {
             Point p = findFreeSpace();
-            setSpaceObject(p,i++,new Planet(p.x,p.y,size,temp));
-        }
-        for (int j = 0; j < numOfBlackHoles; j++) {
-            Point p = findFreeSpace();
-            setSpaceObject(p,i++,new BlackHole(p.x,p.y));
-        }
-        for (int j = 0; j < numOfAsteroids; j++) {
-            Point p = findFreeSpace();
-            setSpaceObject(p,i++,new Asteroid(p.x,p.y));
+            try {
+                SpaceObject obj = objectType.getDeclaredConstructor(Integer.class, Integer.class)
+                                    .newInstance(p.x, p.y);
+                setSpaceObject(p, obj);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
