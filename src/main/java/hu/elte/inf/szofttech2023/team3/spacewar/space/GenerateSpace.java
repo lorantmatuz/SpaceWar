@@ -6,16 +6,20 @@ import java.awt.Point;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * This class extends the {@code Space} class with a generating {@code static}
- * method called {@code run()}.
+ * This class provides a method called {@code run()} to generate the {@code Space} class.
  */
-public class GenerateSpace extends Space {
+public class GenerateSpace {
+    private final Space space;
     private static final ThreadLocalRandom rnd = ThreadLocalRandom.current();
+
+    public GenerateSpace(Space space) {
+        this.space = space;
+    }
 
     /**
      * Generates the {@code Space} in which the game is played.
      */
-    public static void run() {
+    public void run(int numOfPlanets, int numOfAsteroids, int numOfBlackHoles) {
         create(numOfPlanets, Planet.class);
         create(numOfBlackHoles, BlackHole.class);
         create(numOfAsteroids, Asteroid.class);
@@ -26,13 +30,13 @@ public class GenerateSpace extends Space {
      * @param numOfObjects the number of objects to generate
      * @param objectType the type of the object to generate
      */
-    private static void create(int numOfObjects, Class<? extends SpaceObject> objectType) {
+    private void create(int numOfObjects, Class<? extends SpaceObject> objectType) {
         for (int j = 0; j < numOfObjects; j++) {
             Point p = findFreeSpace();
             try {
-                SpaceObject obj = objectType.getDeclaredConstructor(Integer.class, Integer.class)
+                SpaceObject obj = objectType.getDeclaredConstructor(int.class, int.class)
                                     .newInstance(p.x, p.y);
-                setSpaceObject(p, obj);
+                space.setSpaceObject(p, obj);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -44,13 +48,13 @@ public class GenerateSpace extends Space {
      * has been placed yet.
      * @return a random {@code Point} in the {@code Space} having no {@code SpaceObject}
      */
-    private static Point findFreeSpace() {
+    private Point findFreeSpace() {
         int x, y;
         do {
-            x = rnd.nextInt(width);
-            y = rnd.nextInt(height);
+            x = rnd.nextInt(space.width);
+            y = rnd.nextInt(space.height);
         }
-        while(isSpaceObject[x][y]);
+        while(space.isSpaceObject[x][y]);
         return new Point(x,y);
     }
 
