@@ -40,4 +40,21 @@ public class Path implements Iterator<Point> {
     public Point next() {
         return path.get(iterator--);
     }
+
+    public void print(Space space, boolean[][] visited) {
+        for (int j = 0; j < space.height; j++) {
+            for (int i = 0; i < space.width; i++) {
+                if(path.contains(new Point(i,j))) {
+                    System.out.print("O ");
+                } else if(space.isSpaceObject[i][j]) {
+                    System.out.print("X ");
+                } else if(visited[i][j]) {
+                    System.out.print("# ");
+                } else {
+                    System.out.print(". ");
+                }
+            }
+            System.out.println();
+        }
+    }
 }

@@ -16,6 +16,7 @@ import java.util.Comparator;
 public class ShortestPath {
     private static final int[][] DIRECTIONS = { {1,0}, {0,1}, {-1,0}, {0,-1},
                                                 {-1,-1}, {-1,1}, {1,1}, {1,-1}};
+    private static boolean[][] visited;
     private static double[][] dist;
     private static Map<Point,Point> preNodes;
     private static Path path;
@@ -41,14 +42,13 @@ public class ShortestPath {
         if(space.isSpaceObject[t.x][t.y]) {
             throw new IllegalArgumentException("Illegal target point!");
         }
-        boolean[][] visited = new boolean[space.width][space.height];
+        visited = new boolean[space.width][space.height];
         dist = new double[space.width][space.height];
         Arrays.stream(dist).forEach(row -> Arrays.fill(row, Double.MAX_VALUE));
         preNodes = new HashMap<>();
         path = new Path();
         Queue<Point> queue = new PriorityQueue<>(
-                Comparator.comparingDouble(a -> euclidean(a, t) + dist[a.x][a.y])
-        );
+                Comparator.comparingDouble(a -> euclidean(a, t) + dist[a.x][a.y]));
         queue.add(s);
         visited[s.x][s.y] = true;
         dist[s.x][s.y] = 0;
@@ -113,6 +113,10 @@ public class ShortestPath {
         return path;
     }
 
+    public boolean[][] getVisited() {
+        return visited.clone();
+    }
+
     // demo usage
     public static void main(String[] args) {
         final var space = Space.getInstance(10,7);
@@ -121,6 +125,7 @@ public class ShortestPath {
         final var shortestPath = new ShortestPath(space);
         try {
             final var path = shortestPath.run(new Point(0,0), new Point(9,6));
+            path.print(space, shortestPath.getVisited());
             System.out.println("Path: ");
             while(path.hasNext()) {
                 System.out.println(path.next());
