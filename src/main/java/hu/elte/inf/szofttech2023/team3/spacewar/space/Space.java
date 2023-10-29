@@ -1,8 +1,11 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.space;
 
+import hu.elte.inf.szofttech2023.team3.spacewar.space.objects.Asteroid;
+import hu.elte.inf.szofttech2023.team3.spacewar.space.objects.BlackHole;
+import hu.elte.inf.szofttech2023.team3.spacewar.space.objects.Planet;
 import hu.elte.inf.szofttech2023.team3.spacewar.space.objects.SpaceObject;
 
-import java.awt.Point;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,11 +39,34 @@ public class Space {
     public void print() {
         for (int j = 0; j < height; j++) {
             for (int i = 0; i < width; i++) {
-                System.out.print(isSpaceObject[i][j] ? "X " : ". ");
+                if (isSpaceObject[i][j]) {
+                    SpaceObject obj = getObjectAt(i, j);
+                    if (obj instanceof BlackHole) {
+                        System.out.print("F ");
+                    } else if (obj instanceof Planet) {
+                        System.out.print("B ");
+                    } else if (obj instanceof Asteroid) {
+                        System.out.print("A ");
+                    } else {
+                        System.out.print("X ");
+                    }
+                } else {
+                    System.out.print(". ");
+                }
             }
             System.out.println();
         }
     }
+
+    private SpaceObject getObjectAt(int x, int y) {
+        for (SpaceObject obj : objects) {
+            if (obj.coordinate.x == x && obj.coordinate.y == y) {
+                return obj;
+            }
+        }
+        return null;
+    }
+
 
     /**
      * Sets a {@code SpaceObject} to the given index
