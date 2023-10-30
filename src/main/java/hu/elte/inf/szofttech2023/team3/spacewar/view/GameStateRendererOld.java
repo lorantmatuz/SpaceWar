@@ -1,19 +1,19 @@
-package hu.elte.inf.szofttech2023.team3.spacewar.model.view;
+package hu.elte.inf.szofttech2023.team3.spacewar.view;
 
 import java.util.Map;
 
-import hu.elte.inf.szofttech2023.team3.spacewar.model.FieldPosition;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.GameState;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.Fighterjet;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.Spacecraft;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.display.BoardDisplay;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.display.Displayable;
+import hu.elte.inf.szofttech2023.team3.spacewar.display.BoardDisplay;
+import hu.elte.inf.szofttech2023.team3.spacewar.display.Displayable;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.old.FieldPosition;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.old.Fighterjet;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.old.GameState;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.old.Spacecraft;
 
-public class GameStateRenderer {
+public class GameStateRendererOld {
     
     private final BoardDisplay boardDisplay;
     
-    public GameStateRenderer(BoardDisplay boardDisplay) {
+    public GameStateRendererOld(BoardDisplay boardDisplay) {
         this.boardDisplay = boardDisplay;
     }
     

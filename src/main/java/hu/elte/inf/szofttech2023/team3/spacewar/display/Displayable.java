@@ -1,4 +1,4 @@
-package hu.elte.inf.szofttech2023.team3.spacewar.model.display;
+package hu.elte.inf.szofttech2023.team3.spacewar.display;
 
 import java.awt.Image;
 

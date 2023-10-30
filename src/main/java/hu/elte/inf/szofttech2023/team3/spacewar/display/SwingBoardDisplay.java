@@ -1,4 +1,4 @@
-package hu.elte.inf.szofttech2023.team3.spacewar.model.display;
+package hu.elte.inf.szofttech2023.team3.spacewar.display;
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
@@ -38,6 +39,7 @@ public class SwingBoardDisplay implements BoardDisplay {
             
             private static final long serialVersionUID = 1L;
 
+            @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setColor(Color.BLACK);
@@ -92,9 +94,16 @@ public class SwingBoardDisplay implements BoardDisplay {
         Image image = item.getImage(fieldWidth, fieldHeight);
         int imageWidth = image.getWidth(null);
         int imageHeight = image.getHeight(null);
+        int pad = 5;
         int left = column * fieldHeight;
         int top = row * fieldWidth;
-        g2d.drawImage(image, left, top, left + fieldWidth, top + fieldHeight, 0, 0, imageWidth, imageHeight, panel);
+
+        g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        
+        g2d.drawImage(image, left + pad, top + pad, left + fieldWidth - (2 * pad), top + fieldHeight - (2 * pad), 0, 0, imageWidth, imageHeight, null);
     }
 
     @Override
