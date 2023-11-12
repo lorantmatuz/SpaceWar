@@ -1,4 +1,4 @@
-package hu.elte.inf.szofttech2023.team3.spacewar.space.objects;
+package hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects;
 
 public class BlackHole extends SpaceObject {
 

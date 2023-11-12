@@ -1,7 +1,7 @@
-package hu.elte.inf.szofttech2023.team3.spacewar.game;
+package hu.elte.inf.szofttech2023.team3.spacewar.model.game;
 
-import hu.elte.inf.szofttech2023.team3.spacewar.space.ships.Fleet;
-import hu.elte.inf.szofttech2023.team3.spacewar.space.ships.Spaceship;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Fleet;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Spaceship;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package hu.elte.inf.szofttech2023.team3.spacewar.model;
+package hu.elte.inf.szofttech2023.team3.spacewar.view;
 
 import java.util.Objects;
 

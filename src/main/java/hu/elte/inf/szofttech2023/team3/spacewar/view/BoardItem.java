@@ -1,4 +1,4 @@
-package hu.elte.inf.szofttech2023.team3.spacewar.model.view;
+package hu.elte.inf.szofttech2023.team3.spacewar.view;
 
 import java.awt.Image;
 import java.io.IOException;
@@ -7,7 +7,7 @@ import java.lang.ref.SoftReference;
 
 import javax.imageio.ImageIO;
 
-import hu.elte.inf.szofttech2023.team3.spacewar.model.display.Displayable;
+import hu.elte.inf.szofttech2023.team3.spacewar.display.Displayable;
 
 public class BoardItem implements Displayable {
     
@@ -41,7 +41,7 @@ public class BoardItem implements Displayable {
     }
     
     private Image loadImageThrowing() throws IOException {
-        return ImageIO.read(getClass().getResource("/hu/elte/inf/szofttech2023/team3/spacewar/model/view/" + imageName + ".png"));
+        return ImageIO.read(getClass().getResource("/hu/elte/inf/szofttech2023/team3/spacewar/view/view/" + imageName + ".png"));
     }
 
     @Override

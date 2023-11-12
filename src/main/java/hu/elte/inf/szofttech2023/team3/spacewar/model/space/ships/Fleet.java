@@ -1,6 +1,6 @@
-package hu.elte.inf.szofttech2023.team3.spacewar.space.ships;
+package hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships;
 
-import hu.elte.inf.szofttech2023.team3.spacewar.space.objects.SpaceObject;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
 
 public final class Fleet extends SpaceObject {
     private final Spaceship[] spaceships = new Spaceship[Spaceship.values().length];

@@ -1,6 +1,10 @@
-package hu.elte.inf.szofttech2023.team3.spacewar.space;
+package hu.elte.inf.szofttech2023.team3.spacewar.model.space;
 
-import hu.elte.inf.szofttech2023.team3.spacewar.space.objects.*;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Asteroid;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.BlackHole;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.*;
 
 import java.awt.Point;
 import java.util.concurrent.ThreadLocalRandom;

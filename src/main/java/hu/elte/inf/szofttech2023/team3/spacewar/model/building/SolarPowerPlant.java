@@ -1,6 +1,6 @@
-package hu.elte.inf.szofttech2023.team3.spacewar.building;
+package hu.elte.inf.szofttech2023.team3.spacewar.model.building;
 
-import hu.elte.inf.szofttech2023.team3.spacewar.space.objects.Planet;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 
 /**
  * This class provides an implementation of the {@code SolarPowerPlant}

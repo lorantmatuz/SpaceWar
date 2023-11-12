@@ -1,4 +1,4 @@
-package hu.elte.inf.szofttech2023.team3.spacewar.space;
+package hu.elte.inf.szofttech2023.team3.spacewar.model.space;
 
 import java.awt.Point;
 import java.util.Arrays;

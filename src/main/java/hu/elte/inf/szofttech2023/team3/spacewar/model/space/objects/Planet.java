@@ -1,6 +1,9 @@
-package hu.elte.inf.szofttech2023.team3.spacewar.space.objects;
+package hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects;
 
-import hu.elte.inf.szofttech2023.team3.spacewar.building.*;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.building.*;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.building.Building;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.building.Mine;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.building.SolarPowerPlant;
 
 import java.util.*;
 

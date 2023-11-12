@@ -1,4 +1,4 @@
-package hu.elte.inf.szofttech2023.team3.spacewar.space.ships;
+package hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships;
 
 public enum Spaceship {
     MOTHERSHIP  (3,4,3,5,4,4),

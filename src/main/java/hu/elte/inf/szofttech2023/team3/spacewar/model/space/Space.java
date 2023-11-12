@@ -1,9 +1,9 @@
-package hu.elte.inf.szofttech2023.team3.spacewar.space;
+package hu.elte.inf.szofttech2023.team3.spacewar.model.space;
 
-import hu.elte.inf.szofttech2023.team3.spacewar.space.objects.Asteroid;
-import hu.elte.inf.szofttech2023.team3.spacewar.space.objects.BlackHole;
-import hu.elte.inf.szofttech2023.team3.spacewar.space.objects.Planet;
-import hu.elte.inf.szofttech2023.team3.spacewar.space.objects.SpaceObject;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Asteroid;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.BlackHole;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -100,4 +100,6 @@ public class Space {
         innerObject.replace(to.x,to.y);
         return true;
     }
+
+    public List<SpaceObject> getSpaceObjects(){ return this.objects; }
 }
