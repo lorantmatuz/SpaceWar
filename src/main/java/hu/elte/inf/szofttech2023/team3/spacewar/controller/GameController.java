@@ -17,10 +17,16 @@ public class GameController {
     }
     
     public void shuffle() {
+        // TODO
         Space space = gameState.getSpace();
         GenerateSpace generator = new GenerateSpace(space);
         generator.run(10, 5, 5);
-        renderer.apply(gameState);
+        renderer.apply(gameState, this::handleAnyAction);
+    }
+
+    public void handleAnyAction(Object target, GameState state) {
+        // TODO
+        System.out.println(String.format("A(n) %s object was clicked", target.getClass().getSimpleName()));
     }
     
 }

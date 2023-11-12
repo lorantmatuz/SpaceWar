@@ -4,9 +4,6 @@ import hu.elte.inf.szofttech2023.team3.spacewar.display.BoardDisplay;
 import hu.elte.inf.szofttech2023.team3.spacewar.display.Displayable;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.GameState;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Space;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Asteroid;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.BlackHole;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
 
 public class GameStateRenderer {
@@ -21,7 +18,7 @@ public class GameStateRenderer {
         return boardDisplay;
     }
     
-    public void apply(GameState gameState) {
+    public void apply(GameState gameState, GameActionListener listener) {
         int rowCount = boardDisplay.getRowCount();
         int columnCount = boardDisplay.getColumnCount();
         Displayable[][] displayables = new Displayable[rowCount][columnCount];
@@ -30,23 +27,17 @@ public class GameStateRenderer {
             for (int i = 0; i < space.width; i++) {
                 SpaceObject spaceObject = space.getObjectAt(i, j);
                 if (spaceObject != null) {
-                    displayables[i][j] = displayableOf(spaceObject);
+                    displayables[i][j] = displayableOf(spaceObject, gameState, listener);
                 }
             }
         }
         boardDisplay.apply(displayables);
     }
 
-    private Displayable displayableOf(SpaceObject spaceObject) {
-        if (spaceObject instanceof Asteroid) {
-            return new BoardItem("asteroid", () -> System.out.println("This is an asteroid"));
-        } else if (spaceObject instanceof BlackHole) {
-            return new BoardItem("blackhole", () -> System.out.println("This is a black hole"));
-        } else if (spaceObject instanceof Planet) {
-            return new BoardItem("planet", () -> System.out.println("This is a planet"));
-        } else {
-            return new BoardItem("fighterjet", () -> System.out.println("HELLO"));
-        }
+    private Displayable displayableOf(SpaceObject spaceObject, GameState gameState, GameActionListener listener) {
+        String imageName = spaceObject.getClass().getSimpleName().toLowerCase();
+        Runnable action = () -> listener.actionPerformed(spaceObject, gameState);
+        return new BoardItem(imageName, action);
     }
     
 }
