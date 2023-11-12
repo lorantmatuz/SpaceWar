@@ -1,20 +1,17 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.model;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Space;
 
 public class GameState {
 
-    private final Map<FieldPosition, Spacecraft> spacecrafts = new HashMap<>();
+    private final Space space;
     
-    public Map<FieldPosition, Spacecraft> getSpacecrafts() {
-        return Collections.unmodifiableMap(spacecrafts);
+    public GameState(Space space) {
+        this.space = space;
     }
     
-    public void setSpacecrafts(Map<FieldPosition, Spacecraft> spacecrafts) {
-        this.spacecrafts.clear();
-        this.spacecrafts.putAll(new HashMap<>(spacecrafts));
+    public Space getSpace() {
+        return space;
     }
     
 }
