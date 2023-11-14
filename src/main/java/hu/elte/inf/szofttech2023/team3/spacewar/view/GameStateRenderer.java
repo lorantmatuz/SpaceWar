@@ -2,6 +2,7 @@ package hu.elte.inf.szofttech2023.team3.spacewar.view;
 
 import hu.elte.inf.szofttech2023.team3.spacewar.display.BoardDisplay;
 import hu.elte.inf.szofttech2023.team3.spacewar.display.Displayable;
+import hu.elte.inf.szofttech2023.team3.spacewar.display.SpecialAction;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.GameState;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Space;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
@@ -17,7 +18,7 @@ public class GameStateRenderer {
     public BoardDisplay getBoardDisplay() {
         return boardDisplay;
     }
-    
+
     public void apply(GameState gameState, GameActionListener listener) {
         int rowCount = boardDisplay.getRowCount();
         int columnCount = boardDisplay.getColumnCount();
@@ -31,13 +32,17 @@ public class GameStateRenderer {
                 }
             }
         }
-        boardDisplay.apply(displayables);
+        boardDisplay.apply(displayables, () -> handleShuffleAction(gameState, listener));
     }
 
     private Displayable displayableOf(SpaceObject spaceObject, GameState gameState, GameActionListener listener) {
         String imageName = spaceObject.getClass().getSimpleName().toLowerCase();
         Runnable action = () -> listener.actionPerformed(spaceObject, gameState);
         return new BoardItem(imageName, action);
+    }
+    
+    private void handleShuffleAction(GameState gameState, GameActionListener listener) {
+        listener.actionPerformed(SpecialAction.SHUFFLE, gameState);
     }
     
 }

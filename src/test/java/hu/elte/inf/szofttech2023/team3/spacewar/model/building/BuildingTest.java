@@ -2,8 +2,6 @@ package hu.elte.inf.szofttech2023.team3.spacewar.model.building;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 

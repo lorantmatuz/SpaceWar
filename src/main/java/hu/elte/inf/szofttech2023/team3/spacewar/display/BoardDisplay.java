@@ -6,6 +6,6 @@ public interface BoardDisplay {
     
     public int getColumnCount();
     
-    public void apply(Displayable[][] content);
+    public void apply(Displayable[][] content, Runnable shuffleAction);
     
 }
