@@ -1,13 +1,9 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.model.space;
 
-import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Asteroid;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.BlackHole;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.*;
-
 import java.awt.Point;
 import java.util.concurrent.ThreadLocalRandom;
+
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.*;
 
 /**
  * This class provides a method called {@code run()} to generate the {@code Space} class.
@@ -24,9 +20,10 @@ public class GenerateSpace {
      * Generates the {@code Space} in which the game is played.
      */
     public void run(int numOfPlanets, int numOfAsteroids, int numOfBlackHoles) {
-        create(numOfPlanets, Planet.class);
-        create(numOfBlackHoles, BlackHole.class);
-        create(numOfAsteroids, Asteroid.class);
+        space.erase();
+        create(numOfPlanets, Planet::new);
+        create(numOfBlackHoles, BlackHole::new);
+        create(numOfAsteroids, Asteroid::new);
     }
 
     /**
@@ -34,12 +31,11 @@ public class GenerateSpace {
      * @param numOfObjects the number of objects to generate
      * @param objectType the type of the object to generate
      */
-    private void create(int numOfObjects, Class<? extends SpaceObject> objectType) {
+    private void create(int numOfObjects, SpaceObjectFactory factory) {
         for (int j = 0; j < numOfObjects; j++) {
             Point p = findFreeSpace();
             try {
-                SpaceObject obj = objectType.getDeclaredConstructor(int.class, int.class)
-                                    .newInstance(p.x, p.y);
+                SpaceObject obj = factory.create(p.x, p.y);
                 space.setSpaceObject(p, obj);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -60,6 +56,14 @@ public class GenerateSpace {
         }
         while(space.isSpaceObject[x][y]);
         return new Point(x,y);
+    }
+    
+    
+    @FunctionalInterface
+    private interface SpaceObjectFactory {
+        
+        public SpaceObject create(int x, int y);
+        
     }
 
 }

@@ -1,12 +1,9 @@
-package hu.elte.inf.szofttech2023.team3.spacewar.building;
+package hu.elte.inf.szofttech2023.team3.spacewar.model.building;
 
-import hu.elte.inf.szofttech2023.team3.spacewar.model.building.Building;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.building.Mine;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.building.SolarPowerPlant;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.building.SpaceShipFactory;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

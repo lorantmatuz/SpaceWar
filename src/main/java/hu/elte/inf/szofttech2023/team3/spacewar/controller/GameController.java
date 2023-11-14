@@ -1,42 +1,40 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.controller;
 
+import hu.elte.inf.szofttech2023.team3.spacewar.display.SpecialAction;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.GameState;
-import hu.elte.inf.szofttech2023.team3.spacewar.view.GameViewer;
-import hu.elte.inf.szofttech2023.team3.spacewar.display.DisplayEngine;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.GenerateSpace;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Space;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
+import hu.elte.inf.szofttech2023.team3.spacewar.view.GameStateRenderer;
 
 public class GameController {
-
-    private GameState gameState;
-    private GameViewer gameViewer;
-    private DisplayEngine displayEngine;
-
-
-    private static final int MAP_WIDTH = 20;
-    private static final int MAP_HEIGHT = 20;
-
-    private static final int NUM_OF_PLANETS = 10;
-    private static final int NUM_OF_ASTEROIDS = 5;
-    private static final int NUM_OF_BLACKHOLES = 3;
-
-    private static final int NUM_OF_PLAYERS = 2;
-
-    public GameController() {
-        gameState = new GameState();
-        gameViewer = new GameViewer();
-        displayEngine = new DisplayEngine();
-
-        gameViewer.init( this , displayEngine );
-        displayEngine.init( gameViewer , MAP_WIDTH , MAP_HEIGHT );
-
-
-        //initializeGUI();
-        gameState.init( MAP_WIDTH, MAP_HEIGHT, NUM_OF_PLAYERS , NUM_OF_ASTEROIDS , NUM_OF_BLACKHOLES , NUM_OF_PLANETS );
-        while( ! gameState.isGameOver() )
-        {
-            gameViewer.renderGame( gameState );
-            gameState.setGameOver( true );
-        }
-        //initializeGameSpace();
+    
+    private final GameState gameState;
+    
+    private final GameStateRenderer renderer;
+    
+    public GameController(GameState gameState, GameStateRenderer renderer) {
+        this.gameState = gameState;
+        this.renderer = renderer;
+    }
+    
+    public void shuffle() {
+        // TODO
+        Space space = gameState.getSpace();
+        GenerateSpace generator = new GenerateSpace(space);
+        generator.run(10, 5, 5);
+        renderer.apply(gameState, this::handleAnyAction);
     }
 
+    public void handleAnyAction(Object target, GameState state) {
+        if (target == SpecialAction.SHUFFLE) {
+            shuffle();
+        } else if (target instanceof SpaceObject) {
+            // TODO
+            System.out.println(String.format("A(n) %s object was clicked", target.getClass().getSimpleName()));
+        } else {
+            System.err.println(String.format("Unknown object type %s", target.getClass()));
+        }
+    }
+    
 }

@@ -1,11 +1,11 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.model.game;
 
-import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Fleet;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Spaceship;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Fleet;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Spaceship;
 
 public final class Battle {
     private static final ThreadLocalRandom rnd = ThreadLocalRandom.current();

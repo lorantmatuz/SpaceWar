@@ -41,7 +41,7 @@ public class BoardItem implements Displayable {
     }
     
     private Image loadImageThrowing() throws IOException {
-        return ImageIO.read(getClass().getResource("/hu/elte/inf/szofttech2023/team3/spacewar/view/view/" + imageName + ".png"));
+        return ImageIO.read(getClass().getResource("/hu/elte/inf/szofttech2023/team3/spacewar/view/" + imageName + ".png"));
     }
 
     @Override

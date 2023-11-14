@@ -1,13 +1,13 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.model.space;
 
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Asteroid;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.BlackHole;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
-
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class implements the space class with a singleton pattern. This stores
@@ -15,23 +15,15 @@ import java.util.List;
  * {@code GenerateSpace} and {@code ShortestPath} classes.
  */
 public class Space {
-    private static Space instance;
     public final int width, height;
     protected final boolean[][] isSpaceObject;
     protected final List<SpaceObject> objects;
 
-    private Space(int width, int height) {
+    public Space(int width, int height) {
         this.width = width;
         this.height = height;
         isSpaceObject = new boolean[width][height];
         objects = new ArrayList<>();
-    }
-
-    public static Space getInstance(int width, int height) {
-        if(instance == null) {
-            instance = new Space(width,height);
-        }
-        return instance;
     }
 
     /**
@@ -58,8 +50,17 @@ public class Space {
             System.out.println();
         }
     }
+    
+    public void erase() {
+        objects.clear();
+        for (int i = 0; i < isSpaceObject.length; i++) {
+            for (int j = 0; j < isSpaceObject.length; j++) {
+                isSpaceObject[i][j] = false;
+            }
+        }
+    }
 
-    private SpaceObject getObjectAt(int x, int y) {
+    public SpaceObject getObjectAt(int x, int y) {
         for (SpaceObject obj : objects) {
             if (obj.x == x && obj.y == y) {
                 return obj;

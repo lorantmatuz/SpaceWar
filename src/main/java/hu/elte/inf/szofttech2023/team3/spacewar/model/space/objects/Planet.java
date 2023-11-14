@@ -1,11 +1,8 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects;
 
-import hu.elte.inf.szofttech2023.team3.spacewar.model.building.*;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.building.Building;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.building.Mine;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.building.SolarPowerPlant;
-
 import java.util.*;
+
+import hu.elte.inf.szofttech2023.team3.spacewar.model.building.*;
 
 public class Planet extends SpaceObject {
     public final double maxSize = 3 * 1024;

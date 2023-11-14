@@ -119,7 +119,7 @@ public class ShortestPath {
 
     // demo usage
     public static void main(String[] args) {
-        final var space = Space.getInstance(10,7);
+        final var space = new Space(10,7);
         final var generateSpace = new GenerateSpace(space);
         generateSpace.run(7,3,1);
         final var shortestPath = new ShortestPath(space);
