@@ -16,27 +16,27 @@ public class PlanetTest {
 
     @Test
     public void buildTest() {
-        Building solarPowerPlant = planet.build(SolarPowerPlant.class);
+        Building solarPowerPlant = planet.build(BuildingEnum.SOLAR_POWER_PLANT);
         /* Successfully built */
         assertThat(solarPowerPlant).isNotNull();
-        Building solarPowerPlant2 = planet.build(SolarPowerPlant.class);
+        Building solarPowerPlant2 = planet.build(BuildingEnum.SOLAR_POWER_PLANT);
         /* Same object */
         assertThat(solarPowerPlant).isSameAs(solarPowerPlant2);
         /* Not generated yet */
-        assertThat(planet.getBuilding(Mine.class)).isNull();
-        Building mine = planet.build(Mine.class);
+        assertThat(planet.getBuilding(BuildingEnum.MINE)).isNull();
+        Building mine = planet.build(BuildingEnum.MINE);
         /* Successfully built */
         assertThat(mine).isNotNull();
-        Building factory = planet.build(SpaceShipFactory.class);
+        Building factory = planet.build(BuildingEnum.SPACE_SHIP_FACTORY);
         /* Successfully built */
         assertThat(factory).isNotNull();
     }
 
     @Test
     public void upgradeTest() {
-        Building mine = planet.build(Mine.class);
+        Building mine = planet.build(BuildingEnum.MINE);
         assertThat(mine.getLevel()).isEqualTo(1);
-        planet.upgrade(Mine.class);
+        planet.upgrade(BuildingEnum.MINE);
         assertThat(mine.getLevel()).isEqualTo(2);
     }
 }
