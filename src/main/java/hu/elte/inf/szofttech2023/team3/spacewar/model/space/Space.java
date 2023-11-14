@@ -101,4 +101,8 @@ public class Space {
         innerObject.replace(to.x,to.y);
         return true;
     }
+
+    public List<SpaceObject> getObjects() {
+        return objects;
+    }
 }
