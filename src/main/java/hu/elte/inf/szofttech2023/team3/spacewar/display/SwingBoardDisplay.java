@@ -1,25 +1,11 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.display;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 public class SwingBoardDisplay implements BoardDisplay {
@@ -35,6 +21,9 @@ public class SwingBoardDisplay implements BoardDisplay {
     private final int fieldHeight;
     private final int fieldWidth;
     private final JPanel boardPanel;
+
+    private final JPanel objectPanel;
+    private final int objectPanelWidth = 500;
     private final JFrame frame;
     private final JButton shuffleButton;
     
@@ -45,9 +34,11 @@ public class SwingBoardDisplay implements BoardDisplay {
         this.columnCount = columnCount;
         this.fieldHeight = fieldHeight;
         this.fieldWidth = fieldWidth;
-        this.boardPanel = createAndInitBoardPanel(rowCount * fieldHeight, columnCount * fieldWidth);
+        this.boardPanel = createAndInitBoardPanel(columnCount * fieldWidth, rowCount * fieldHeight);
+        //this.objectPanel =  createAndInitObjectPanel( (int)Math.floor((double)columnCount/3.0) * fieldWidth , rowCount * fieldHeight );
+        this.objectPanel =  createAndInitObjectPanel( objectPanelWidth , rowCount * fieldHeight );
         this.shuffleButton = new JButton("Shuffle");
-        this.frame = createAndInitFrame(this.boardPanel, this.shuffleButton);
+        this.frame = createAndInitFrame(this.boardPanel, this.objectPanel, this.shuffleButton);
     }
     
     private JPanel createAndInitBoardPanel(int panelWidth, int panelHeight) {
@@ -67,14 +58,121 @@ public class SwingBoardDisplay implements BoardDisplay {
             
             @Override
             public void mouseClicked(MouseEvent e) {
-                handleClick(e);
+                handleBoardClick(e);
             }
             
         });
         return unsetBoardPanel;
     }
 
-    private JFrame createAndInitFrame(JPanel boardPanel, JButton shuffleButton) {
+    private JPanel createAndInitObjectPanel(int panelWidth, int panelHeight) {
+        //JPanel unsetObjectPanel = new JPanel() {};
+        JPanel unsetObjectPanel = new JPanel(new GridLayout(3,1) ) {};
+        unsetObjectPanel.setPreferredSize(new Dimension(panelWidth, panelHeight));
+        //unsetObjectPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        unsetObjectPanel.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                handlePanelClick(e);
+            }
+
+        });
+
+        /*
+        JLabel label = new JLabel("Object panel");
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        label.setBorder(new EmptyBorder(BORDER_TOP, BORDER_LEFT, BORDER_BOTTOM, BORDER_RIGHT));
+        label.setFont(new Font(Font.MONOSPACED, Font.BOLD, FONT_SIZE ));
+        unsetObjectPanel.add(label, BorderLayout.NORTH);
+         */
+
+        // ATTRIBUTE PANEL //
+        JPanel attributePanel = new JPanel() {};
+        attributePanel.setPreferredSize(new Dimension(panelWidth, panelHeight/4 ));
+        //attributePanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        attributePanel.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                handlePanelClick(e);
+            }
+
+        });
+
+        JLabel attribPanelLabel = new JLabel("Attribute Panel");
+        attribPanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        attribPanelLabel.setBorder(new EmptyBorder(BORDER_TOP, BORDER_LEFT, BORDER_BOTTOM, BORDER_RIGHT));
+        attribPanelLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, FONT_SIZE ));
+        attributePanel.add( attribPanelLabel, BorderLayout.NORTH);
+
+        // PROGRESS PANEL //
+        JPanel progressPanel = new JPanel() {};
+        progressPanel.setPreferredSize(new Dimension(panelWidth, panelHeight/2 ));
+        //progressPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        progressPanel.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                handlePanelClick(e);
+            }
+
+        });
+
+        JLabel progressPanelLabel = new JLabel("Progress Panel");
+        progressPanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        progressPanelLabel.setBorder(new EmptyBorder(BORDER_TOP, BORDER_LEFT, BORDER_BOTTOM, BORDER_RIGHT));
+        progressPanelLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, FONT_SIZE ));
+        progressPanel.add( progressPanelLabel, BorderLayout.NORTH);
+
+        // ACTION PANEL //
+        JPanel actionPanel = new JPanel() {};
+        actionPanel.setPreferredSize(new Dimension(panelWidth, panelHeight/4 ));
+        //actionPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        progressPanel.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                handlePanelClick(e);
+            }
+
+        });
+
+        JLabel actionPanelLabel = new JLabel("Action Panel");
+        actionPanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        actionPanelLabel.setBorder(new EmptyBorder(BORDER_TOP, BORDER_LEFT, BORDER_BOTTOM, BORDER_RIGHT));
+        actionPanelLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, FONT_SIZE ));
+        actionPanel.add( actionPanelLabel, BorderLayout.NORTH);
+
+        /*
+        JSplitPane splitObjectPanelBottom = new JSplitPane();
+        //splitPane.setSize( columnCount * fieldWidth + (int)Math.floor((double)columnCount/3.0) * fieldWidth , rowCount*fieldHeight  );
+        splitObjectPanelBottom.setSize( columnCount * fieldWidth + objectPanelWidth , rowCount*fieldHeight*2/4  );
+        splitObjectPanelBottom.setDividerSize(0);
+        splitObjectPanelBottom.setDividerLocation( columnCount * fieldWidth * 2 / 4 );
+        splitObjectPanelBottom.setOrientation(JSplitPane.VERTICAL_SPLIT );
+        splitObjectPanelBottom.setTopComponent( progressPanel );
+        splitObjectPanelBottom.setBottomComponent( actionPanel );
+
+        JSplitPane splitObjectPanelTop = new JSplitPane();
+        //splitPane.setSize( columnCount * fieldWidth + (int)Math.floor((double)columnCount/3.0) * fieldWidth , rowCount*fieldHeight  );
+        splitObjectPanelTop.setSize( columnCount * fieldWidth + objectPanelWidth , rowCount*fieldHeight  );
+        splitObjectPanelTop.setDividerSize(0);
+        splitObjectPanelTop.setDividerLocation( columnCount * fieldWidth / 4 );
+        splitObjectPanelTop.setOrientation(JSplitPane.VERTICAL_SPLIT );
+        splitObjectPanelTop.setTopComponent( attributePanel );
+        splitObjectPanelTop.setBottomComponent( splitObjectPanelBottom );
+
+        unsetObjectPanel.add( splitObjectPanelTop );
+        */
+
+        unsetObjectPanel.add(attributePanel);
+        unsetObjectPanel.add(progressPanel);
+        unsetObjectPanel.add(actionPanel);
+
+        return unsetObjectPanel;
+    }
+    private JFrame createAndInitFrame(JPanel boardPanel, JPanel objectPanel, JButton shuffleButton) {
         JFrame unsetFrame = new JFrame();
         
         JPanel contentPanel = new JPanel(new BorderLayout());
@@ -83,15 +181,26 @@ public class SwingBoardDisplay implements BoardDisplay {
         label.setBorder(new EmptyBorder(BORDER_TOP, BORDER_LEFT, BORDER_BOTTOM, BORDER_RIGHT));
         label.setFont(new Font(Font.MONOSPACED, Font.BOLD, FONT_SIZE ));
         contentPanel.add(label, BorderLayout.NORTH);
-        contentPanel.add(boardPanel, BorderLayout.CENTER);
-        
+        //contentPanel.add(boardPanel, BorderLayout.CENTER);
+        //contentPanel.add(objectPanel, BorderLayout.EAST );
         contentPanel.add(shuffleButton, BorderLayout.SOUTH);
-        
+
+        JSplitPane splitPane = new JSplitPane();
+        //splitPane.setSize( columnCount * fieldWidth + (int)Math.floor((double)columnCount/3.0) * fieldWidth , rowCount*fieldHeight  );
+        splitPane.setSize( columnCount * fieldWidth + objectPanelWidth , rowCount*fieldHeight  );
+        splitPane.setDividerSize(0);
+        splitPane.setDividerLocation( columnCount * fieldWidth );
+        splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+        splitPane.setLeftComponent( boardPanel );
+        splitPane.setRightComponent( objectPanel );
+
+        contentPanel.add( splitPane );
+
         unsetFrame.setContentPane(contentPanel);
         unsetFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         unsetFrame.pack();
         unsetFrame.setLocationRelativeTo(null);
-        
+
         return unsetFrame;
     }
 
@@ -153,7 +262,7 @@ public class SwingBoardDisplay implements BoardDisplay {
         g2d.drawImage(image, left + pad, top + pad, left + fieldWidth - (2 * pad), top + fieldHeight - (2 * pad), 0, 0, imageWidth, imageHeight, null);
     }
     
-    private void handleClick(MouseEvent e) {
+    private void handleBoardClick(MouseEvent e) {
         Point point = e.getPoint();
         int x = (int) point.getX();
         int y = (int) point.getY();
@@ -176,4 +285,7 @@ public class SwingBoardDisplay implements BoardDisplay {
         field.getAction().run();
     }
 
+    private void handlePanelClick(MouseEvent e) {
+        System.out.println("Panel is clicked!");
+    }
 }
