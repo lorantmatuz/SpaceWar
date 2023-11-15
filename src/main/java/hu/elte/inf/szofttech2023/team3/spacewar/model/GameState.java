@@ -11,6 +11,7 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Fleet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Spaceship;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GameState {
@@ -93,7 +94,10 @@ public class GameState {
             final var ssf = planet.build(BuildingEnum.SPACE_SHIP_FACTORY);
             // ssf.build(...);
             // upgrade
-            planet.upgrade(BuildingEnum.MINE);
+            //
+            //planet.upgrade(BuildingEnum.MINE);
+            planet.scheduleUpgrade(BuildingEnum.MINE);
+
         }
         // travelling
         {
@@ -106,19 +110,33 @@ public class GameState {
             manager.setTargetPoint(target);
             final var pathSearch = new ShortestPath(space);
             final var path = pathSearch.run(start,target);
-            final var cost = path.getTotalCost();
+            final var totalCost = path.getTotalCost();
             // TODO: handle case if cost > actionPoints
             final var actionPoints = manager.getActionPoint();
-            if(actionPoints < cost) {
+            var decreaseByPoint = actionPoints;
+            var endPoint = target;
+            if(actionPoints < totalCost) {
+                // example usage of path longer than action points
+                final List<Point> travelPath = new ArrayList<>();
                 while(path.hasNext()) {
                     final var pair = path.next();
-                    if(pair.cost() > actionPoints) {
+                    // path.accumulatingCost represents the total cost of path so far
+                    if(pair.accumulatingCost() > actionPoints) {
                         break;
                     }
+                    // means that the fleet can travel until the given point
+                    travelPath.add(pair.node());
+                    decreaseByPoint = pair.accumulatingCost();
                 }
+                // now travelPath represent the path that can be taken
+                System.out.println(travelPath);
+                endPoint = travelPath.get(travelPath.size() - 1);
             }
-            // TODO: get max-cost path not exceeding 'cost'
-            //manager.decreaseActionPointBy(cost);
+            // fly to the endpoint
+            // TODO: simulate moving along the path?
+            space.moveObject(fleet,endPoint);
+            // decrease the action points for flying
+            manager.decreaseActionPointBy(decreaseByPoint);
         }
 
 
