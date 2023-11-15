@@ -80,7 +80,7 @@ public class ShortestPath {
      * @param b the end {@code Point} in the {@code Space}
      * @return the Euclidean distance between the given {@code Point}s
      */
-    private static double euclidean(Point a, Point b) {
+    public static double euclidean(Point a, Point b) {
         return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
     }
 
@@ -109,7 +109,7 @@ public class ShortestPath {
             path.add(p);
         }
         while(!p.equals(s));
-        path.setCost(dist[t.x][t.y]);
+        path.setTotalCost(dist[t.x][t.y]);
         return path;
     }
 
