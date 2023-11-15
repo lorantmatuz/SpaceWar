@@ -1,14 +1,16 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.model.game;
+
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
 
 import java.util.List;
 import java.awt.Point;
 
-
 public class TurnManager {
     private final List<Player> players;
     public final double maxActionPoint = 100;
 
+    private Player currentPlayer;
+    private int turnCounter = 0;
     private TurnState state = null;
     private int playerIndex = 0;
     private double actionPoint;
@@ -16,36 +18,27 @@ public class TurnManager {
     private Point targetPoint;
     private Player winner = null;
 
-
     public TurnManager(List<Player> players) {
         this.players = players;
+        this.currentPlayer = nextPlayer();
     }
 
     public Player nextPlayer() {
-        final var player = players.get(playerIndex);
-        harvestFromPlanets(player);
-        playerIndex = (playerIndex + 1) % players.size();
+        currentPlayer = players.get(playerIndex);
+        if(++playerIndex >= players.size()) {
+            playerIndex = 0;
+            ++turnCounter;
+        }
         state = TurnState.STARTED;
         actionPoint = maxActionPoint;
         selectedObject = null;
         targetPoint = null;
-        return player;
-    }
-
-    private void harvestFromPlanets(Player player) {
-        for(final var planet : player.getPlanets()) {
-            planet.importEnergy();
-            planet.importMaterial();
-        }
+        return getCurrentPlayer();
     }
 
     public double decreaseActionPointBy(double points) {
         actionPoint -= points;
         return getActionPoint();
-    }
-
-    public void setState(TurnState state) {
-        this.state = state;
     }
 
     public void setSelectedObject(SpaceObject selectedObject) {
@@ -54,6 +47,10 @@ public class TurnManager {
 
     public void setTargetPoint(Point targetPoint) {
         this.targetPoint = targetPoint;
+    }
+
+    public Player getCurrentPlayer() {
+        return currentPlayer;
     }
 
     public double getActionPoint() {
@@ -72,4 +69,7 @@ public class TurnManager {
         return winner;
     }
 
+    public int getTurnCounter() {
+        return turnCounter;
+    }
 }
