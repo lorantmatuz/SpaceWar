@@ -2,6 +2,8 @@ package hu.elte.inf.szofttech2023.team3.spacewar;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -14,6 +16,7 @@ import javax.swing.border.EmptyBorder;
 import hu.elte.inf.szofttech2023.team3.spacewar.controller.GameController;
 import hu.elte.inf.szofttech2023.team3.spacewar.display.SwingBoardDisplay;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.GameState;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Space;
 import hu.elte.inf.szofttech2023.team3.spacewar.view.GameStateRenderer;
 
@@ -21,7 +24,8 @@ public class Main {
 
     public static void main(String[] args) {
         Space space = new Space(20, 20);
-        GameState state = new GameState(space);
+        List<Player> playerList = new ArrayList<>();
+        GameState state = new GameState(space, playerList);
         
         SwingBoardDisplay display = new SwingBoardDisplay(20, 20, 40, 40);
         JPanel boardPanel = display.getPanel();
