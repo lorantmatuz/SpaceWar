@@ -53,8 +53,8 @@ public class Space {
     
     public void erase() {
         objects.clear();
-        for (int i = 0; i < isSpaceObject.length; i++) {
-            for (int j = 0; j < isSpaceObject.length; j++) {
+        for (int j = 0; j < height; j++) {
+            for (int i = 0; i < width; i++) {
                 isSpaceObject[i][j] = false;
             }
         }
