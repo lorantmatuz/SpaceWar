@@ -20,6 +20,10 @@ public class Planet extends SpaceObject {
         super(x,y);
     }
 
+    public void colonize(Player player) {
+        owner = player;
+    }
+
     public Building build(BuildingEnum buildingEnum) {
         var building = getBuilding(buildingEnum);
         if(building == null) {
@@ -29,17 +33,19 @@ public class Planet extends SpaceObject {
         return building;
     }
 
-    public boolean upgrade(BuildingEnum buildingEnum) {
+    public boolean scheduleUpgrade(BuildingEnum buildingEnum) {
         final var building = getBuilding(buildingEnum);
         if(building == null) {
            return false;
         }
-        final double cost = building.upgradeCostOfLevel();
+        final double cost = 0;
+        // TODO:
+        //final double cost = building.upgradeCostOfLevel();
         if(cost + size > maxSize) {
             return false;
         }
         size += cost;
-        building.upgrade();
+        building.scheduleUpgrade();
         return true;
     }
 
@@ -62,7 +68,6 @@ public class Planet extends SpaceObject {
     public Building getBuilding(BuildingEnum buildingEnum) {
         return buildingMap.get(buildingEnum);
     }
-
 
     public double getEnergy() {
         return energy;
