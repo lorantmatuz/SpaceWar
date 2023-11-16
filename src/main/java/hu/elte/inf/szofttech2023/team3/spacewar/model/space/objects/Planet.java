@@ -38,34 +38,53 @@ public class Planet extends SpaceObject {
         if(building == null) {
            return false;
         }
-        final double cost = 0;
-        // TODO:
-        //final double cost = building.upgradeCostOfLevel();
+        final double cost = building.upgradeCostOfLevel();
         if(cost + size > maxSize) {
             return false;
         }
-        size += cost;
         building.scheduleUpgrade();
         return true;
     }
 
+    public void checkUpgrade() {
+        final var buildings = buildingsToList();
+        for(final var building : buildings) {
+            if(building.checkUpgrade()) {
+                size += building.upgradeCostOfLevel();
+            }
+        }
+    }
+
     public boolean importEnergy() {
         Building building = getBuilding(SOLAR_POWER_PLANT);
-        if(building != null) {
+        if(building != null && !building.isUnderConstruction()) {
             this.energy += ((SolarPowerPlant) building).exportEnergy();
+            return true;
         }
-        return building != null;
+        return false;
     }
 
     public boolean importMaterial() {
         Building building = getBuilding(MINE);
-        if(building != null) {
+        if(building != null && !building.isUnderConstruction()) {
             this.material += ((Mine) building).exportMaterial();
+            return true;
         }
-        return building != null;
+        return false;
     }
 
-    public Building getBuilding(BuildingEnum buildingEnum) {
+    private List<Building> buildingsToList() {
+        final List<Building> list = new ArrayList<>();
+        for(final var buildingEnum : BuildingEnum.values()) {
+            final var building = getBuilding(buildingEnum);
+            if(building != null) {
+                list.add(building);
+            }
+        }
+        return list;
+    }
+
+    private Building getBuilding(BuildingEnum buildingEnum) {
         return buildingMap.get(buildingEnum);
     }
 
