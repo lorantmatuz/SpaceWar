@@ -70,7 +70,9 @@ public class GameState {
                 // TODO: figure the position of the first fleets of the players
                 final var dummyPosition = 2;
                 final var fleet = new Fleet(dummyPosition,dummyPosition);
-                fleet.addShip(Spaceship.MOTHERSHIP);
+                // TODO: normally, no ships can be added directly,
+                // TODO: they must be produced by a shipfactory
+                fleet.addShip(Spaceship.MOTHER_SHIP);
                 final var fleets = List.of(fleet);
                 player.addFleet(fleet);
             }
@@ -100,8 +102,11 @@ public class GameState {
                 final var planet = player.getPlanets().get(0);
                 // build
                 planet.build(BuildingEnum.MINE);
-                final var ssf = planet.build(BuildingEnum.SPACE_SHIP_FACTORY);
-                // ssf.build(...);
+                planet.build(BuildingEnum.SPACE_SHIP_FACTORY);
+                final var ship = planet.produceShip(Spaceship.MOTHER_SHIP);
+                if(ship != null) {
+                    System.out.println(ship + " DONE:)");
+                }
                 // upgrade
                 //
                 //planet.upgrade(BuildingEnum.MINE);

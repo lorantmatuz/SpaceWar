@@ -4,6 +4,7 @@ import java.util.*;
 
 import hu.elte.inf.szofttech2023.team3.spacewar.model.building.*;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Spaceship;
 
 import static hu.elte.inf.szofttech2023.team3.spacewar.model.building.BuildingEnum.*;
 
@@ -71,6 +72,14 @@ public class Planet extends SpaceObject {
             return true;
         }
         return false;
+    }
+
+    public Spaceship produceShip(Spaceship ship) {
+        Building building = getBuilding(SPACE_SHIP_FACTORY);
+        if(building != null && !building.isUnderConstruction()) {
+            return ((SpaceShipFactory)building).produce(ship);
+        }
+        return null;
     }
 
     private List<Building> buildingsToList() {

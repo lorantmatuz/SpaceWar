@@ -43,7 +43,7 @@ public final class Battle {
     public static void main(String[] args) {
         Fleet fleet = new Fleet(1,3);
         fleet.addShip(Spaceship.SUPPLIER);
-        fleet.addShip(Spaceship.MOTHERSHIP);
+        fleet.addShip(Spaceship.MOTHER_SHIP);
         Battle.fight(fleet,fleet);
     }
 }
