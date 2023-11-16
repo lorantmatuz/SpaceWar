@@ -39,6 +39,9 @@ public class GameState {
     }
 
     public static void main(String[] args) {
+        /**
+         * Dummy user's guide
+         */
         // space
         final var space = new Space(10,10);
         // generator
@@ -76,70 +79,78 @@ public class GameState {
         final var gameState = new GameState(space,players);
         // manager
         final var manager = gameState.getManager();
-        final var player = manager.nextPlayer();
-        // clicking on gameObject
-        {
-            // TODO: unite with clicking gui(?)
-            // TODO: use space.getObjectAt(x,y) instead
-            // random clicked example
-            final var clickedObject = space.getObjects().get(2);
-            manager.setSelectedObject(clickedObject);
-        }
-        // planet building, upgrade
-        {
-            // click on planet
-            final var planet = player.getPlanets().get(0);
-            // build
-            planet.build(BuildingEnum.MINE);
-            final var ssf = planet.build(BuildingEnum.SPACE_SHIP_FACTORY);
-            // ssf.build(...);
-            // upgrade
-            //
-            //planet.upgrade(BuildingEnum.MINE);
-            planet.scheduleUpgrade(BuildingEnum.MINE);
 
-        }
-        // travelling
-        {
-            // click on fleet
-            // TODO: find fleet of player via (x,y) coordinates
-            final var fleet = player.getFleets().get(2);
-            final var start = new Point(fleet.x,fleet.y);
-            // "random" clicked target point example
-            final var target = new Point(6,9);
-            manager.setTargetPoint(target);
-            final var pathSearch = new ShortestPath(space);
-            final var path = pathSearch.run(start,target);
-            final var totalCost = path.getTotalCost();
-            // TODO: handle case if cost > actionPoints
-            final var actionPoints = manager.getActionPoint();
-            var decreaseByPoint = actionPoints;
-            var endPoint = target;
-            if(actionPoints < totalCost) {
-                // example usage of path longer than action points
-                final List<Point> travelPath = new ArrayList<>();
-                while(path.hasNext()) {
-                    final var pair = path.next();
-                    // path.accumulatingCost represents the total cost of path so far
-                    if(pair.accumulatingCost() > actionPoints) {
-                        break;
-                    }
-                    // means that the fleet can travel until the given point
-                    travelPath.add(pair.node());
-                    decreaseByPoint = pair.accumulatingCost();
-                }
-                // now travelPath represent the path that can be taken
-                System.out.println(travelPath);
-                endPoint = travelPath.get(travelPath.size() - 1);
+        // let's play!!
+        int i = 0;
+        // TODO: remove dummy i later on
+        while(manager.getWinner() == null && ++i <= 10) {
+            final var player = manager.nextPlayer();
+
+            // clicking on gameObject
+            {
+                // TODO: unite with clicking gui(?)
+                // TODO: use space.getObjectAt(x,y) instead
+                // random clicked example
+                final var clickedObject = space.getObjects().get(2);
+                manager.setSelectedObject(clickedObject);
             }
-            // fly to the endpoint
-            // TODO: simulate moving along the path?
-            space.moveObject(fleet,endPoint);
-            // decrease the action points for flying
-            manager.decreaseActionPointBy(decreaseByPoint);
+            // planet building, upgrade
+            {
+                // click on planet
+                final var planet = player.getPlanets().get(0);
+                // build
+                planet.build(BuildingEnum.MINE);
+                final var ssf = planet.build(BuildingEnum.SPACE_SHIP_FACTORY);
+                // ssf.build(...);
+                // upgrade
+                //
+                //planet.upgrade(BuildingEnum.MINE);
+                planet.scheduleUpgrade(BuildingEnum.MINE);
+                // and check for upgrades if they finished
+                // recommended to use it in all loop
+                planet.checkUpgrade();
+
+            }
+            // travelling
+            {
+                // click on fleet
+                // TODO: find fleet of player via (x,y) coordinates
+                final var fleet = player.getFleets().get(0);
+                final var start = new Point(fleet.x,fleet.y);
+                // "random" clicked target point example
+                final var target = new Point(6,9);
+                manager.setTargetPoint(target);
+                final var pathSearch = new ShortestPath(space);
+                final var path = pathSearch.run(start,target);
+                final var totalCost = path.getTotalCost();
+                // TODO: handle case if cost > actionPoints
+                final var actionPoints = manager.getActionPoint();
+                var decreaseByPoint = actionPoints;
+                var endPoint = target;
+                if(actionPoints < totalCost) {
+                    // example usage of path longer than action points
+                    final List<Point> travelPath = new ArrayList<>();
+                    while(path.hasNext()) {
+                        final var pair = path.next();
+                        // path.accumulatingCost represents the total cost of path so far
+                        if(pair.accumulatingCost() > actionPoints) {
+                            break;
+                        }
+                        // means that the fleet can travel until the given point
+                        travelPath.add(pair.node());
+                        decreaseByPoint = pair.accumulatingCost();
+                    }
+                    // now travelPath represent the path that can be taken
+                    System.out.println(travelPath);
+                    endPoint = travelPath.get(travelPath.size() - 1);
+                }
+                // fly to the endpoint
+                // TODO: simulate moving along the path?
+                space.moveObject(fleet,endPoint);
+                // decrease the action points for flying
+                manager.decreaseActionPointBy(decreaseByPoint);
+            }
+
         }
-
-
-        //player.get
     }
 }
