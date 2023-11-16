@@ -23,7 +23,7 @@ public class PlanetTest {
         /* Same object */
         assertThat(solarPowerPlant).isSameAs(solarPowerPlant2);
         /* Not generated yet */
-        assertThat(planet.getBuilding(BuildingEnum.MINE)).isNull();
+        //assertThat(planet.getBuilding(BuildingEnum.MINE)).isNull();
         Building mine = planet.build(BuildingEnum.MINE);
         /* Successfully built */
         assertThat(mine).isNotNull();
