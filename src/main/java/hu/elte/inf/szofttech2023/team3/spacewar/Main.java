@@ -1,17 +1,7 @@
 package hu.elte.inf.szofttech2023.team3.spacewar;
 
-import java.awt.BorderLayout;
-import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
-import javax.swing.border.EmptyBorder;
 
 import hu.elte.inf.szofttech2023.team3.spacewar.controller.GameController;
 import hu.elte.inf.szofttech2023.team3.spacewar.display.SwingBoardDisplay;
@@ -22,34 +12,20 @@ import hu.elte.inf.szofttech2023.team3.spacewar.view.GameStateRenderer;
 
 public class Main {
 
-    public static void main(String[] args) {
-        Space space = new Space(20, 20);
-        List<Player> playerList = new ArrayList<>();
-        GameState state = new GameState(space, playerList);
-        
-        SwingBoardDisplay display = new SwingBoardDisplay(20, 20, 40, 40);
-        JPanel boardPanel = display.getPanel();
-        GameStateRenderer renderer = new GameStateRenderer(display);
+    private static final int BOARD_COLUMNS = 20;
+    private static final int BOARD_ROWS = 20;
+    private static final int FIELD_WIDTH = 40;
+    private static final int FIELD_HEIGHT = 40;
 
+    public static void main(String[] args) {
+        Space space = new Space(BOARD_COLUMNS, BOARD_ROWS);
+        List<Player> players = new ArrayList<>();
+        players.add(new Player("A"));
+        players.add(new Player("B"));
+        GameState state = new GameState(space, players);
+        SwingBoardDisplay display = new SwingBoardDisplay(BOARD_ROWS, BOARD_COLUMNS, FIELD_WIDTH, FIELD_HEIGHT);
+        GameStateRenderer renderer = new GameStateRenderer(display);
         GameController controller = new GameController(state, renderer);
-        
-        JFrame frame = new JFrame();
-        JPanel contentPanel = new JPanel(new BorderLayout());
-        JLabel label = new JLabel("Space War");
-        label.setHorizontalAlignment(SwingConstants.CENTER);
-        label.setBorder(new EmptyBorder(10, 10, 10, 10));
-        label.setFont(new Font(Font.MONOSPACED, Font.BOLD, 40));
-        contentPanel.add(label, BorderLayout.NORTH);
-        contentPanel.add(boardPanel, BorderLayout.CENTER);
-        JButton button = new JButton("Regenerate space");
-        button.addActionListener(ev -> controller.shuffle());
-        contentPanel.add(button, BorderLayout.SOUTH);
-        frame.setContentPane(contentPanel);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-        
         controller.shuffle();
     }
     

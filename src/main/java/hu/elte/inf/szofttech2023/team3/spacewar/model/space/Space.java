@@ -105,4 +105,9 @@ public class Space {
     public List<SpaceObject> getObjects() {
         return objects;
     }
+
+    public List<SpaceObject> getSpaceObjects(){
+        return this.objects;
+    }
+    
 }

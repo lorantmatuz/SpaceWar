@@ -1,10 +1,10 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects;
 
-import hu.elte.inf.szofttech2023.team3.spacewar.model.building.*;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import hu.elte.inf.szofttech2023.team3.spacewar.model.building.*;
 
 public class PlanetTest {
     private Planet planet;
