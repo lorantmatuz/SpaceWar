@@ -29,17 +29,13 @@ public class GenerateSpace {
     /**
      * Creates SpaceObjects in Space.
      * @param numOfObjects the number of objects to generate
-     * @param objectType the type of the object to generate
+     * @param factory the type of the object to create
      */
     private void create(int numOfObjects, SpaceObjectFactory factory) {
         for (int j = 0; j < numOfObjects; j++) {
             Point p = findFreeSpace();
-            try {
-                SpaceObject obj = factory.create(p.x, p.y);
-                space.setSpaceObject(p, obj);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            SpaceObject obj = factory.create(p.x, p.y);
+            space.setSpaceObject(p, obj);
         }
     }
 

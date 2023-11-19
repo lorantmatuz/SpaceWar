@@ -24,7 +24,7 @@ public final class Fleet extends SpaceObject {
     }
 
     public boolean canAttack() {
-        return getShip(Spaceship.MOTHERSHIP) != null;
+        return getShip(Spaceship.MOTHER_SHIP) != null;
     }
 
     public boolean canColonize() {
@@ -53,7 +53,7 @@ public final class Fleet extends SpaceObject {
 
     public static void main(String[] args) {
         var fleet = new Fleet(1,3);
-        fleet.addShip(Spaceship.MOTHERSHIP);
+        fleet.addShip(Spaceship.MOTHER_SHIP);
         fleet.replace(2,3);
     }
 }
