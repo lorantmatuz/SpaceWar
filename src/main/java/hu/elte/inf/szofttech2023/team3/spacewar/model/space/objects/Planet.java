@@ -5,12 +5,13 @@ import java.util.*;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.building.*;
 
 public class Planet extends SpaceObject {
-    public final double maxSize = 3 * 1024;
-    public final int temperature = 100;
-    private double size = 1.0;
+    private String name;
+    public int maxSize;
+    public int temperature;
+    private int size;
     //private Player owner = null;
-    private double energy = 0;
-    private double material = 0;
+    private int energy;
+    private int material;
     private final Map<Class<? extends Building>, Building> buildingMap
             = new HashMap<>();
 
@@ -68,11 +69,24 @@ public class Planet extends SpaceObject {
     }
 
 
-    public double getEnergy() {
+    public int getEnergy() {
         return energy;
     }
 
-    public double getMaterial() {
+    public int getMaterial() {
         return material;
+    }
+    public int getTemperature(){ return temperature; }
+    public int getMaxSize(){ return maxSize; }
+    public int getSize(){ return size; }
+    public String getName() { return name; }
+    public void setEnergy( int energy ){ this.energy = energy; }
+    public void setMaterial( int material ){ this.material = material; }
+    public void setTemperature( int temperature ){ this.temperature = temperature; }
+    public void setMaxSize( int maSize ){  this.maxSize = maxSize; }
+    public void setName( String name ){ this.name = name; }
+
+    public Map<Class<? extends Building>, Building> getBuildingMap() {
+        return buildingMap;
     }
 }

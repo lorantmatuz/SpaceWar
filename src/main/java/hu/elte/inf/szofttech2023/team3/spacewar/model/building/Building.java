@@ -9,6 +9,7 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 public abstract class Building {
     protected Planet planet;
     protected int level = 1;
+    protected int size = 1;
 
     public Building(Planet planet) {
         this.planet = planet;
@@ -30,4 +31,5 @@ public abstract class Building {
     public int upgradeDurationOfLevel() {
         return level;
     }
+    public int getSize(){ return this.size; }
 }
