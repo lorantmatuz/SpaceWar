@@ -48,8 +48,8 @@ public abstract class Building {
     }
 
     // TODO: modify the upgrade cost of level function
-    public double upgradeCostOfLevel() {
-        return Math.pow(2.0, level);
+    public int upgradeCostOfLevel() {
+        return (int)Math.pow(2,level);
     }
 
 }

@@ -10,12 +10,12 @@ import static hu.elte.inf.szofttech2023.team3.spacewar.model.building.BuildingEn
 
 public class Planet extends SpaceObject {
     private static int id = -1;
-    public final double maxSize = 3 * 1024;
+    public final int maxSize = 3 * 1024;
     public final int temperature = 100;
-    private double size = 1.0;
+    private int size = 1;
     private Player owner = null;
-    private double energy = 0;
-    private double material = 0;
+    private int energy = 0;
+    private int material = 0;
     private final Map<BuildingEnum, Building> buildingMap = new HashMap<>();
 
     public Planet(int x, int y) {
@@ -41,7 +41,7 @@ public class Planet extends SpaceObject {
         if(building == null) {
            return false;
         }
-        final double cost = building.upgradeCostOfLevel();
+        final int cost = building.upgradeCostOfLevel();
         if(cost + size > maxSize) {
             return false;
         }
@@ -99,11 +99,11 @@ public class Planet extends SpaceObject {
         return buildingMap.get(buildingEnum);
     }
 
-    public double getEnergy() {
+    public int getEnergy() {
         return energy;
     }
 
-    public double getMaterial() {
+    public int getMaterial() {
         return material;
     }
 
