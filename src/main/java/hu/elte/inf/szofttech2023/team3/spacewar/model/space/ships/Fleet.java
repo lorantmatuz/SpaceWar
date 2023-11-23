@@ -3,12 +3,14 @@ package hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
 
 public final class Fleet extends SpaceObject {
+    private static int id = -1;
     private final Spaceship[] spaceships = new Spaceship[Spaceship.values().length];
     private int totalConsumption = 0;
     private int minSpeed = Integer.MAX_VALUE;
 
     public Fleet(int x, int y) {
         super(x, y);
+        ++id;
     }
 
     public boolean addShip(Spaceship ship) {
@@ -49,6 +51,10 @@ public final class Fleet extends SpaceObject {
 
     public Spaceship[] getSpaceships() {
         return spaceships.clone();
+    }
+
+    public int getId() {
+        return id;
     }
 
     public static void main(String[] args) {
