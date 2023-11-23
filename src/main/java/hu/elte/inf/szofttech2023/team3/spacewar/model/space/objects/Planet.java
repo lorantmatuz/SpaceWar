@@ -4,7 +4,8 @@ import java.util.*;
 
 import hu.elte.inf.szofttech2023.team3.spacewar.model.building.*;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Spaceship;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.construction.UpgradeBuilding;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.SpaceshipEnum;
 
 import static hu.elte.inf.szofttech2023.team3.spacewar.model.building.BuildingEnum.*;
 
@@ -41,26 +42,18 @@ public class Planet extends SpaceObject {
         if(building == null) {
            return false;
         }
-        final int cost = building.upgradeCostOfLevel();
+        final int cost = building.getUpgradeCostOfLevel();
         if(cost + size > maxSize) {
             return false;
         }
-        building.scheduleUpgrade();
+        owner.addConstruction(new UpgradeBuilding(building));
+        size += cost;
         return true;
-    }
-
-    public void checkUpgrade() {
-        final var buildings = buildingsToList();
-        for(final var building : buildings) {
-            if(building.checkUpgrade()) {
-                size += building.upgradeCostOfLevel();
-            }
-        }
     }
 
     public boolean importEnergy() {
         Building building = getBuilding(SOLAR_POWER_PLANT);
-        if(building != null && !building.isUnderConstruction()) {
+        if(building != null) {
             this.energy += ((SolarPowerPlant) building).exportEnergy();
             return true;
         }
@@ -69,19 +62,18 @@ public class Planet extends SpaceObject {
 
     public boolean importMaterial() {
         Building building = getBuilding(MINE);
-        if(building != null && !building.isUnderConstruction()) {
+        if(building != null) {
             this.material += ((Mine) building).exportMaterial();
             return true;
         }
         return false;
     }
 
-    public Spaceship produceShip(Spaceship ship) {
+    public void produceShip(SpaceshipEnum ship) {
         Building building = getBuilding(SPACE_SHIP_FACTORY);
-        if(building != null && !building.isUnderConstruction()) {
-            return ((SpaceShipFactory)building).produce(ship);
+        if(building != null) {
+             ((SpaceShipFactory)building).produce(ship);
         }
-        return null;
     }
 
     private List<Building> buildingsToList() {
@@ -109,5 +101,9 @@ public class Planet extends SpaceObject {
 
     public int getId() {
         return id;
+    }
+
+    public Player getOwner() {
+        return owner;
     }
 }
