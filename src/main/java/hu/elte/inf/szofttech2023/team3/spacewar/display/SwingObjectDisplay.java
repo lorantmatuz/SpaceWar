@@ -13,6 +13,7 @@ public class SwingObjectDisplay extends JPanel implements Rectangular, MenuDispl
 
     private AttributePanel attributePanel;
     private CollectionPanel collectionPanel;
+    private JScrollPane collectionScroller;
     private ActionPanel actionPanel;
 
     public SwingObjectDisplay( int rowCount , int columnCount ) {
@@ -47,6 +48,9 @@ public class SwingObjectDisplay extends JPanel implements Rectangular, MenuDispl
             }
 
         });
+        collectionScroller = new JScrollPane( collectionPanel );
+        collectionPanel.setAutoscrolls(true);
+        collectionScroller.setPreferredSize(new Dimension(objectDisplayWidth,objectDisplayHeight/2));
 
         // ACTION PANEL //
         actionPanel = new ActionPanel( objectDisplayWidth , objectDisplayHeight/4 );
@@ -60,7 +64,8 @@ public class SwingObjectDisplay extends JPanel implements Rectangular, MenuDispl
 
 
         add(attributePanel, BorderLayout.NORTH );
-        add(collectionPanel, BorderLayout.CENTER );
+        //add(collectionPanel, BorderLayout.CENTER );
+        add(collectionScroller, BorderLayout.CENTER);
         add(actionPanel, BorderLayout.SOUTH );
 
 

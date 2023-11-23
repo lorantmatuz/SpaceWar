@@ -64,12 +64,20 @@ public class DisplayEngine implements Applicable {
         panelLabel.setText( outText );
     }
     @Override
-    public void apply(List<String> titleList, List<Map.Entry< String,List<Integer> > > content)
+    public void apply(Boolean erase, String title, List<String> header, List<Map.Entry< String,List<Integer> > > content)
     {
-        JLabel panelLabel = objectDisplay.getCollectionPanel().getCollectionPanelLabel();
+        CollectionPanel collectionPanel = objectDisplay.getCollectionPanel();
+        if( erase )
+        {
+            collectionPanel.removeAll();
+            collectionPanel.revalidate();
+            collectionPanel.repaint();
+        }
+        JLabel panelLabel = collectionPanel.setCollectionPanelLabel();
         String outText = new String("<html>");
+        outText = outText + "<p>" + title + "</p>";
         outText = outText + "<p>" ;
-        for(String element : titleList ) {
+        for(String element : header ) {
             outText = outText + element + ",";
         }
         outText = outText + "</p> <br>";
@@ -84,6 +92,7 @@ public class DisplayEngine implements Applicable {
         }
         outText = outText + "</html>";
         panelLabel.setText( outText );
+        collectionPanel.add( panelLabel );
     }
 
     @Override

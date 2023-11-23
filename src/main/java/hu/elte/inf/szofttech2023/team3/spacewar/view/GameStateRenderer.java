@@ -44,7 +44,8 @@ public class GameStateRenderer {
     public void apply( Object object , GameState gameState , GameActionListener listener ) {
         String title = new String();
         List<Map.Entry<String, Integer>> attributeContent = new ArrayList<>();
-        ArrayList<String> titleList = new ArrayList<>();
+        String collectionTitle = new String();
+        ArrayList<String> collectionHeader = new ArrayList<>();
         List<Map.Entry<String, List<Integer>>> collectionContent = new ArrayList<>();
         List<Map.Entry<String, Runnable >> actionContent = new ArrayList<>();
         if (object instanceof Planet) {
@@ -55,9 +56,10 @@ public class GameStateRenderer {
             attributeContent.add(new AbstractMap.SimpleEntry<>("temperature", p.getTemperature() ) );
             attributeContent.add(new AbstractMap.SimpleEntry<>("space capacity", p.getMaxSize()  ) );
             attributeContent.add(new AbstractMap.SimpleEntry<>("used capacity", p.getSize()      ) );
-            titleList.add("Building type");
-            titleList.add("Level");
-            titleList.add("Size");
+            collectionTitle = "Buildings";
+            collectionHeader.add("Building type");
+            collectionHeader.add("Level");
+            collectionHeader.add("Size");
             Map<Class<? extends Building>, Building> buildingList = p.getBuildingMap();
             for (Map.Entry<Class<? extends Building>, Building> set : buildingList.entrySet()) {
                 List<Integer> listElementAttributes = new ArrayList<Integer>();
@@ -84,7 +86,7 @@ public class GameStateRenderer {
             title = "A black hole";
         }
         displayEngine.apply( title , attributeContent );
-        displayEngine.apply( titleList , collectionContent );
+        displayEngine.apply( true , collectionTitle, collectionHeader , collectionContent );
         displayEngine.apply( actionContent  );
     }
 
