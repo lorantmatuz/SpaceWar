@@ -9,6 +9,7 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Spaceship;
 import static hu.elte.inf.szofttech2023.team3.spacewar.model.building.BuildingEnum.*;
 
 public class Planet extends SpaceObject {
+    private static int id = -1;
     public final double maxSize = 3 * 1024;
     public final int temperature = 100;
     private double size = 1.0;
@@ -19,6 +20,7 @@ public class Planet extends SpaceObject {
 
     public Planet(int x, int y) {
         super(x,y);
+        ++id;
     }
 
     public void colonize(Player player) {
@@ -103,5 +105,9 @@ public class Planet extends SpaceObject {
 
     public double getMaterial() {
         return material;
+    }
+
+    public int getId() {
+        return id;
     }
 }
