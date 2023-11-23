@@ -9,6 +9,7 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Space;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Fleet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Spaceship;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.SpaceshipEnum;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -72,7 +73,7 @@ public class GameState {
                 final var fleet = new Fleet(dummyPosition,dummyPosition);
                 // TODO: normally, no ships can be added directly,
                 // TODO: they must be produced by a shipfactory
-                fleet.addShip(Spaceship.MOTHER_SHIP);
+                fleet.addShip(new Spaceship(SpaceshipEnum.MOTHER_SHIP));
                 final var fleets = List.of(fleet);
                 player.addFleet(fleet);
             }
@@ -103,17 +104,11 @@ public class GameState {
                 // build
                 planet.build(BuildingEnum.MINE);
                 planet.build(BuildingEnum.SPACE_SHIP_FACTORY);
-                final var ship = planet.produceShip(Spaceship.MOTHER_SHIP);
-                if(ship != null) {
-                    System.out.println(ship + " DONE:)");
-                }
+                planet.produceShip(SpaceshipEnum.MOTHER_SHIP);
                 // upgrade
                 //
                 //planet.upgrade(BuildingEnum.MINE);
                 planet.scheduleUpgrade(BuildingEnum.MINE);
-                // and check for upgrades if they finished
-                // recommended to use it in all loop
-                planet.checkUpgrade();
 
             }
             // travelling
