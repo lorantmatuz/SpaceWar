@@ -1,6 +1,7 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.model.building;
 
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Spaceship;
 
 public class SpaceShipFactory extends Building {
 
@@ -13,8 +14,10 @@ public class SpaceShipFactory extends Building {
         ++level;
     }
 
-    //public SpaceShip produce(Class<? extends SpaceShip> type) {
-    //  if(ship.minLevelToBuild() < level) return null;
-    //  TODO
-    // }
+    public Spaceship produce(Spaceship ship) {
+        if(ship.minLevelToBuild < level) {
+            return null;
+        }
+        return ship;
+    }
 }
