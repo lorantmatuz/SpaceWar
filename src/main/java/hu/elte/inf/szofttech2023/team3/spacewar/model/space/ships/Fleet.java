@@ -25,6 +25,14 @@ public final class Fleet extends SpaceObject {
         return true;
     }
 
+    public boolean mergeFleet(Fleet fleet) {
+        boolean retVal = true;
+        for(final var ship : fleet.getSpaceships()) {
+            retVal = retVal && addShip(ship);
+        }
+        return retVal;
+    }
+
     public boolean canAttack() {
         return getShip(SpaceshipEnum.MOTHER_SHIP) != null;
     }

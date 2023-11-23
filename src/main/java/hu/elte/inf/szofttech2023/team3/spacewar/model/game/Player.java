@@ -34,6 +34,10 @@ public class Player
         fleets.add(fleet);
     }
 
+    public boolean removeFleet(Fleet fleet) {
+        return fleets.remove(fleet);
+    }
+
     public String getName() {
         return name;
     }
