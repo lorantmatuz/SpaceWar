@@ -7,10 +7,13 @@ import java.util.ArrayList;
 
 public class Player
 {
+    private String name;
     ArrayList<Planet> planets;
     ArrayList<Fleet> fleets;
 
-    public Player(){}
+    public Player(String name){
+        this.name = name;
+    }
 
     public void init()
     {

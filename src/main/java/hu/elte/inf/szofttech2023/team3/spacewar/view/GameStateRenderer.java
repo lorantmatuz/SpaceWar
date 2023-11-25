@@ -6,6 +6,7 @@ import hu.elte.inf.szofttech2023.team3.spacewar.display.SpecialAction;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.GameState;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Space;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Fleet;
 
 public class GameStateRenderer {
     
@@ -35,12 +36,23 @@ public class GameStateRenderer {
         boardDisplay.apply(displayables, () -> handleShuffleAction(gameState, listener));
     }
 
-    private Displayable displayableOf(SpaceObject spaceObject, GameState gameState, GameActionListener listener) {
+   /* private Displayable displayableOf(SpaceObject spaceObject, GameState gameState, GameActionListener listener) {
         String imageName = spaceObject.getClass().getSimpleName().toLowerCase();
         Runnable action = () -> listener.actionPerformed(spaceObject, gameState);
         return new BoardItem(imageName, action);
     }
-    
+    */
+    private Displayable displayableOf(SpaceObject spaceObject, GameState gameState, GameActionListener listener) {
+        String imageName;
+        if (spaceObject instanceof Fleet) {
+            imageName = "fighterjet"; // Az összes űrhajó és flotta esetén
+        } else {
+            imageName = spaceObject.getClass().getSimpleName().toLowerCase(); // Minden más esetben
+        }
+        Runnable action = () -> listener.actionPerformed(spaceObject, gameState);
+        return new BoardItem(imageName, action);
+    }
+
     private void handleShuffleAction(GameState gameState, GameActionListener listener) {
         listener.actionPerformed(SpecialAction.SHUFFLE, gameState);
     }

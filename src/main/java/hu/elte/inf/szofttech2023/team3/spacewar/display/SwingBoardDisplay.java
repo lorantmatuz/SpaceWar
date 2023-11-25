@@ -1,26 +1,15 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.display;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.RenderingHints;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.GameState;
+import hu.elte.inf.szofttech2023.team3.spacewar.view.FieldPosition;
+import hu.elte.inf.szofttech2023.team3.spacewar.view.GameActionListener;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
-import javax.swing.border.EmptyBorder;
 
 public class SwingBoardDisplay implements BoardDisplay {
 
@@ -29,7 +18,7 @@ public class SwingBoardDisplay implements BoardDisplay {
     private static final int BORDER_LEFT = 10;
     private static final int BORDER_RIGHT = 10;
     private static final int FONT_SIZE = 40;
-    
+
     private final int rowCount;
     private final int columnCount;
     private final int fieldHeight;
@@ -37,17 +26,31 @@ public class SwingBoardDisplay implements BoardDisplay {
     private final JPanel boardPanel;
     private final JFrame frame;
     private final JButton shuffleButton;
-    
+    private final GameState gameState;
+
     private Displayable[][] content = new Displayable[0][0];
-    
-    public SwingBoardDisplay(int rowCount, int columnCount, int fieldWidth, int fieldHeight) {
+    private GameActionListener actionListener; // Hozzáadott GameActionListener
+
+    public SwingBoardDisplay(int rowCount, int columnCount, int fieldWidth, int fieldHeight, GameState gameState) {
         this.rowCount = rowCount;
         this.columnCount = columnCount;
         this.fieldHeight = fieldHeight;
         this.fieldWidth = fieldWidth;
+        this.gameState = gameState;
+
         this.boardPanel = createAndInitBoardPanel(rowCount * fieldHeight, columnCount * fieldWidth);
         this.shuffleButton = new JButton("Shuffle");
         this.frame = createAndInitFrame(this.boardPanel, this.shuffleButton);
+
+
+    }
+    private void initMouseListener() {
+        boardPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                handleClick(e);
+            }
+        });
     }
     
     private JPanel createAndInitBoardPanel(int panelWidth, int panelHeight) {
@@ -152,28 +155,36 @@ public class SwingBoardDisplay implements BoardDisplay {
         
         g2d.drawImage(image, left + pad, top + pad, left + fieldWidth - (2 * pad), top + fieldHeight - (2 * pad), 0, 0, imageWidth, imageHeight, null);
     }
-    
+    public void setActionListener(GameActionListener listener) {
+        this.actionListener = listener;
+    }
     private void handleClick(MouseEvent e) {
         Point point = e.getPoint();
         int x = (int) point.getX();
         int y = (int) point.getY();
         int row = y / fieldHeight;
         int column = x / fieldWidth;
-        if (content.length < row) {
+
+        if (row >= rowCount || column >= columnCount) {
+            handleEmptySpaceClick(row, column);
             return;
         }
-        
-        Displayable[] contentRow = content[row];
-        if (contentRow.length < column) {
+
+        if (content.length <= row || content[row].length <= column || content[row][column] == null) {
+            handleEmptySpaceClick(row, column);
             return;
         }
-        
-        Displayable field = contentRow[column];
-        if (field == null) {
-            return;
+
+        Displayable field = content[row][column];
+        if (field != null) {
+            field.getAction().run();
         }
-        
-        field.getAction().run();
+    }
+    private void handleEmptySpaceClick(int row, int column) {
+        if (actionListener != null && gameState != null) {
+            FieldPosition position = FieldPosition.of(row, column);
+            actionListener.actionPerformed(position, gameState);
+        }
     }
 
 }
