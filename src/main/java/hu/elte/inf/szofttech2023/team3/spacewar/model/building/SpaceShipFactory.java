@@ -1,7 +1,8 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.model.building;
 
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.construction.ConstructSpaceship;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Spaceship;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.SpaceshipEnum;
 
 public class SpaceShipFactory extends Building {
 
@@ -14,10 +15,11 @@ public class SpaceShipFactory extends Building {
         ++level;
     }
 
-    public Spaceship produce(Spaceship ship) {
+    public void produce(SpaceshipEnum ship) {
         if(ship.minLevelToBuild < level) {
-            return null;
+            return;
         }
-        return ship;
+        final var player = planet.getOwner();
+        player.addConstruction(new ConstructSpaceship(planet,ship));
     }
 }

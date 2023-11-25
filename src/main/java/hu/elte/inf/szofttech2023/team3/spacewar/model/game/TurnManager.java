@@ -29,6 +29,7 @@ public class TurnManager {
             playerIndex = 0;
             ++turnCounter;
         }
+        currentPlayer.checkConstructions();
         state = TurnState.STARTED;
         actionPoint = maxActionPoint;
         selectedObject = null;

@@ -1,5 +1,6 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.model.game;
 
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.construction.Constructable;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Fleet;
 
@@ -11,9 +12,18 @@ public class Player
     private final String name;
     private final List<Planet> planets = new ArrayList<>();
     private final List<Fleet> fleets = new ArrayList<>();
+    private final List<Constructable> constructions = new ArrayList<>();
 
     public Player(String name) {
         this.name = name;
+    }
+
+    public void addConstruction(Constructable construction) {
+        constructions.add(construction);
+    }
+
+    public void checkConstructions() {
+        constructions.removeIf(Constructable::isEndOfConstruction);
     }
 
     public void addPlanet(Planet planet) {
@@ -22,6 +32,10 @@ public class Player
 
     public void addFleet(Fleet fleet) {
         fleets.add(fleet);
+    }
+
+    public boolean removeFleet(Fleet fleet) {
+        return fleets.remove(fleet);
     }
 
     public String getName() {
@@ -34,5 +48,9 @@ public class Player
 
     public List<Fleet> getFleets() {
         return fleets;
+    }
+
+    public List<Constructable> getConstructions() {
+        return constructions;
     }
 }
