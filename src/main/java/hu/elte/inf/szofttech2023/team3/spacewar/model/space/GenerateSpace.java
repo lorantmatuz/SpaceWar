@@ -3,6 +3,10 @@ package hu.elte.inf.szofttech2023.team3.spacewar.model.space;
 import java.awt.Point;
 import java.util.concurrent.ThreadLocalRandom;
 
+import hu.elte.inf.szofttech2023.team3.spacewar.model.building.Building;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.building.BuildingEnum;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.building.Mine;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.building.SolarPowerPlant;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.*;
 
 /**
@@ -21,8 +25,11 @@ public class GenerateSpace {
      */
     public void run(int numOfPlanets, int numOfAsteroids, int numOfBlackHoles) {
         space.erase();
+        System.out.println("rendering planets...");
         create(numOfPlanets, Planet::new);
+        System.out.println("rendering blackholes...");
         create(numOfBlackHoles, BlackHole::new);
+        System.out.println("rendering asteroids...");
         create(numOfAsteroids, Asteroid::new);
     }
 
@@ -34,8 +41,30 @@ public class GenerateSpace {
     private void create(int numOfObjects, SpaceObjectFactory factory) {
         for (int j = 0; j < numOfObjects; j++) {
             Point p = findFreeSpace();
+            /*
             SpaceObject obj = factory.create(p.x, p.y);
             space.setSpaceObject(p, obj);
+            */
+            try {
+                SpaceObject obj = factory.create(p.x, p.y);
+                space.setSpaceObject(p, obj);
+                //
+                if( obj instanceof Planet)
+                {
+                    Planet planet = (Planet) obj;
+                    planet.setEnergy(rnd.nextInt());
+                    planet.setMaterial(rnd.nextInt());
+                    planet.setEnergy(rnd.nextInt());
+                    planet.setMaxSize(rnd.nextInt());
+                    planet.setTemperature(rnd.nextInt());
+                    planet.setName("Planet-X" );
+                    planet.build(BuildingEnum.MINE);
+                    planet.build(BuildingEnum.SOLAR_POWER_PLANT);
+                }
+                //
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -11,7 +11,7 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 public class Mine extends Building {
     // TODO: modify the period, minEnergy, amount consistently
     private final int peroid = 2;
-    private final int minEnergy = 100;
+    private final int minEnergy = 10;
     private int amount = 1;
 
     public Mine(Planet planet) {
