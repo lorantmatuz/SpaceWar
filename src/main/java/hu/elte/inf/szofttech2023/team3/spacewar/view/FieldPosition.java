@@ -46,5 +46,10 @@ public class FieldPosition {
     public int hashCode() {
         return Objects.hash(row, column);
     }
+    
+    @Override
+    public String toString() {
+        return FieldPosition.class.getSimpleName() + "{ row: " + row + ", column: " + column + "}";
+    }
 
 }

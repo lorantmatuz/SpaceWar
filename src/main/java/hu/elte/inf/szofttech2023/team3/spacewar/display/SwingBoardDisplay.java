@@ -3,12 +3,17 @@ package hu.elte.inf.szofttech2023.team3.spacewar.display;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.function.Consumer;
 
 import javax.swing.*;
+
+import hu.elte.inf.szofttech2023.team3.spacewar.view.FieldPosition;
 
 public class SwingBoardDisplay extends JPanel implements Rectangular, BoardDisplay {
 
     private Displayable[][] content = new Displayable[0][0];
+    
+    private Consumer<FieldPosition> boardClickListener;
     
     private final int boardWidth;
     private final int boardHeight;
@@ -17,7 +22,7 @@ public class SwingBoardDisplay extends JPanel implements Rectangular, BoardDispl
     private final int fieldWidth;
     private final int fieldHeight;
     
-    public SwingBoardDisplay(int rowCount, int columnCount ) {
+    public SwingBoardDisplay(int rowCount, int columnCount) {
 
         this.rowCount = rowCount;
         this.columnCount = columnCount;
@@ -95,20 +100,41 @@ public class SwingBoardDisplay extends JPanel implements Rectangular, BoardDispl
         int y = (int) point.getY();
         int row = y / fieldHeight;
         int column = x / fieldWidth;
-        if (content.length < row) {
-            return;
+        FieldPosition position = FieldPosition.of(row, column);
+        if (!handleObjectClick(position)) {
+            handleEmptySpaceClick(position);
         }
-        
-        Displayable[] contentRow = content[row];
-        if (contentRow.length < column) {
-            return;
-        }
-        
-        Displayable field = contentRow[column];
-        if (field == null) {
-            return;
-        }
-        
-        field.getAction().run();
     }
+    
+    public boolean handleObjectClick(FieldPosition position) {
+        int row = position.getRow();
+        int column = position.getColumn();
+        
+        if (row >= rowCount || column >= columnCount) {
+            return false;
+        }
+
+        if (content.length <= row || content[row].length <= column || content[row][column] == null) {
+            return false;
+        }
+
+        Displayable field = content[row][column];
+        if (field == null) {
+            return false;
+        }
+
+        field.getAction().run();
+        return true;
+    }
+
+    public void setBoardClickListener(Consumer<FieldPosition> boardClickListener) {
+        this.boardClickListener = boardClickListener;
+    }
+    
+    private void handleEmptySpaceClick(FieldPosition position) {
+        if (boardClickListener != null) {
+            boardClickListener.accept(position);
+        }
+    }
+    
 }

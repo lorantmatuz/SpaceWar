@@ -10,10 +10,6 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Fleet;
 
-import javax.swing.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.*;
 
 public class GameStateRenderer {
@@ -69,9 +65,9 @@ public class GameStateRenderer {
                         new AbstractMap.SimpleEntry<>( set.getKey().name(), listElementAttributes )
                 );
             }
-            actionContent.add(new AbstractMap.SimpleEntry("Build Building", (Runnable) () -> listener.actionPerformed(SpecialAction.BUILD_BUILDING,gameState)));
-            actionContent.add(new AbstractMap.SimpleEntry("Build Ship", (Runnable) () -> listener.actionPerformed(SpecialAction.BUILD_SHIP,gameState)));
-            actionContent.add(new AbstractMap.SimpleEntry("Transfer Resources", (Runnable) () -> listener.actionPerformed(SpecialAction.TRANSFER,gameState)));
+            actionContent.add(new AbstractMap.SimpleEntry<>("Build Building", (Runnable) () -> listener.actionPerformed(SpecialAction.BUILD_BUILDING,gameState)));
+            actionContent.add(new AbstractMap.SimpleEntry<>("Build Ship", (Runnable) () -> listener.actionPerformed(SpecialAction.BUILD_SHIP,gameState)));
+            actionContent.add(new AbstractMap.SimpleEntry<>("Transfer Resources", (Runnable) () -> listener.actionPerformed(SpecialAction.TRANSFER,gameState)));
         }
         else if (object instanceof Fleet)
         {
@@ -92,14 +88,14 @@ public class GameStateRenderer {
 
 
     private Displayable displayableOf(SpaceObject spaceObject, GameState gameState, GameActionListener listener) {
-        String imageName = spaceObject.getClass().getSimpleName().toLowerCase();
+        String imageName;
+        if (spaceObject instanceof Fleet) {
+            imageName = "fighterjet"; // Az összes űrhajó és flotta esetén
+        } else {
+            imageName = spaceObject.getClass().getSimpleName().toLowerCase(); // Minden más esetben
+        }
         Runnable action = () -> listener.actionPerformed(spaceObject, gameState);
         return new BoardItem(imageName, action);
-    }
-
-    private void handleShuffleAction(GameState gameState, GameActionListener listener) {
-        System.out.println("shuffleAction!");
-        listener.actionPerformed(SpecialAction.SHUFFLE, gameState);
     }
 
 }

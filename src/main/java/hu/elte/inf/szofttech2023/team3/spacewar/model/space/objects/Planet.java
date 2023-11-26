@@ -1,11 +1,14 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects;
 
-import java.util.*;
-
 import hu.elte.inf.szofttech2023.team3.spacewar.model.building.*;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.construction.UpgradeBuilding;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.SpaceshipEnum;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static hu.elte.inf.szofttech2023.team3.spacewar.model.building.BuildingEnum.*;
 
@@ -26,6 +29,7 @@ public class Planet extends SpaceObject {
 
     public void colonize(Player player) {
         owner = player;
+        player.addPlanet(this);
     }
 
     public Building build(BuildingEnum buildingEnum) {

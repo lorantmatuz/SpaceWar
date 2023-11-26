@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameState {
+
+    private boolean playerIsActive = false;
+
     private final Space space;
     private final List<Player> players;
     private final TurnManager manager;
@@ -34,6 +37,15 @@ public class GameState {
     public Space getSpace() {
         return space;
     }
+
+    public boolean getActionState(){
+        return playerIsActive;
+    }
+
+    public void setActionState(boolean active) {
+        this.playerIsActive = active;
+    }
+
 
     public List<Player> getPlayers() {
         return players;
@@ -152,5 +164,6 @@ public class GameState {
             }
 
         }
+
     }
 }

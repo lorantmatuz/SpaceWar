@@ -1,13 +1,13 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.model.space;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Asteroid;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.BlackHole;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class implements the space class with a singleton pattern. This stores
@@ -16,7 +16,7 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
  */
 public class Space {
     public final int width, height;
-    protected final boolean[][] isSpaceObject;
+    public final boolean[][] isSpaceObject;
     protected final List<SpaceObject> objects;
 
     public Space(int width, int height) {
@@ -76,7 +76,7 @@ public class Space {
      *         in the grid
      * @param object the {@code SpaceObject} to set
      */
-    protected void setSpaceObject(Point p, SpaceObject object) {
+    public void setSpaceObject(Point p, SpaceObject object) {
         objects.add(object);
         isSpaceObject[p.x][p.y] = true;
     }
