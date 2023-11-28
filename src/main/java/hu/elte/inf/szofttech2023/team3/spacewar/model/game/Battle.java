@@ -39,11 +39,4 @@ public final class Battle {
         }
         return list.get(rnd.nextInt(list.size()));
     }
-
-    public static void main(String[] args) {
-        Fleet fleet = new Fleet(1,3);
-        fleet.addShip(Spaceship.SUPPLIER);
-        fleet.addShip(Spaceship.MOTHERSHIP);
-        Battle.fight(fleet,fleet);
-    }
 }

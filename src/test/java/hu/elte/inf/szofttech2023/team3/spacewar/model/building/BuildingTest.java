@@ -2,15 +2,14 @@ package hu.elte.inf.szofttech2023.team3.spacewar.model.building;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 
+import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class BuildingTest {
-    final Planet planet = new Planet(0,0);
+    final Planet planet = new Planet(0, 0, new Player(1, "Test Player"));
     Building solar, mine, factory;
 
     @BeforeEach

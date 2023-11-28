@@ -6,6 +6,4 @@ public interface Displayable {
 
     public Image getImage(int width, int height);
     
-    public Runnable getAction();
-    
 }

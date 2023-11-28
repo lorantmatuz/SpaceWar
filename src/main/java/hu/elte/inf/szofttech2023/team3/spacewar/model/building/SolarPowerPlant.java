@@ -10,7 +10,7 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
  */
 public class SolarPowerPlant extends Building {
     // TODO: modify the efficiency consistently
-    private double efficiency = planet.temperature;
+    private int efficiency = planet.getTemperature();
 
     public SolarPowerPlant(Planet planet) {
         super(planet);
@@ -22,13 +22,13 @@ public class SolarPowerPlant extends Building {
         efficiency = efficiencyOfLevel();
     }
 
-    public double exportEnergy() {
+    public int exportEnergy() {
         return efficiency;
     }
 
     // TODO: modify the efficiency of a level
-    public double efficiencyOfLevel() {
-        return level + planet.temperature ;
+    public int efficiencyOfLevel() {
+        return level + planet.getTemperature() ;
     }
 
 }

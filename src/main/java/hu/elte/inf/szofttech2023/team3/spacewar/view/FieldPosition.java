@@ -1,4 +1,4 @@
-package hu.elte.inf.szofttech2023.team3.spacewar.model.old;
+package hu.elte.inf.szofttech2023.team3.spacewar.view;
 
 import java.util.Objects;
 
@@ -45,6 +45,11 @@ public class FieldPosition {
     @Override
     public int hashCode() {
         return Objects.hash(row, column);
+    }
+    
+    @Override
+    public String toString() {
+        return FieldPosition.class.getSimpleName() + "{ row: " + row + ", column: " + column + "}";
     }
 
 }

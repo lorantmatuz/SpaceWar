@@ -1,13 +1,14 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.model.space;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Asteroid;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.BlackHole;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
+import hu.elte.inf.szofttech2023.team3.spacewar.view.FieldPosition;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class implements the space class with a singleton pattern. This stores
@@ -16,7 +17,7 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
  */
 public class Space {
     public final int width, height;
-    protected final boolean[][] isSpaceObject;
+    public final boolean[][] isSpaceObject;
     protected final List<SpaceObject> objects;
 
     public Space(int width, int height) {
@@ -53,13 +54,17 @@ public class Space {
     
     public void erase() {
         objects.clear();
-        for (int i = 0; i < isSpaceObject.length; i++) {
-            for (int j = 0; j < isSpaceObject.length; j++) {
+        for (int j = 0; j < height; j++) {
+            for (int i = 0; i < width; i++) {
                 isSpaceObject[i][j] = false;
             }
         }
     }
 
+    public SpaceObject getObjectAt(FieldPosition fieldPosition) {
+        return getObjectAt(fieldPosition.getColumn(), fieldPosition.getRow());
+    }
+    
     public SpaceObject getObjectAt(int x, int y) {
         for (SpaceObject obj : objects) {
             if (obj.x == x && obj.y == y) {
@@ -76,7 +81,7 @@ public class Space {
      *         in the grid
      * @param object the {@code SpaceObject} to set
      */
-    protected void setSpaceObject(Point p, SpaceObject object) {
+    public void setSpaceObject(Point p, SpaceObject object) {
         objects.add(object);
         isSpaceObject[p.x][p.y] = true;
     }
@@ -101,4 +106,13 @@ public class Space {
         innerObject.replace(to.x,to.y);
         return true;
     }
+
+    public List<SpaceObject> getObjects() {
+        return objects;
+    }
+
+    public List<SpaceObject> getSpaceObjects(){
+        return this.objects;
+    }
+    
 }

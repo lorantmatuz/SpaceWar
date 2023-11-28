@@ -9,36 +9,42 @@ import java.util.List;
  * This class provides an implementation of the {@code Iterator} interface
  * with the {@code Point}s of the found path.
  */
-public class Path implements Iterator<Point> {
+public class Path implements Iterator<ArcOfPath> {
     private final List<Point> path = new ArrayList<>();
-    private double totalCost = 0;
-    private int iterator = -1;
+    private double accumulatingTotalCost = 0;
+    private double totalCost;
+    private int head = -1;
 
     public void add(Point p) {
         path.add(p);
-        ++iterator;
+        ++head;
     }
 
-    public void setCost(double cost) {
-        totalCost += cost;
-    }
-
-    public int getLength() {
-        return path.size();
+    public void setTotalCost(double totalCost) {
+        this.totalCost = totalCost;
     }
 
     public double getTotalCost() {
         return totalCost;
     }
 
-    @Override
-    public boolean hasNext() {
-        return iterator >= 0;
+    public int getLength() {
+        return path.size();
     }
 
     @Override
-    public Point next() {
-        return path.get(iterator--);
+    public boolean hasNext() {
+        return head >= 0;
+    }
+
+    @Override
+    public ArcOfPath next() {
+        final var node = path.get(head);
+        if(head + 1 < path.size()) {
+            accumulatingTotalCost += ShortestPath.euclidean(node, path.get(head + 1));
+        }
+        --head;
+        return new ArcOfPath(node, accumulatingTotalCost);
     }
 
     public void print(Space space, boolean[][] visited) {

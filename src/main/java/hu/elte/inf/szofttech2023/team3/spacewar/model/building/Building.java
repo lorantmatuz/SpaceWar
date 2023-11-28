@@ -9,25 +9,28 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 public abstract class Building {
     protected Planet planet;
     protected int level = 1;
+    protected int size = 1;
 
     public Building(Planet planet) {
         this.planet = planet;
     }
 
-    public abstract void upgrade() ;
-
+    public abstract void upgrade();
 
     public int getLevel() {
         return level;
     }
 
-    // TODO: modify the upgrade cost of level function
-    public double upgradeCostOfLevel() {
-        return Math.pow(2.0, level);
-    }
-
-    // TODO: adapt duration of upgrade
-    public int upgradeDurationOfLevel() {
+    public int getDurationOfUpgrade() {
         return level;
     }
+    
+    public int getUpgradeCostOfLevel() {
+        return (int)Math.pow(2,level);
+    }
+
+    public int getSize(){
+        return this.size;
+    }
+
 }
