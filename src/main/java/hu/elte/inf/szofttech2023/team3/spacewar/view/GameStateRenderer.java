@@ -17,7 +17,7 @@ public class GameStateRenderer {
     
     private final DisplayEngine displayEngine;
 
-    public GameStateRenderer(SwingDisplayEngine displayEngine) {
+    public GameStateRenderer(DisplayEngine displayEngine) {
         this.displayEngine = displayEngine;
     }
     
