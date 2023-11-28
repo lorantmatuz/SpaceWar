@@ -31,8 +31,8 @@ public class ActionPanel extends JPanel {
         setPreferredSize(new Dimension( actionPanelWidth, actionPanelHeight ));
         actionPanelLabel = new JLabel("Actions");
         actionPanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        actionPanelLabel.setBorder(new EmptyBorder( DisplayEngine.BORDER_TOP, DisplayEngine.BORDER_LEFT, DisplayEngine.BORDER_BOTTOM, DisplayEngine.BORDER_RIGHT));
-        actionPanelLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, DisplayEngine.FONT_SIZE ));
+        actionPanelLabel.setBorder(new EmptyBorder( SwingDisplayEngine.BORDER_TOP, SwingDisplayEngine.BORDER_LEFT, SwingDisplayEngine.BORDER_BOTTOM, SwingDisplayEngine.BORDER_RIGHT));
+        actionPanelLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, SwingDisplayEngine.FONT_SIZE ));
 
         contentPanel = new JPanel( new GridLayout(3,3));
 

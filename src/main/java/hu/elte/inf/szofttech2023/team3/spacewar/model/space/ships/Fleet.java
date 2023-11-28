@@ -1,15 +1,18 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships;
 
+import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
 
 public final class Fleet extends SpaceObject {
     private static int id = -1;
     private final Spaceship[] spaceships = new Spaceship[SpaceshipEnum.values().length];
+    private Player owner;
     private int totalConsumption = 0;
     private int minSpeed = Integer.MAX_VALUE;
 
-    public Fleet(int x, int y) {
+    public Fleet(int x, int y, Player owner) {
         super(x, y);
+        this.owner = owner;
         ++id;
     }
 
@@ -61,12 +64,16 @@ public final class Fleet extends SpaceObject {
         return spaceships.clone();
     }
 
-    public int getId() {
-        return id;
+    public Player getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Player owner) {
+        this.owner = owner;
     }
 
     public static void main(String[] args) {
-        var fleet = new Fleet(1,3);
+        var fleet = new Fleet(1, 3, new Player(1, "John"));
         fleet.addShip(new Spaceship(SpaceshipEnum.MOTHER_SHIP));
         fleet.replace(2,3);
     }

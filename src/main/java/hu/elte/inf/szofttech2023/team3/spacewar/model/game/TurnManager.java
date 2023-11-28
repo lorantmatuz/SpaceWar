@@ -1,6 +1,6 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.model.game;
 
-import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
+import hu.elte.inf.szofttech2023.team3.spacewar.view.FieldPosition;
 
 import java.util.List;
 import java.awt.Point;
@@ -14,9 +14,10 @@ public class TurnManager {
     private TurnState state = null;
     private int playerIndex = 0;
     private double actionPoint;
-    private SpaceObject selectedObject;
     private Point targetPoint;
     private Player winner = null;
+    private FieldPosition selectedPosition = null;
+    private List<FieldPosition> plannedPath = null;
 
     public TurnManager(List<Player> players) {
         this.players = players;
@@ -32,7 +33,6 @@ public class TurnManager {
         currentPlayer.checkConstructions();
         state = TurnState.STARTED;
         actionPoint = maxActionPoint;
-        selectedObject = null;
         targetPoint = null;
         return getCurrentPlayer();
     }
@@ -42,12 +42,16 @@ public class TurnManager {
         return getActionPoint();
     }
 
-    public void setSelectedObject(SpaceObject selectedObject) {
-        this.selectedObject = selectedObject;
-    }
-
     public void setTargetPoint(Point targetPoint) {
         this.targetPoint = targetPoint;
+    }
+
+    public void setSelectedPosition(FieldPosition selectedPosition) {
+        this.selectedPosition = selectedPosition;
+    }
+
+    public void setPlannedPath(List<FieldPosition> plannedPath) {
+        this.plannedPath = plannedPath;
     }
 
     public Player getCurrentPlayer() {
@@ -64,6 +68,14 @@ public class TurnManager {
 
     public Point getTargetPoint() {
         return targetPoint;
+    }
+
+    public FieldPosition getSelectedPosition() {
+        return selectedPosition;
+    }
+
+    public List<FieldPosition> getPlannedPath() {
+        return plannedPath;
     }
 
     public Player getWinner() {

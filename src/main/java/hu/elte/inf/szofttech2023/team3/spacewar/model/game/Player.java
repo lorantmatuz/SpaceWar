@@ -9,12 +9,14 @@ import java.util.List;
 
 public class Player
 {
+    private final int no;
     private final String name;
     private final List<Planet> planets = new ArrayList<>();
     private final List<Fleet> fleets = new ArrayList<>();
     private final List<Constructable> constructions = new ArrayList<>();
 
-    public Player(String name) {
+    public Player(int no, String name) {
+        this.no = no;
         this.name = name;
     }
 
@@ -36,6 +38,10 @@ public class Player
 
     public boolean removeFleet(Fleet fleet) {
         return fleets.remove(fleet);
+    }
+
+    public int getNo() {
+        return no;
     }
 
     public String getName() {

@@ -18,7 +18,7 @@ public class SwingTurnInfoDisplay extends JPanel implements Rectangular, MenuDis
         super(new GridLayout(3,1) );
 
         this.turnInfoDisplayWidth = turnInfoDisplayWidth;
-        this.turnInfoDisplayHeight = ROW_COUNT * DisplayEngine.FIELD_HEIGHT;
+        this.turnInfoDisplayHeight = ROW_COUNT * SwingDisplayEngine.FIELD_HEIGHT;
 
         setPreferredSize(new Dimension( turnInfoDisplayWidth, turnInfoDisplayHeight));
 
@@ -26,25 +26,25 @@ public class SwingTurnInfoDisplay extends JPanel implements Rectangular, MenuDis
         infoLabel.setHorizontalAlignment(SwingConstants.CENTER);
         infoLabel.setBorder(
                 new EmptyBorder(
-                        DisplayEngine.BORDER_TOP,
-                        DisplayEngine.BORDER_LEFT,
-                        DisplayEngine.BORDER_BOTTOM,
-                        DisplayEngine.BORDER_RIGHT
+                        SwingDisplayEngine.BORDER_TOP,
+                        SwingDisplayEngine.BORDER_LEFT,
+                        SwingDisplayEngine.BORDER_BOTTOM,
+                        SwingDisplayEngine.BORDER_RIGHT
                 )
         );
-        infoLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, DisplayEngine.FONT_SIZE ));
+        infoLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, SwingDisplayEngine.FONT_SIZE ));
 
         turnLabel = new JLabel(" Turn 1, Player: X");
         turnLabel.setHorizontalAlignment(SwingConstants.CENTER);
         turnLabel.setBorder(
                 new EmptyBorder(
-                        DisplayEngine.BORDER_TOP,
-                        DisplayEngine.BORDER_LEFT,
-                        DisplayEngine.BORDER_BOTTOM,
-                        DisplayEngine.BORDER_RIGHT
+                        SwingDisplayEngine.BORDER_TOP,
+                        SwingDisplayEngine.BORDER_LEFT,
+                        SwingDisplayEngine.BORDER_BOTTOM,
+                        SwingDisplayEngine.BORDER_RIGHT
                 )
         );
-        turnLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, DisplayEngine.FONT_SIZE ));
+        turnLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, SwingDisplayEngine.FONT_SIZE ));
 
         this.shuffleButton = new JButton("End Turn");
 

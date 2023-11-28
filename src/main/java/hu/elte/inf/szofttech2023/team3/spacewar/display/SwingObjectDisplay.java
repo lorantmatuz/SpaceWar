@@ -2,9 +2,15 @@ package hu.elte.inf.szofttech2023.team3.spacewar.display;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
+import hu.elte.inf.szofttech2023.team3.spacewar.view.BoardEventType;
+import hu.elte.inf.szofttech2023.team3.spacewar.view.FieldPosition;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Map;
+import java.util.function.BiConsumer;
 
 public class SwingObjectDisplay extends JPanel implements Rectangular, MenuDisplay {
 
@@ -15,12 +21,12 @@ public class SwingObjectDisplay extends JPanel implements Rectangular, MenuDispl
     private CollectionPanel collectionPanel;
     private JScrollPane collectionScroller;
     private ActionPanel actionPanel;
-
+    
     public SwingObjectDisplay( int rowCount , int columnCount ) {
         super(new BorderLayout());
 
-        objectDisplayHeight = rowCount * DisplayEngine.FIELD_HEIGHT;
-        objectDisplayWidth  = Math.min( columnCount * DisplayEngine.FIELD_WIDTH  , 500 );
+        objectDisplayHeight = rowCount * SwingDisplayEngine.FIELD_HEIGHT;
+        objectDisplayWidth  = 400;
         //setPreferredSize(new Dimension( objectDisplayWidth, objectDisplayHeight));
         setPreferredSize(new Dimension( objectDisplayWidth, objectDisplayHeight));
 
@@ -71,6 +77,7 @@ public class SwingObjectDisplay extends JPanel implements Rectangular, MenuDispl
 
 
     }
+
     @Override
     public void handleMenuClick(MouseEvent e, JPanel clickedOn ) {
         System.out.println("Menu is clicked!");

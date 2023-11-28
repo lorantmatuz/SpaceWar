@@ -1,25 +1,27 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.controller;
 
-import hu.elte.inf.szofttech2023.team3.spacewar.display.DisplayEngine;
-import hu.elte.inf.szofttech2023.team3.spacewar.display.SpecialAction;
+import java.util.*;
+import java.awt.*;
+import java.util.List;
+
 import hu.elte.inf.szofttech2023.team3.spacewar.model.GameState;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.game.TurnManager;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.*;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Fleet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Spaceship;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.SpaceshipEnum;
+import hu.elte.inf.szofttech2023.team3.spacewar.view.ActionEvent;
+import hu.elte.inf.szofttech2023.team3.spacewar.view.BoardEvent;
+import hu.elte.inf.szofttech2023.team3.spacewar.view.BoardEventType;
 import hu.elte.inf.szofttech2023.team3.spacewar.view.FieldPosition;
 import hu.elte.inf.szofttech2023.team3.spacewar.view.GameStateRenderer;
-
-import java.awt.*;
 
 public class GameController {
 
     private final  GameState gameState;
-    private int tempFleetX = -1;
-    private int tempFleetY = -1;
     
     private final GameStateRenderer renderer;
     
@@ -31,18 +33,18 @@ public class GameController {
     private void initializeGame() {
         // Térkép generálása
         Space space = gameState.getSpace();
-        GenerateSpace generator = new GenerateSpace(space);
-        generator.run(10, 5, 5);
+        GenerateSpace generator = new GenerateSpace(space, gameState.getPlayers());
+        generator.run(4, 10, 5, 5);
 
         // Játékosok és flották létrehozása
         createPlayersAndFleets(space);
 
         // Játékállapot frissítése
-        renderer.apply(gameState, this::handleAnyAction);
+        renderer.apply(gameState, this::handleBoardEvent);
     }
-    private Fleet createFleetWithMothership(Point startPosition) {
+    private Fleet createFleetWithMothership(Point startPosition, Player owner) {
         if (startPosition != null) {
-            Fleet fleet = new Fleet(startPosition.x, startPosition.y);
+            Fleet fleet = new Fleet(startPosition.x, startPosition.y, owner);
             fleet.addShip(new Spaceship(SpaceshipEnum.MOTHER_SHIP));
             return fleet;
         }
@@ -82,8 +84,8 @@ public class GameController {
         Player player2 = gameState.getPlayers().get(1);
         Point player1StartPosition = findStartPositionForFleet(space, new Point(space.width - 1, 0));
         Point player2StartPosition = findStartPositionForFleet(space, new Point(0, space.height - 1));
-        Fleet fleet1 = createFleetWithMothership(player1StartPosition);
-        Fleet fleet2 = createFleetWithMothership(player2StartPosition);
+        Fleet fleet1 = createFleetWithMothership(player1StartPosition, player1);
+        Fleet fleet2 = createFleetWithMothership(player2StartPosition, player2);
         if (fleet1 != null) {
             space.setSpaceObject(fleet1, fleet1);
         }
@@ -98,35 +100,50 @@ public class GameController {
     public void shuffle() {
         // TODO
         Space space = gameState.getSpace();
-        GenerateSpace generator = new GenerateSpace(space);
-        generator.run(10, 5, 5);
-        renderer.apply(gameState, this::handleAnyAction);
+        GenerateSpace generator = new GenerateSpace(space, gameState.getPlayers());
+        generator.run(8, 10, 5, 5);
+        renderer.apply(gameState, this::handleBoardEvent);
     }
     
-    public void setupActionListener(DisplayEngine display, GameState state) {
-        display.getBoardDisplay().setBoardClickListener(position -> handleAnyAction(position, state));
+    public void handleBoardEvent(BoardEvent event, GameState state) {
+        BoardEventType eventType = event.getType();
+        if (eventType == BoardEventType.CLICK) {
+            handleBoardClick(event.getFieldPosition(), state);
+        } else if (eventType == BoardEventType.HOVER) {
+            handleBoardHover(event.getFieldPosition(), state);
+        } else if (eventType == BoardEventType.OUT) {
+            handleBoardOut(state);
+        } else {
+            System.out.println("Unknown event type: " + eventType);
+        }
     }
 
-    public void handleAnyAction(Object target, GameState state) {
+    public void handleBoardClick(FieldPosition position, GameState state) {
+        state = gameState;
+        TurnManager turnManager = state.getTurnManager();
+        FieldPosition selectedPosition = turnManager.getSelectedPosition();
+        SpaceObject target = state.getSpace().getObjectAt(position);
+        
+        // FIXME
+        state.getSpace().print();
+        System.out.println(position + " --> " + target);
+        
         // Player already selected a fleet.
-        if(state.getActionState()){
-            if(target instanceof Spaceship) {
-                // TODO: Ellenséges hajó támadása / saját hajó flottalapítás, ha a saját hajó anyahajó vagy a cél anyahajó
-            } else if (target instanceof Planet) {
+        if (selectedPosition != null){
+            System.out.println("selectedPosition: " + selectedPosition);
+            if (target instanceof Planet) {
                 // TODO: Ha ellenséges, bolygó akkor támadás, ha saját akkor kilépünk.
-            }else if (target instanceof FieldPosition) {
-                FieldPosition position = (FieldPosition) target;
+            }else if (target == null) {
                 int row = position.getRow();
                 int column = position.getColumn();
                 System.out.println("Üres űrre kattintottak, és volt előtte flotta vagy űrhajó kattintva: Sor=" + row + ", Oszlop=" + column);
 
-                Point targetPoint = new Point(row, column);
-                Point fleetPoint = new Point(tempFleetX, tempFleetY);
+                Point targetPoint = new Point(column, row);
+                Point fleetPoint = new Point(selectedPosition.getColumn(), selectedPosition.getRow());
 
-                SpaceObject potentialFleet = gameState.getSpace().getObjectAt(tempFleetX, tempFleetY);
+                SpaceObject potentialFleet = gameState.getSpace().getObjectAt(selectedPosition);
                 if (potentialFleet instanceof Fleet) {
                     Fleet selectedFleet = (Fleet) potentialFleet;
-
                     if (!gameState.getSpace().isSpaceObject[targetPoint.x][targetPoint.y]) {
                         final var shortestPath = new ShortestPath(gameState.getSpace());
                         try {
@@ -136,7 +153,7 @@ public class GameController {
                                 Point point = path.next().node();
                                 System.out.println(point);
                                 gameState.getSpace().moveObject(selectedFleet, point);
-                                renderer.apply(gameState, this::handleAnyAction);
+                                renderer.apply(gameState, this::handleBoardEvent);
                             }
                         } catch (IllegalArgumentException e) {
                             System.err.println("Hiba: " + e.getMessage());
@@ -147,7 +164,8 @@ public class GameController {
                 } else {
                     System.err.println("A kiválasztott objektum nem flotta.");
                 }
-                state.setActionState(false);
+                turnManager.setSelectedPosition(null);
+                turnManager.setPlannedPath(null);
             }
         }
         else{
@@ -158,29 +176,70 @@ public class GameController {
                 System.out.println("Minspeed: " + fleet.getMinSpeed());
                 System.out.println("X: " + fleet.x);
                 System.out.println("Y " + fleet.y);
-                tempFleetY = fleet.y;
-                tempFleetX = fleet.x;
-                state.setActionState(true);
+                turnManager.setSelectedPosition(FieldPosition.of(fleet.y, fleet.x));
             }else if (target instanceof Planet) {
                 Planet planet = (Planet) target;
                 System.out.println("Planet state:");
                 System.out.println("Energy: " + planet.getEnergy());
                 System.out.println("Material: " + planet.getMaterial());
-            }else if (target instanceof FieldPosition) {
-                FieldPosition position = (FieldPosition) target;
+            }else if (target == null) {
                 int row = position.getRow();
                 int column = position.getColumn();
                 System.out.println("Ures urre kattintottak, de nem volt előtte flotta vagy űrhajó kattintva: Sor=" + row + ", Oszlop=" + column);
             }
         }
-        if (target == SpecialAction.SHUFFLE) {
-            shuffle();
-        }else if (target instanceof SpaceObject) {
-            // TODO
-            renderer.apply( target , gameState , this::handleAnyAction );
+        
+        renderer.apply(gameState, this::handleBoardEvent);
+
+        if (target != null) {
             System.out.println(String.format("A(n) %s object was clicked", target.getClass().getSimpleName()));
+            renderer.apply(target, gameState, this::handleActionEvent);
         }
 
-
     }
+
+    private void handleBoardHover(FieldPosition position, GameState state) {
+        TurnManager turnManager = state.getTurnManager();
+        FieldPosition selectedPosition = turnManager.getSelectedPosition();
+        SpaceObject target = state.getSpace().getObjectAt(position);
+        if (selectedPosition != null) {
+            if (target == null) {
+                turnManager.setPlannedPath(calculateShortestPathBetween(selectedPosition, position));
+            } else {
+                turnManager.setPlannedPath(null);
+            }
+            renderer.apply(gameState, this::handleBoardEvent);
+        }
+        
+    }
+    private void handleBoardOut(GameState state) {
+        TurnManager turnManager = state.getTurnManager();
+        FieldPosition selectedPosition = turnManager.getSelectedPosition();
+        if (selectedPosition != null) {
+            turnManager.setPlannedPath(null);
+            renderer.apply(gameState, this::handleBoardEvent);
+        }
+    }
+    
+    private List<FieldPosition> calculateShortestPathBetween(FieldPosition base, FieldPosition to) {
+        List<FieldPosition> result = new ArrayList<>();
+        final var shortestPath = new ShortestPath(gameState.getSpace());
+        Path path = shortestPath.run(
+                new Point(base.getColumn(), base.getRow()),
+                new Point(to.getColumn(), to.getRow()));
+        if (path.hasNext()) {
+            path.next(); // skip start point
+        }
+        while (path.hasNext()) {
+            Point point = path.next().node();
+            result.add(FieldPosition.of(point.y, point.x));
+        }
+        return result;
+    }
+
+    private void handleActionEvent(ActionEvent actionEvent, GameState state) {
+        // TODO
+        System.out.println("ActionEvent: " + actionEvent.getType());
+    }
+    
 }

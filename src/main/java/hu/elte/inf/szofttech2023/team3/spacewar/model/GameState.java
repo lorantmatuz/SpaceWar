@@ -10,6 +10,7 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Fleet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Spaceship;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.SpaceshipEnum;
+import hu.elte.inf.szofttech2023.team3.spacewar.view.FieldPosition;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -17,33 +18,23 @@ import java.util.List;
 
 public class GameState {
 
-    private boolean playerIsActive = false;
-
     private final Space space;
     private final List<Player> players;
-    private final TurnManager manager;
+    private final TurnManager turnManager;
 
 
     public GameState(Space space, List<Player> players) {
         this.space = space;
         this.players = players;
-        this.manager = new TurnManager(players);
+        this.turnManager = new TurnManager(players);
     }
 
-    public TurnManager getManager() {
-        return manager;
+    public TurnManager getTurnManager() {
+        return turnManager;
     }
 
     public Space getSpace() {
         return space;
-    }
-
-    public boolean getActionState(){
-        return playerIsActive;
-    }
-
-    public void setActionState(boolean active) {
-        this.playerIsActive = active;
     }
 
 
@@ -57,14 +48,13 @@ public class GameState {
          */
         // space
         final var space = new Space(10,10);
+        // players
+        final var players = List.of(new Player(1, "A"), new Player(2, "B"));
         // generator
         {
-            final var generator = new GenerateSpace(space);
-            generator.run(10,4,3);
+            final var generator = new GenerateSpace(space, players);
+            generator.run(4,10,4,3);
         }
-        // players
-        final var players = List.of(new Player("A"),
-                                    new Player("B"));
         // setup
         {
             final var objects = space.getObjects();
@@ -82,7 +72,7 @@ public class GameState {
                 // first fleet
                 // TODO: figure the position of the first fleets of the players
                 final var dummyPosition = 2;
-                final var fleet = new Fleet(dummyPosition,dummyPosition);
+                final var fleet = new Fleet(dummyPosition,dummyPosition,players.get(0));
                 // TODO: normally, no ships can be added directly,
                 // TODO: they must be produced by a shipfactory
                 fleet.addShip(new Spaceship(SpaceshipEnum.MOTHER_SHIP));
@@ -93,7 +83,7 @@ public class GameState {
         // state
         final var gameState = new GameState(space,players);
         // manager
-        final var manager = gameState.getManager();
+        final var manager = gameState.getTurnManager();
 
         // let's play!!
         int i = 0;
@@ -107,7 +97,7 @@ public class GameState {
                 // TODO: use space.getObjectAt(x,y) instead
                 // random clicked example
                 final var clickedObject = space.getObjects().get(2);
-                manager.setSelectedObject(clickedObject);
+                manager.setSelectedPosition(FieldPosition.of(clickedObject.y, clickedObject.x));
             }
             // planet building, upgrade
             {

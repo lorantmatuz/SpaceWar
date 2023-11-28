@@ -3,18 +3,16 @@ package hu.elte.inf.szofttech2023.team3.spacewar.display;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.function.Consumer;
+import java.util.Objects;
+import java.util.function.BiConsumer;
 
 import javax.swing.*;
 
+import hu.elte.inf.szofttech2023.team3.spacewar.view.BoardEventType;
 import hu.elte.inf.szofttech2023.team3.spacewar.view.FieldPosition;
 
 public class SwingBoardDisplay extends JPanel implements Rectangular, BoardDisplay {
 
-    private Displayable[][] content = new Displayable[0][0];
-    
-    private Consumer<FieldPosition> boardClickListener;
-    
     private final int boardWidth;
     private final int boardHeight;
     private final int rowCount;
@@ -22,25 +20,70 @@ public class SwingBoardDisplay extends JPanel implements Rectangular, BoardDispl
     private final int fieldWidth;
     private final int fieldHeight;
     
+    private Displayable[][] content = new Displayable[0][0];
+    private BiConsumer<BoardEventType, FieldPosition> boardListener;
+    private FieldPosition previousFieldPosition = null;
+    
     public SwingBoardDisplay(int rowCount, int columnCount) {
 
         this.rowCount = rowCount;
         this.columnCount = columnCount;
-        this.fieldWidth = DisplayEngine.FIELD_WIDTH;
-        this.fieldHeight = DisplayEngine.FIELD_HEIGHT;
+        this.fieldWidth = SwingDisplayEngine.FIELD_WIDTH;
+        this.fieldHeight = SwingDisplayEngine.FIELD_HEIGHT;
         this.boardWidth = columnCount * fieldWidth;
         this.boardHeight = rowCount * fieldHeight;
         this.setPreferredSize(new Dimension(boardWidth, boardHeight));
         this.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        this.addMouseListener(new MouseAdapter() {
+        MouseAdapter mouseAdapter = new MouseAdapter() {
+            @Override public void mouseClicked(MouseEvent e) {
+                handleClick(fieldPositionOf(e));
+            }
             @Override
-            public void mouseClicked(MouseEvent e) { handleBoardClick(e); }
-        });
+            public void mouseMoved(MouseEvent e) {
+                handleMove(fieldPositionOf(e));
+            }
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                handleMove(null);
+            }
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                handleMove(fieldPositionOf(e));
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                handleMove(null);
+            }
+        };
+        this.addMouseListener(mouseAdapter);
+        this.addMouseMotionListener(mouseAdapter);
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         drawBoard(g, boardWidth, boardHeight);
+    }
+
+    private void handleClick(FieldPosition position) {
+        if (boardListener == null) {
+            return;
+        }
+        
+        boardListener.accept(BoardEventType.CLICK, position);
+    }
+    
+    private void handleMove(FieldPosition position) {
+        if (boardListener == null || Objects.equals(position, previousFieldPosition)) {
+            return;
+        }
+
+        if (position != null) {
+            boardListener.accept(BoardEventType.HOVER, position);
+        } else {
+            boardListener.accept(BoardEventType.OUT, null);
+        }
+
+        previousFieldPosition = position;
     }
 
 
@@ -76,7 +119,9 @@ public class SwingBoardDisplay extends JPanel implements Rectangular, BoardDispl
 
         Displayable item = content[row][column];
 
-        if (item == null)  return;
+        if (item == null) {
+            return;
+        }
 
         Image image = item.getImage(fieldWidth, fieldHeight);
         int imageWidth = image.getWidth(null);
@@ -93,48 +138,18 @@ public class SwingBoardDisplay extends JPanel implements Rectangular, BoardDispl
     }
 
 
-    @Override
-    public void handleBoardClick(MouseEvent e) {
+    private FieldPosition fieldPositionOf(MouseEvent e) {
         Point point = e.getPoint();
         int x = (int) point.getX();
         int y = (int) point.getY();
         int row = y / fieldHeight;
         int column = x / fieldWidth;
-        FieldPosition position = FieldPosition.of(row, column);
-        if (!handleObjectClick(position)) {
-            handleEmptySpaceClick(position);
-        }
-    }
-    
-    public boolean handleObjectClick(FieldPosition position) {
-        int row = position.getRow();
-        int column = position.getColumn();
-        
-        if (row >= rowCount || column >= columnCount) {
-            return false;
-        }
-
-        if (content.length <= row || content[row].length <= column || content[row][column] == null) {
-            return false;
-        }
-
-        Displayable field = content[row][column];
-        if (field == null) {
-            return false;
-        }
-
-        field.getAction().run();
-        return true;
+        return FieldPosition.of(row, column);
     }
 
-    public void setBoardClickListener(Consumer<FieldPosition> boardClickListener) {
-        this.boardClickListener = boardClickListener;
-    }
-    
-    private void handleEmptySpaceClick(FieldPosition position) {
-        if (boardClickListener != null) {
-            boardClickListener.accept(position);
-        }
+    @Override
+    public void setBoardListener(BiConsumer<BoardEventType, FieldPosition> boardListener) {
+        this.boardListener = boardListener;
     }
     
 }

@@ -4,6 +4,7 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Asteroid;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.BlackHole;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
+import hu.elte.inf.szofttech2023.team3.spacewar.view.FieldPosition;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -60,6 +61,10 @@ public class Space {
         }
     }
 
+    public SpaceObject getObjectAt(FieldPosition fieldPosition) {
+        return getObjectAt(fieldPosition.getColumn(), fieldPosition.getRow());
+    }
+    
     public SpaceObject getObjectAt(int x, int y) {
         for (SpaceObject obj : objects) {
             if (obj.x == x && obj.y == y) {

@@ -18,13 +18,14 @@ public class Planet extends SpaceObject {
     private int maxSize = 3 * 1024;
     private int temperature = 100;
     private int size = 1;
-    private Player owner = null;
+    private Player owner;
     private int energy = 0;
     private int material = 0;
     private final Map<BuildingEnum, Building> buildingMap = new HashMap<>();
 
-    public Planet(int x, int y) {
+    public Planet(int x, int y, Player owner) {
         super(x,y);
+        this.owner = owner;
     }
 
     public void colonize(Player player) {

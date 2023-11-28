@@ -1,5 +1,6 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.display;
 
+// TODO: move this out from the display package
 public enum SpecialAction {
 
     SHUFFLE,

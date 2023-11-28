@@ -5,13 +5,14 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import hu.elte.inf.szofttech2023.team3.spacewar.model.building.*;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
 
 public class PlanetTest {
     private Planet planet;
 
     @BeforeEach
     public void beforeEach() {
-        planet = new Planet(0,0);
+        planet = new Planet(0, 0, new Player(1, "Test Player"));
     }
 
     @Test

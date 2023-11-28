@@ -18,7 +18,7 @@ public class ConstructSpaceship extends Constructable {
     @Override
     protected void construct() {
         // TODO: find an adjacent coordinate
-        final var fleet = new Fleet(planet.x + 1,planet.y + 1);
+        final var fleet = new Fleet(planet.x + 1,planet.y + 1,planet.getOwner());
         fleet.addShip(new Spaceship(spaceship));
         planet.getOwner().addFleet(fleet);
     }

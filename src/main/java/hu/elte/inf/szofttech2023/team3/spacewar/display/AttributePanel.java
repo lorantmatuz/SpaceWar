@@ -11,8 +11,8 @@ public class AttributePanel extends JPanel {
         setPreferredSize(new Dimension( attributePanelWidth, attributePanelHeight ));
         attributePanelLabel = new JLabel("Attribute Panel");
         attributePanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        attributePanelLabel.setBorder(new EmptyBorder(DisplayEngine.BORDER_TOP, DisplayEngine.BORDER_LEFT, DisplayEngine.BORDER_BOTTOM, DisplayEngine.BORDER_RIGHT));
-        attributePanelLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, DisplayEngine.FONT_SIZE ));
+        attributePanelLabel.setBorder(new EmptyBorder(SwingDisplayEngine.BORDER_TOP, SwingDisplayEngine.BORDER_LEFT, SwingDisplayEngine.BORDER_BOTTOM, SwingDisplayEngine.BORDER_RIGHT));
+        attributePanelLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, SwingDisplayEngine.FONT_SIZE ));
         add( attributePanelLabel, BorderLayout.NORTH);
     };
 

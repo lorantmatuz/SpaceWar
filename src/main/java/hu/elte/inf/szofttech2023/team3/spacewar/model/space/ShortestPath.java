@@ -3,10 +3,13 @@ package hu.elte.inf.szofttech2023.team3.spacewar.model.space;
 import java.awt.Point;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Queue;
 import java.util.PriorityQueue;
 import java.util.Comparator;
+import java.util.HashMap;
+
+import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
 
 /**
  * This class contains provides the method called
@@ -120,8 +123,9 @@ public class ShortestPath {
     // demo usage
     public static void main(String[] args) {
         final var space = new Space(10,7);
-        final var generateSpace = new GenerateSpace(space);
-        generateSpace.run(7,3,1);
+        final var players = List.of(new Player(1, "A"), new Player(2, "B"));
+        final var generateSpace = new GenerateSpace(space, players);
+        generateSpace.run(4,7,3,1);
         final var shortestPath = new ShortestPath(space);
         try {
             final var path = shortestPath.run(new Point(0,0), new Point(9,6));
