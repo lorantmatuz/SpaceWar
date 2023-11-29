@@ -10,6 +10,7 @@ public abstract class Building {
     protected Planet planet;
     protected int level = 1;
     protected int size = 1;
+    protected  boolean isFunctional = false;
 
     public Building(Planet planet) {
         this.planet = planet;
