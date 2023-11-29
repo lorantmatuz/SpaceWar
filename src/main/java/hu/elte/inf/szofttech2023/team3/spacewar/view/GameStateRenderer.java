@@ -10,6 +10,8 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.BlackHole;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Fleet;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Spaceship;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.SpaceshipEnum;
 
 import java.util.*;
 
@@ -86,9 +88,33 @@ public class GameStateRenderer {
             actionContent.add(Map.entry("Build Ship", createActionEvent(actionEventListener, SpecialAction.BUILD_SHIP, gameState)));
             actionContent.add(Map.entry("Transfer Resources", createActionEvent(actionEventListener, SpecialAction.TRANSFER, gameState)));
         }
-        else if (object instanceof Fleet)
+        else if (object instanceof Fleet fleet)
         {
-            title = "Fleet";
+            title = "Fleet-" + fleet.getId();
+            ArrayList<Spaceship> spaceships = fleet.getSpaceships();
+            attributeContent.add(Map.entry("Total # of ships", fleet.getTotalShipNumber() ));
+            attributeContent.add(Map.entry("Total HP", fleet.getTotalHP() ));
+            attributeContent.add(Map.entry("Total offense", fleet.getTotalOffense() ));
+            attributeContent.add(Map.entry("Total defense", fleet.getTotalDefense() ));
+            attributeContent.add(Map.entry("Speed", fleet.getMinSpeed() ));
+            attributeContent.add(Map.entry("Max Transported resource", fleet.getMaxTransportedResources() ));
+            attributeContent.add(Map.entry("Transported resource", fleet.getTransportedResources() ));
+            // write the number of ships for all ship types
+            collectionTitle = "Ships";
+            collectionHeader.add("Ship type");
+            collectionHeader.add("Number of ship");
+            for (SpaceshipEnum ship : SpaceshipEnum.values() )
+            {
+                List<Integer> listElementAttributes = new ArrayList<>();
+                int numberOfShips = fleet.getNumberOf( ship );
+                if( numberOfShips > 0 )
+                {
+                    listElementAttributes.add( fleet.getNumberOf( ship ) );
+                    collectionContent.add(Map.entry( ship.name(), listElementAttributes ) );
+                }
+            }
+            actionContent.add(Map.entry("Merge fleet", createActionEvent(actionEventListener, SpecialAction.MERGE_FLEET, gameState)));
+            actionContent.add(Map.entry("Create new fleet", createActionEvent(actionEventListener, SpecialAction.CREATE_FLEET, gameState)));
         }
         else if (object instanceof Asteroid)
         {
@@ -101,6 +127,17 @@ public class GameStateRenderer {
         displayEngine.applyObjectInfo( title , attributeContent );
         displayEngine.applyObjectItemsInfo( true , collectionTitle, collectionHeader , collectionContent );
         displayEngine.applyObjectActionPalette( actionContent  );
+    }
+
+    public void applyBuildSelectAction(GameState gameState , ActionEventListener listener )
+    {
+        System.out.println("Rendering buildings....");
+        Planet selectedPlanet = (Planet) gameState.getSelectedObject();
+        Map<BuildingEnum, Building>  buildingMap = selectedPlanet.getBuildingMap();
+        for ( Map.Entry<BuildingEnum, Building> entry : buildingMap.entrySet() )
+        {
+            if ( entry.getValue().getDurationOfUpgrade() > 0 ) return;
+        }
     }
 
     private Runnable createActionEvent(ActionEventListener actionEventListener, Object type, GameState gameState) {

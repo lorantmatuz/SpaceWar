@@ -4,6 +4,7 @@ import java.util.*;
 import java.awt.*;
 import java.util.List;
 
+import hu.elte.inf.szofttech2023.team3.spacewar.display.SpecialAction;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.GameState;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.TurnManager;
@@ -169,6 +170,7 @@ public class GameController {
             }
         }
         else{
+            gameState.setSelectedObject( target );
             if (target instanceof Fleet) {
                 Fleet fleet = (Fleet) target;
                 System.out.println("Fleet state:");
@@ -240,6 +242,11 @@ public class GameController {
     private void handleActionEvent(ActionEvent actionEvent, GameState state) {
         // TODO
         System.out.println("ActionEvent: " + actionEvent.getType());
+        if ( actionEvent.getType() == SpecialAction.BUILD_BUILDING )
+        {
+            System.out.println("Build building action");
+            renderer.applyBuildSelectAction( gameState, this::handleActionEvent );
+        }
     }
     
 }

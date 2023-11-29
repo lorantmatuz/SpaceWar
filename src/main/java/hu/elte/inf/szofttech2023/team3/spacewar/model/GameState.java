@@ -7,6 +7,7 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.space.GenerateSpace;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ShortestPath;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Space;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Fleet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Spaceship;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.SpaceshipEnum;
@@ -21,12 +22,14 @@ public class GameState {
     private final Space space;
     private final List<Player> players;
     private final TurnManager turnManager;
+    private SpaceObject selectedObject;
 
 
     public GameState(Space space, List<Player> players) {
         this.space = space;
         this.players = players;
         this.turnManager = new TurnManager(players);
+        this.selectedObject = null;
     }
 
     public TurnManager getTurnManager() {
@@ -155,5 +158,11 @@ public class GameState {
 
         }
 
+    }
+
+    public SpaceObject getSelectedObject(){ return this.selectedObject; }
+
+    public void setSelectedObject(SpaceObject selectedObject) {
+        this.selectedObject = selectedObject;
     }
 }
