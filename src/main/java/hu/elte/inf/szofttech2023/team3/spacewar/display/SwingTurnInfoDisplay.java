@@ -66,4 +66,6 @@ public class SwingTurnInfoDisplay extends JPanel implements Rectangular, MenuDis
 
     public JButton getShuffleButton(){ return this.shuffleButton; };
 
+    public JLabel getInfoLabel(){ return this.infoLabel; }
+    public JLabel getTurnLabel(){ return this.turnLabel; }
 }

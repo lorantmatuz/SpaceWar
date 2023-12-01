@@ -34,4 +34,6 @@ public abstract class Building {
         return this.size;
     }
 
+    public Boolean getFunctionality(){ return isFunctional; }
+
 }

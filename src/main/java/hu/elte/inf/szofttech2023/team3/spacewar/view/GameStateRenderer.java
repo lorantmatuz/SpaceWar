@@ -134,9 +134,10 @@ public class GameStateRenderer {
         System.out.println("Rendering buildings....");
         Planet selectedPlanet = (Planet) gameState.getSelectedObject();
         Map<BuildingEnum, Building>  buildingMap = selectedPlanet.getBuildingMap();
-        for ( Map.Entry<BuildingEnum, Building> entry : buildingMap.entrySet() )
-        {
-            if ( entry.getValue().getDurationOfUpgrade() > 0 ) return;
+        for ( Map.Entry<BuildingEnum, Building> entry : buildingMap.entrySet() ) {
+            if (!entry.getValue().getFunctionality()) {
+                displayEngine.setInfoLabel(entry.getValue().getClass().getSimpleName() + " is under construction!");
+            }
         }
     }
 
