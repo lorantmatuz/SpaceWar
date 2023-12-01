@@ -65,5 +65,13 @@ public class SwingTurnInfoDisplay extends JPanel implements Rectangular, MenuDis
     public int getHeight(){ return  this.turnInfoDisplayHeight; };
 
     public JButton getShuffleButton(){ return this.shuffleButton; };
+    public JLabel getTurnLabel() {
+        return turnLabel;
+    }
+    public void setTurnLabelText(String text) {
+        turnLabel.setText(text);
+    }
+
+
 
 }
