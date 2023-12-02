@@ -243,6 +243,20 @@ public class GameController {
             }else {
                 System.out.println("Nem a te flottad, nem mozgathatod.");
             }
+
+        }
+        if (target instanceof Fleet) {
+            Fleet targetFleet = (Fleet) target;
+            SpaceObject selectedObject = gameState.getSelectedObject();
+            if (selectedObject instanceof Fleet) {
+                Fleet selectedFleet = (Fleet) selectedObject;
+                if (selectedFleet.getOwner().equals(currentPlayer) && targetFleet.getOwner().equals(currentPlayer) && isAdjacentToFleet(selectedFleet, targetFleet)) {
+                    mergeFleets(selectedFleet, targetFleet);
+                    System.out.println("Flottak sikeresen osszevonva.");
+                } else {
+                    System.out.println("A kivalasztott flottak nem osszevonhatoak.");
+                }
+            }
         }
 
         renderer.apply(gameState, this::handleBoardEvent);
@@ -303,6 +317,20 @@ public class GameController {
             gameState.getSpace().moveObject(fleet, point);
         }
         renderer.apply(gameState, this::handleBoardEvent);
+    }
+    private boolean isAdjacentToFleet(Fleet fleet, Fleet targetFleet) {
+        int deltaX = Math.abs(fleet.x - targetFleet.x);
+        int deltaY = Math.abs(fleet.y - targetFleet.y);
+        return (deltaX <= 1 && deltaY <= 1);
+    }
+    private void mergeFleets(Fleet fleet1, Fleet fleet2) {
+        if (fleet1.mergeFleet(fleet2)) {
+            gameState.getSpace().removeFleet(fleet2);
+            renderer.apply(gameState, this::handleBoardEvent);
+            System.out.println("Flottak sikeresen osszevonva.");
+        } else {
+            System.out.println("Nem sikerult osszevonni a flottakat.");
+        }
     }
     
 }
