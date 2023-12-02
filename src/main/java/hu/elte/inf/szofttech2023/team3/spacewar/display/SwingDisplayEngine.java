@@ -9,14 +9,14 @@ import java.util.List;
 
 public class SwingDisplayEngine implements DisplayEngine {
 
-    public static final int FIELD_WIDTH = 40;
-    public static final int FIELD_HEIGHT = 40;
+    public static final int FIELD_WIDTH = 35;
+    public static final int FIELD_HEIGHT = 35;
 
     public static final int BORDER_TOP = 10;
     public static final int BORDER_BOTTOM = 10;
     public static final int BORDER_LEFT = 10;
     public static final int BORDER_RIGHT = 10;
-    public static final int FONT_SIZE = 20;
+    public static final int FONT_SIZE = 15;
 
     private final SwingBoardDisplay boardDisplay;
     private final SwingObjectDisplay objectDisplay;
@@ -89,8 +89,10 @@ public class SwingDisplayEngine implements DisplayEngine {
     }
 
     @Override
-    public void applyObjectActionPalette(List< Map.Entry<String, Runnable >> content )
+    public void applyObjectActionPalette(String title, List< Map.Entry<String, Runnable >> content )
     {
+        JLabel actionPanelLabel = objectDisplay.getActionPanel().getActionPanelLabel();
+        actionPanelLabel.setText( title );
         JPanel actionPanel = objectDisplay.getActionPanel().getContentPanel();
         actionPanel.removeAll();
         actionPanel.revalidate();
@@ -116,6 +118,17 @@ public class SwingDisplayEngine implements DisplayEngine {
     }
     public JButton getShuffleButton(){ return this.turnInfoDisplay.getShuffleButton(); }
 
+    @Override
+    public void setInfoLabel( String info ){
+        JLabel infoLabel = this.turnInfoDisplay.getInfoLabel();
+        infoLabel.setText( info );
+    }
+    @Override
+    public void setTurnLabel( int turnNumber, String player, double actionPoint ){
+        JLabel turnLabel = this.turnInfoDisplay.getTurnLabel();
+        String turnInfo = "Turn: " + turnNumber + ", Player: " + player + ", Action point: " + actionPoint;
+        turnLabel.setText( turnInfo );
+    }
 
 }
 

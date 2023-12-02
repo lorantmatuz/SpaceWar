@@ -20,8 +20,8 @@ public class Main {
         Space space = new Space(BOARD_COLUMNS, BOARD_ROWS);
 
         List<Player> players = new ArrayList<>();
-        players.add(new Player(1, "Player A"));
-        players.add(new Player(2, "Player B"));
+        players.add(new Player(1, "Blue"));
+        players.add(new Player(2, "Red"));
         GameState state = new GameState(space, players);
 
         //SwingBoardDisplay display = new SwingBoardDisplay(BOARD_ROWS, BOARD_COLUMNS, FIELD_WIDTH, FIELD_HEIGHT);

@@ -29,7 +29,8 @@ public class ActionPanel extends JPanel {
         this.actionPanelWidth = actionPanelWidth;
         this.actionPanelHeight = actionPanelHeight;
         setPreferredSize(new Dimension( actionPanelWidth, actionPanelHeight ));
-        actionPanelLabel = new JLabel("Actions");
+        //actionPanelLabel = new JLabel("Actions");
+        actionPanelLabel = new JLabel();
         actionPanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
         actionPanelLabel.setBorder(new EmptyBorder( SwingDisplayEngine.BORDER_TOP, SwingDisplayEngine.BORDER_LEFT, SwingDisplayEngine.BORDER_BOTTOM, SwingDisplayEngine.BORDER_RIGHT));
         actionPanelLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, SwingDisplayEngine.FONT_SIZE ));
@@ -133,5 +134,6 @@ public class ActionPanel extends JPanel {
 
     ArrayList<JButton> getButtons(){ return this.buttons; }
     public JPanel getContentPanel(){ return this.contentPanel; }
+    public JLabel getActionPanelLabel(){ return this.actionPanelLabel; }
 
 }
