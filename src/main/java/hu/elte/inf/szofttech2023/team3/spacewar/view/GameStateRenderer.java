@@ -30,7 +30,9 @@ public class GameStateRenderer {
         int columnCount = boardDisplay.getColumnCount();
         Displayable[][] displayables = new Displayable[rowCount][columnCount];
         collectSpaceObjects(gameState, displayables);
-        collectPathObjects(gameState, displayables);
+        if( gameState.getSelectedObject()!= null && gameState.getSelectedObject().getClass() == Fleet.class ) {
+            collectPathObjects(gameState, displayables);
+        }
         displayEngine.applyBoard(displayables);
         boardDisplay.setBoardListener((type, position) -> boardEventListener.actionPerformed(new BoardEvent(type, position), gameState));
     }
