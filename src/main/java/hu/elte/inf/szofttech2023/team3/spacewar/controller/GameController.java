@@ -143,7 +143,7 @@ public class GameController {
 
     public void handleBoardLeftClick(FieldPosition position, GameState state) {
 
-        Boolean showObjectInfo = false;
+        boolean showObjectInfo = false;
         state = gameState;
         TurnManager turnManager = state.getTurnManager();
         FieldPosition selectedPosition = turnManager.getSelectedPosition();
@@ -192,6 +192,8 @@ public class GameController {
             System.out.println("Ures urre kattintottak, de nem volt elotte flotta vagy urhajó kattintva: Sor=" + row + ", Oszlop=" + column);
         }
 
+        renderer.apply(gameState, this::handleBoardEvent);
+
         if (target != null) {
             System.out.println(String.format("A(n) %s object was clicked", target.getClass().getSimpleName()));
             renderer.apply( target, showObjectInfo, gameState, this::handleActionEvent);
@@ -199,7 +201,6 @@ public class GameController {
 
     }
     public void handleBoardRightClick(FieldPosition position, GameState state) {
-        Boolean showObjectInfo = false;
         state = gameState;
         TurnManager turnManager = state.getTurnManager();
         FieldPosition selectedPosition = turnManager.getSelectedPosition();

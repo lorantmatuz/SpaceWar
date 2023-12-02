@@ -182,7 +182,16 @@ public class GameStateRenderer {
     {
         TurnManager manager = gameState.getTurnManager();
         displayEngine.setInfoLabel("New round for player " + manager.getCurrentPlayer().getName() + "!" );
-        displayEngine.setTurnLabel( manager.getTurnCounter() , manager.getCurrentPlayer().getName() );
+        displayTurnInfo( manager );
+    }
+
+    public void displayTurnInfo( TurnManager manager )
+    {
+        displayEngine.setTurnLabel(
+                manager.getTurnCounter() ,
+                manager.getCurrentPlayer().getName() ,
+                manager.getActionPoint()
+        );
     }
     private Runnable createActionEvent(ActionEventListener actionEventListener, Object type, GameState gameState) {
         return () -> actionEventListener.actionPerformed(new ActionEvent(type), gameState);
