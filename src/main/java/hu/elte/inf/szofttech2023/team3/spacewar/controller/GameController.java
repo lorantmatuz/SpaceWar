@@ -143,7 +143,6 @@ public class GameController {
         FieldPosition selectedPosition = turnManager.getSelectedPosition();
         SpaceObject target = state.getSpace().getObjectAt(position);
         Player currentPlayer = turnManager.getCurrentPlayer();
-        System.out.println("Most ennek a kore megy felül" + turnManager.getCurrentPlayer().getName());
 
         
         // FIXME
@@ -151,47 +150,35 @@ public class GameController {
         System.out.println(position + " --> " + target);
         
         // Player already selected a fleet.
-        if (selectedPosition != null){
-            System.out.println("selectedPosition: " + selectedPosition);
-            if (target instanceof Planet) {
-                // TODO: Ha ellenséges, bolygó akkor támadás, ha saját akkor kilépünk.
-            }else if (target == null) {
-                int row = position.getRow();
-                int column = position.getColumn();
-                System.out.println("Üres űrre kattintottak, és volt előtte flotta vagy űrhajó kattintva: Sor=" + row + ", Oszlop=" + column);
+        if (target == null) {
+            Point targetPoint = new Point(position.getColumn(), position.getRow());
+            Point fleetPoint = new Point(selectedPosition.getColumn(), selectedPosition.getRow());
+            SpaceObject potentialFleet = gameState.getSpace().getObjectAt(selectedPosition);
 
-                Point targetPoint = new Point(column, row);
-                Point fleetPoint = new Point(selectedPosition.getColumn(), selectedPosition.getRow());
+            if (potentialFleet instanceof Fleet) {
+                Fleet selectedFleet = (Fleet) potentialFleet;
+                if (selectedFleet.getOwner().equals(currentPlayer)) {
+                    final var shortestPath = new ShortestPath(gameState.getSpace());
+                    try {
+                        Path path = shortestPath.run(fleetPoint, targetPoint);
+                        int actionCost = (int) path.getTotalCost() * selectedFleet.getMinSpeed();
 
-                SpaceObject potentialFleet = gameState.getSpace().getObjectAt(selectedPosition);
-                if (potentialFleet instanceof Fleet) {
-                    Fleet selectedFleet = (Fleet) potentialFleet;
-                    if (selectedFleet.getOwner().equals(turnManager.getCurrentPlayer())) {
-                        if (!gameState.getSpace().isSpaceObject[targetPoint.x][targetPoint.y]) {
-                            final var shortestPath = new ShortestPath(gameState.getSpace());
-                            try {
-                                Path path = shortestPath.run(fleetPoint, targetPoint);
-                                System.out.println("Az útvonal pontjai:");
-                                while (path.hasNext()) {
-                                    Point point = path.next().node();
-                                    System.out.println(point);
-                                    gameState.getSpace().moveObject(selectedFleet, point);
-                                    renderer.apply(gameState, this::handleBoardEvent);
-                                }
-                            } catch (IllegalArgumentException e) {
-                                System.err.println("Hiba: " + e.getMessage());
-                            }
+                        if (turnManager.getActionPoint() >= actionCost) {
+                            executeTravel(selectedFleet, path);
+                            turnManager.decreaseActionPointBy(actionCost);
                         } else {
-                            System.err.println("A cél pont foglalt vagy nem érvényes.");
+                            System.out.println("Nincs eleg akciópont az utazashoz.");
                         }
-                    } else {
-                        System.err.println("A kiválasztott objektum nem flotta.");
+                    } catch (IllegalArgumentException e) {
+                        System.err.println("Hiba: " + e.getMessage());
                     }
-                    turnManager.setSelectedPosition(null);
-                    turnManager.setPlannedPath(null);
+                } else {
+                    System.err.println("A kivalasztott objektum nem a sajat flottad.");
                 }
+                turnManager.setSelectedPosition(null);
+                turnManager.setPlannedPath(null);
             }else {
-                System.out.println("Nem a te flottád, nem mozgathatod.");
+                System.out.println("Nem a te flottad, nem mozgathatod.");
             }
         }
         else {
@@ -284,6 +271,13 @@ public class GameController {
             System.out.println("Build building action");
             renderer.applyBuildSelectAction( gameState, this::handleActionEvent );
         }
+    }
+    private void executeTravel(Fleet fleet, Path path) {
+        while (path.hasNext()) {
+            Point point = path.next().node();
+            gameState.getSpace().moveObject(fleet, point);
+        }
+        renderer.apply(gameState, this::handleBoardEvent);
     }
     
 }

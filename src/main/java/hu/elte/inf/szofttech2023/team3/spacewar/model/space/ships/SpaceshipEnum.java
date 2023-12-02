@@ -1,12 +1,12 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships;
 
 public enum SpaceshipEnum {
-    MOTHER_SHIP(3,4,3,5,4,4,0, 0),
-    HUNTER      (3,2,4,2,2,2,1, 0),
-    CRUISER     (4,3,5,3,3,3,1, 0),
-    FRIGATE     (4,4,3,4,4,4,2, 0),
-    COLONY      (2,3,3,4,3,3,2, 0),
-    SUPPLIER    (1,2,3,2,1,2,2, 50);
+    MOTHER_SHIP(3,4,10,5,4,4,0, 0),
+    HUNTER      (3,2,5,2,2,2,1, 0),
+    CRUISER     (4,3,1,3,3,3,1, 0),
+    FRIGATE     (4,4,10,4,4,4,2, 0),
+    COLONY      (2,3,10,4,3,3,2, 0),
+    SUPPLIER    (1,2,10,2,1,2,2, 50);
 
     public final int offensiveForce;
     public final int protectiveForce;
