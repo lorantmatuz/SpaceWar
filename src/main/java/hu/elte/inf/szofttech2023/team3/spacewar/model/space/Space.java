@@ -77,13 +77,11 @@ public class Space {
 
     /**
      * Sets a {@code SpaceObject} to the given index
-     * @param p the {@code Point}, i.e. the place of the {@code SpaceObject}
-     *         in the grid
      * @param object the {@code SpaceObject} to set
      */
-    public void setSpaceObject(Point p, SpaceObject object) {
+    public void setSpaceObject(SpaceObject object) {
         objects.add(object);
-        isSpaceObject[p.x][p.y] = true;
+        isSpaceObject[object.x][object.y] = true;
     }
 
     /**
