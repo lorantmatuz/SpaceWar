@@ -67,6 +67,7 @@ public class GameController {
         if (startPosition != null) {
             Fleet fleet = new Fleet(startPosition.x, startPosition.y, owner);
             fleet.addShip(new Spaceship(SpaceshipEnum.MOTHER_SHIP));
+            fleet.addShip(new Spaceship(SpaceshipEnum.SUPPLIER));
             return fleet;
         }
         return null;
@@ -269,12 +270,20 @@ public class GameController {
                 if (isAdjacentToPlanet(selectedFleet, targetPlanet)) {
                     if (targetPlanet.getOwner() == null ||
                             !targetPlanet.getOwner().equals(currentPlayer)) {
-                        // Bolygó elfoglalása
                         targetPlanet.setOwner(currentPlayer);
                         System.out.println("A bolygo elfoglalasa megtortent.");
-                    } else {
-                        // Egyéb esetek (pl. saját bolygóhoz való utazás)
-                        System.out.println("Nem hajthato vegre muvelet a sajat bolygon.");
+                    } else if (isAdjacentToPlanet(selectedFleet, targetPlanet) && targetPlanet.getOwner().equals(currentPlayer)) {
+                        if (selectedFleet.getTransportedResources() == 0) {
+                            int resourceToLoad = Math.min(targetPlanet.getMaterial(), selectedFleet.getMaxTransportedResources());
+                            selectedFleet.modifyTransportedResources(resourceToLoad);
+                            targetPlanet.setMaterial(targetPlanet.getMaterial() - resourceToLoad);
+                            System.out.println("Nyersanyagok felvetele a bolygorol.");
+                        } else {
+                            int resourcesToTransfer = selectedFleet.getTransportedResources();
+                            targetPlanet.setMaterial(targetPlanet.getMaterial() + resourcesToTransfer);
+                            selectedFleet.modifyTransportedResources(-resourcesToTransfer);
+                            System.out.println("Nyersanyagok atadása a bolygonak.");
+                        }
                     }
                 } else {
                     System.out.println("A kivalasztott muvelet nem hajthato vegre.");
