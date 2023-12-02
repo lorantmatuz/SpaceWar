@@ -122,9 +122,10 @@ public class SwingDisplayEngine implements DisplayEngine {
         infoLabel.setText( info );
     }
     @Override
-    public void setTurnLabel( String turn ){
+    public void setTurnLabel( int turnNumber, String player ){
         JLabel turnLabel = this.turnInfoDisplay.getTurnLabel();
-        turnLabel.setText( turn );
+        String turnInfo = "Turn: " + turnNumber + ", Player: " + player;
+        turnLabel.setText( turnInfo );
     }
 
 }

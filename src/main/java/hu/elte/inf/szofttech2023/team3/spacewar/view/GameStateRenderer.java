@@ -141,6 +141,12 @@ public class GameStateRenderer {
         }
     }
 
+    public void displayNextTurn(GameState gameState)
+    {
+        TurnManager manager = gameState.getTurnManager();
+        displayEngine.setInfoLabel("New round for player " + manager.getCurrentPlayer().getName() + "!" );
+        displayEngine.setTurnLabel( manager.getTurnCounter() , manager.getCurrentPlayer().getName() );
+    }
     private Runnable createActionEvent(ActionEventListener actionEventListener, Object type, GameState gameState) {
         return () -> actionEventListener.actionPerformed(new ActionEvent(type), gameState);
     }

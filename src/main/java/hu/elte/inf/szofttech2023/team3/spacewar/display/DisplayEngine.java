@@ -11,5 +11,5 @@ public interface DisplayEngine {
     public void applyObjectActionPalette(List<Map.Entry<String, Runnable >> content );
     public BoardDisplay getBoardDisplay();
     public void setInfoLabel( String info );
-    public void setTurnLabel( String turn );
+    public void setTurnLabel( int turnNumber , String player );
 }

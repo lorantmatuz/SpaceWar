@@ -43,6 +43,7 @@ public class GameController {
         createPlayersAndFleets(space);
         renderer.apply(gameState, this::handleBoardEvent);
         System.out.println("Elso kor " + turnManager.getCurrentPlayer().getName()+ " "+ turnManager.getTurnCounter() );
+        renderer.displayNextTurn( gameState );
     }
     private void startTurn() {
         Player currentPlayer = turnManager.getCurrentPlayer();
@@ -55,6 +56,7 @@ public class GameController {
 
     private void nextTurn() {
         Player currentPlayer = turnManager.nextPlayer(); // Váltás a következő játékosra
+        renderer.displayNextTurn( gameState );
     }
 
     private void updateTurnDisplay(Player currentPlayer) {
