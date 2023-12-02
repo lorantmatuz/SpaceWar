@@ -253,8 +253,31 @@ public class GameController {
                 if (selectedFleet.getOwner().equals(currentPlayer) && targetFleet.getOwner().equals(currentPlayer) && isAdjacentToFleet(selectedFleet, targetFleet)) {
                     mergeFleets(selectedFleet, targetFleet);
                     System.out.println("Flottak sikeresen osszevonva.");
-                } else {
+                } else if (selectedFleet.getOwner().equals(currentPlayer) && !targetFleet.getOwner().equals(currentPlayer) && isAdjacentToFleet(selectedFleet, targetFleet)) {
+                    // Harc
+                    //fight(selectedFleet, targetFleet);
+                    System.out.println("Harc indítva az ellenséges flotta ellen.");
+                }else {
                     System.out.println("A kivalasztott flottak nem osszevonhatoak.");
+                }
+            }
+        }else if (target instanceof Planet) {
+            Planet targetPlanet = (Planet) target;
+            SpaceObject selectedObject = gameState.getSelectedObject();
+            if (selectedObject instanceof Fleet) {
+                Fleet selectedFleet = (Fleet) selectedObject;
+                if (isAdjacentToPlanet(selectedFleet, targetPlanet)) {
+                    if (targetPlanet.getOwner() == null ||
+                            !targetPlanet.getOwner().equals(currentPlayer)) {
+                        // Bolygó elfoglalása
+                        targetPlanet.setOwner(currentPlayer);
+                        System.out.println("A bolygo elfoglalasa megtortent.");
+                    } else {
+                        // Egyéb esetek (pl. saját bolygóhoz való utazás)
+                        System.out.println("Nem hajthato vegre muvelet a sajat bolygon.");
+                    }
+                } else {
+                    System.out.println("A kivalasztott muvelet nem hajthato vegre.");
                 }
             }
         }
@@ -331,6 +354,11 @@ public class GameController {
         } else {
             System.out.println("Nem sikerult osszevonni a flottakat.");
         }
+    }
+    private boolean isAdjacentToPlanet(Fleet fleet, Planet targetPlanet) {
+        int deltaX = Math.abs(fleet.x - targetPlanet.x);
+        int deltaY = Math.abs(fleet.y - targetPlanet.y);
+        return (deltaX <= 1 && deltaY <= 1);
     }
     
 }

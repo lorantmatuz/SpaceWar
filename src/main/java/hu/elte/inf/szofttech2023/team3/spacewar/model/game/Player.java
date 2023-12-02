@@ -59,4 +59,17 @@ public class Player
     public List<Constructable> getConstructions() {
         return constructions;
     }
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (this == obj) {
+            return true;
+        }
+        if (obj instanceof Player player) {
+            return this.no == player.getNo() && this.name.equals(player.getName());
+        }
+        return false;
+    }
 }
