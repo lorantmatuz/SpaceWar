@@ -88,10 +88,10 @@ public class GameController {
         Fleet fleet1 = createFleetWithMothership(player1StartPosition, player1);
         Fleet fleet2 = createFleetWithMothership(player2StartPosition, player2);
         if (fleet1 != null) {
-            space.setSpaceObject(fleet1, fleet1);
+            space.setSpaceObject(fleet1);
         }
         if (fleet2 != null) {
-            space.setSpaceObject(fleet2, fleet2);
+            space.setSpaceObject(fleet2);
         }
 
         player1.addFleet(fleet1);
@@ -146,7 +146,8 @@ public class GameController {
                 if (potentialFleet instanceof Fleet) {
                     Fleet selectedFleet = (Fleet) potentialFleet;
                     if (!gameState.getSpace().isSpaceObject[targetPoint.x][targetPoint.y]) {
-                        final var shortestPath = new ShortestPath(gameState.getSpace());
+                        //final var shortestPath = new ShortestPath(gameState.getSpace());
+                        final var shortestPath = gameState.getShortestPath();
                         try {
                             Path path = shortestPath.run(fleetPoint, targetPoint);
                             System.out.println("Az útvonal pontjai:");
@@ -225,7 +226,8 @@ public class GameController {
     
     private List<FieldPosition> calculateShortestPathBetween(FieldPosition base, FieldPosition to) {
         List<FieldPosition> result = new ArrayList<>();
-        final var shortestPath = new ShortestPath(gameState.getSpace());
+        //final var shortestPath = new ShortestPath(gameState.getSpace());
+        final var shortestPath = gameState.getShortestPath();
         Path path = shortestPath.run(
                 new Point(base.getColumn(), base.getRow()),
                 new Point(to.getColumn(), to.getRow()));
