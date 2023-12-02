@@ -128,8 +128,10 @@ public class GameController {
     
     public void handleBoardEvent(BoardEvent event, GameState state) {
         BoardEventType eventType = event.getType();
-        if (eventType == BoardEventType.CLICK) {
-            handleBoardClick(event.getFieldPosition(), state);
+        if (eventType == BoardEventType.LEFT_CLICK) {
+            handleBoardLeftClick(event.getFieldPosition(), state);
+        } else if (eventType == BoardEventType.RIGHT_CLICK) {
+            handleBoardRightClick(event.getFieldPosition(), state);
         } else if (eventType == BoardEventType.HOVER) {
             handleBoardHover(event.getFieldPosition(), state);
         } else if (eventType == BoardEventType.OUT) {
@@ -139,7 +141,65 @@ public class GameController {
         }
     }
 
-    public void handleBoardClick(FieldPosition position, GameState state) {
+    public void handleBoardLeftClick(FieldPosition position, GameState state) {
+
+        Boolean showObjectInfo = false;
+        state = gameState;
+        TurnManager turnManager = state.getTurnManager();
+        FieldPosition selectedPosition = turnManager.getSelectedPosition();
+        SpaceObject target = state.getSpace().getObjectAt(position);
+        Player currentPlayer = turnManager.getCurrentPlayer();
+        System.out.println("Most ennek a kore megy felül" + turnManager.getCurrentPlayer().getName());
+
+
+        // FIXME
+        state.getSpace().print();
+        System.out.println(position + " --> " + target);
+
+        gameState.setSelectedObject(target);
+
+        if (target instanceof Fleet) {
+            Fleet fleet = (Fleet) target;
+            if (fleet.getOwner().equals(currentPlayer)) {
+                showObjectInfo = true;
+                System.out.println("Fleet state:");
+                System.out.println("Spaceships: " + fleet.getSpaceships());
+                System.out.println("Minspeed: " + fleet.getMinSpeed());
+                System.out.println("X: " + fleet.x);
+                System.out.println("Y " + fleet.y);
+                System.out.println("owner" + fleet.getOwner().getName());
+                turnManager.setSelectedPosition(FieldPosition.of(fleet.y, fleet.x));
+            }else {
+                System.out.println("Hostile fleet");
+                // TODO : check if the enemy fleet is in observation distance
+            }
+        } else if (target instanceof Planet) {
+            Planet planet = (Planet) target;
+            System.out.println("Most ennek a kore megy " + turnManager.getCurrentPlayer().getName());
+            if (planet.getOwner().equals(currentPlayer)) {
+                showObjectInfo = true;
+                System.out.println("Planet state:");
+                System.out.println("Energy: " + planet.getEnergy());
+                System.out.println("Material: " + planet.getMaterial());
+                System.out.println("Owner: " + planet.getOwner().getName());
+            } else {
+                System.out.println("Hostile planet");
+                // TODO : check if the enemy planet is in observation distance
+            }
+        } else if (target == null) {
+            int row = position.getRow();
+            int column = position.getColumn();
+            System.out.println("Ures urre kattintottak, de nem volt elotte flotta vagy urhajó kattintva: Sor=" + row + ", Oszlop=" + column);
+        }
+
+        if (target != null) {
+            System.out.println(String.format("A(n) %s object was clicked", target.getClass().getSimpleName()));
+            renderer.apply( target, showObjectInfo, gameState, this::handleActionEvent);
+        }
+
+    }
+    public void handleBoardRightClick(FieldPosition position, GameState state) {
+        Boolean showObjectInfo = false;
         state = gameState;
         TurnManager turnManager = state.getTurnManager();
         FieldPosition selectedPosition = turnManager.getSelectedPosition();
@@ -196,46 +256,8 @@ public class GameController {
                 System.out.println("Nem a te flottád, nem mozgathatod.");
             }
         }
-        else {
-            gameState.setSelectedObject(target);
 
-            if (target instanceof Fleet) {
-                Fleet fleet = (Fleet) target;
-                if (fleet.getOwner().equals(currentPlayer)) {
-                    System.out.println("Fleet state:");
-                    System.out.println("Spaceships: " + fleet.getSpaceships());
-                    System.out.println("Minspeed: " + fleet.getMinSpeed());
-                    System.out.println("X: " + fleet.x);
-                    System.out.println("Y " + fleet.y);
-                    System.out.println("owner" + fleet.getOwner().getName());
-                    turnManager.setSelectedPosition(FieldPosition.of(fleet.y, fleet.x));
-                }else {
-                    System.out.println("Hostile fleet");
-                }
-            } else if (target instanceof Planet) {
-                Planet planet = (Planet) target;
-                System.out.println("Most ennek a kore megy " + turnManager.getCurrentPlayer().getName());
-                if (planet.getOwner().equals(currentPlayer)) {
-                    System.out.println("Planet state:");
-                    System.out.println("Energy: " + planet.getEnergy());
-                    System.out.println("Material: " + planet.getMaterial());
-                    System.out.println("Owner: " + planet.getOwner().getName());
-                } else {
-                    System.out.println("Hostile planet");
-                }
-            } else if (target == null) {
-                int row = position.getRow();
-                int column = position.getColumn();
-                System.out.println("Ures urre kattintottak, de nem volt elotte flotta vagy urhajó kattintva: Sor=" + row + ", Oszlop=" + column);
-            }
-        }
-        
         renderer.apply(gameState, this::handleBoardEvent);
-
-        if (target != null) {
-            System.out.println(String.format("A(n) %s object was clicked", target.getClass().getSimpleName()));
-            renderer.apply(target, gameState, this::handleActionEvent);
-        }
 
     }
 

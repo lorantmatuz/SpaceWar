@@ -89,8 +89,10 @@ public class SwingDisplayEngine implements DisplayEngine {
     }
 
     @Override
-    public void applyObjectActionPalette(List< Map.Entry<String, Runnable >> content )
+    public void applyObjectActionPalette(String title, List< Map.Entry<String, Runnable >> content )
     {
+        JLabel actionPanelLabel = objectDisplay.getActionPanel().getActionPanelLabel();
+        actionPanelLabel.setText( title );
         JPanel actionPanel = objectDisplay.getActionPanel().getContentPanel();
         actionPanel.removeAll();
         actionPanel.revalidate();
