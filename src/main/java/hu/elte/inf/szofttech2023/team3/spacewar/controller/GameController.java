@@ -1,7 +1,6 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.controller;
 
 import hu.elte.inf.szofttech2023.team3.spacewar.display.SpecialAction;
-import hu.elte.inf.szofttech2023.team3.spacewar.display.SwingTurnInfoDisplay;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.GameState;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.TurnManager;
@@ -27,13 +26,12 @@ public class GameController {
     private final GameStateRenderer renderer;
 
     private final TurnManager turnManager;
-    private final SwingTurnInfoDisplay turnInfoDisplay;
+
 
     public GameController(GameState gameState, GameStateRenderer renderer) {
         this.gameState = gameState;
         this.renderer = renderer;
-        this.turnManager = new TurnManager(gameState.getPlayers());
-        this.turnInfoDisplay = new SwingTurnInfoDisplay(300);
+        turnManager = gameState.getTurnManager();
         initializeGame();
     }
     private void initializeGame() {
@@ -48,7 +46,6 @@ public class GameController {
     }
     private void startTurn() {
         Player currentPlayer = turnManager.getCurrentPlayer();
-        updateTurnDisplay(currentPlayer);
     }
 
     public void endTurn() {
@@ -58,13 +55,10 @@ public class GameController {
 
     private void nextTurn() {
         Player currentPlayer = turnManager.nextPlayer(); // Váltás a következő játékosra
-        updateTurnDisplay(currentPlayer);
     }
 
     private void updateTurnDisplay(Player currentPlayer) {
-        // Frissítsd a GUI-t az aktuális játékos és kör információival
-        String turnText = "Turn " + turnManager.getTurnCounter() + ", Player: " + currentPlayer.getName();
-        turnInfoDisplay.setTurnLabelText(turnText);
+
     }
 
     private Fleet createFleetWithMothership(Point startPosition, Player owner) {

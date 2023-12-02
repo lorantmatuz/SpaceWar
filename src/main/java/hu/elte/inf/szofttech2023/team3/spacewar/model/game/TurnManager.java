@@ -31,6 +31,7 @@ public class TurnManager {
         }
         currentPlayer = players.get(playerIndex++);
         currentPlayer.checkConstructions();
+        System.out.println("TurnManager: "+ currentPlayer.getName());
         state = TurnState.STARTED;
         actionPoint = maxActionPoint;
         targetPoint = null;
