@@ -231,7 +231,7 @@ public class GameController {
                             executeTravel(selectedFleet, path);
                             turnManager.decreaseActionPointBy(actionCost);
                         } else {
-                            System.out.println("Nincs eleg akciópont az utazashoz.");
+                            System.out.println("Nincs eleg akciopont az utazashoz.");
                         }
                     } catch (IllegalArgumentException e) {
                         System.err.println("Hiba: " + e.getMessage());
@@ -256,6 +256,16 @@ public class GameController {
                     System.out.println("Flottak sikeresen osszevonva.");
                 } else if (selectedFleet.getOwner().equals(currentPlayer) && !targetFleet.getOwner().equals(currentPlayer) && isAdjacentToFleet(selectedFleet, targetFleet)) {
                     // Harc
+                    /*
+                    if (Battle.fight(selectedFleet, targetFleet)){
+                        gameState.getSpace().removeFleet(targetFleet);
+                        renderer.apply(gameState, this::handleBoardEvent);
+                        System.out.println("Megnyerted a csatat!!");
+                    }else{
+                        gameState.getSpace().removeFleet(selectedFleet);
+                        renderer.apply(gameState, this::handleBoardEvent);
+                        System.out.println("Elvesztetted a csatat!!");
+                    }*/
                     //fight(selectedFleet, targetFleet);
                     System.out.println("Harc indítva az ellenséges flotta ellen.");
                 }else {
@@ -341,6 +351,7 @@ public class GameController {
         {
             System.out.println("Build building action");
             renderer.applyBuildSelectAction( gameState, this::handleActionEvent );
+
         }
     }
     private void executeTravel(Fleet fleet, Path path) {

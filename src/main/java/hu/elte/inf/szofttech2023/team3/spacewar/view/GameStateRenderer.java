@@ -1,9 +1,13 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.view;
 
-import hu.elte.inf.szofttech2023.team3.spacewar.display.*;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.building.*;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.game.TurnManager;
+import hu.elte.inf.szofttech2023.team3.spacewar.display.BoardDisplay;
+import hu.elte.inf.szofttech2023.team3.spacewar.display.DisplayEngine;
+import hu.elte.inf.szofttech2023.team3.spacewar.display.Displayable;
+import hu.elte.inf.szofttech2023.team3.spacewar.display.SpecialAction;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.GameState;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.building.Building;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.building.BuildingEnum;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.game.TurnManager;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Space;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Asteroid;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.BlackHole;
@@ -13,7 +17,11 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Fleet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Spaceship;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.SpaceshipEnum;
 
-import java.util.*;
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class GameStateRenderer {
     
@@ -168,17 +176,27 @@ public class GameStateRenderer {
         displayEngine.applyObjectActionPalette( actionsTitle , actionContent  );
     }
 
-    public void applyBuildSelectAction(GameState gameState , ActionEventListener listener )
-    {
+    public void applyBuildSelectAction(GameState gameState, ActionEventListener listener) {
         System.out.println("Rendering buildings....");
         Planet selectedPlanet = (Planet) gameState.getSelectedObject();
-        Map<BuildingEnum, Building>  buildingMap = selectedPlanet.getBuildingMap();
-        for ( Map.Entry<BuildingEnum, Building> entry : buildingMap.entrySet() ) {
-            if (!entry.getValue().getFunctionality()) {
-                displayEngine.setInfoLabel(entry.getValue().getClass().getSimpleName() + " is under construction!");
+        Map<BuildingEnum, Building> buildingMap = selectedPlanet.getBuildingMap();
+
+        for (BuildingEnum buildingType : BuildingEnum.values()) {
+            // Ellenőrizzük, hogy az adott épület már létezik-e és aktív-e
+            if (!buildingMap.containsKey(buildingType) || !buildingMap.get(buildingType).getFunctionality()) {
+                String buildingName = buildingType.name();
+                System.out.println("Build " + buildingName);
+                JButton buildButton = new JButton("Build " + buildingName);
+                buildButton.addActionListener(e -> {
+                    listener.actionPerformed(new ActionEvent(buildingType), gameState);
+                });
+                // displayEngine.add(buildButton);
+            } else {
+                displayEngine.setInfoLabel(buildingType.name() + " is already built or under construction.");
             }
         }
     }
+
 
     public void displayNextTurn(GameState gameState)
     {
