@@ -162,6 +162,7 @@ public class GameController {
         if (target instanceof Fleet) {
             Fleet fleet = (Fleet) target;
             if (fleet.getOwner().equals(currentPlayer)) {
+                renderer.displayInfo("Choose target!");
                 showObjectInfo = true;
                 System.out.println("Fleet state:");
                 System.out.println("Spaceships: " + fleet.getSpaceships());
@@ -171,6 +172,7 @@ public class GameController {
                 System.out.println("owner" + fleet.getOwner().getName());
                 turnManager.setSelectedPosition(FieldPosition.of(fleet.y, fleet.x));
             }else {
+                renderer.displayInfo("Hostile fleet.");
                 System.out.println("Hostile fleet");
                 // TODO : check if the enemy fleet is in observation distance
             }
@@ -178,16 +180,19 @@ public class GameController {
             Planet planet = (Planet) target;
             System.out.println("Most ennek a kore megy " + turnManager.getCurrentPlayer().getName());
             if (planet.getOwner().equals(currentPlayer)) {
+                renderer.displayInfo("Choose planet operations.");
                 showObjectInfo = true;
                 System.out.println("Planet state:");
                 System.out.println("Energy: " + planet.getEnergy());
                 System.out.println("Material: " + planet.getMaterial());
                 System.out.println("Owner: " + planet.getOwner().getName());
             } else {
+                renderer.displayInfo("Hostile planet.");
                 System.out.println("Hostile planet");
                 // TODO : check if the enemy planet is in observation distance
             }
         } else if (target == null) {
+            renderer.displayInfo("There is nothing there.");
             int row = position.getRow();
             int column = position.getColumn();
             System.out.println("Ures urre kattintottak, de nem volt elotte flotta vagy urhajó kattintva: Sor=" + row + ", Oszlop=" + column);
@@ -230,18 +235,23 @@ public class GameController {
                         if (turnManager.getActionPoint() >= actionCost) {
                             executeTravel(selectedFleet, path);
                             turnManager.decreaseActionPointBy(actionCost);
+                            renderer.displayInfo("Travel accomplished.");
+                            renderer.displayTurnInfo( turnManager );
                         } else {
+                            renderer.displayInfo("Not enough ActionPoints for that travel!");
                             System.out.println("Nincs eleg akciópont az utazashoz.");
                         }
                     } catch (IllegalArgumentException e) {
                         System.err.println("Hiba: " + e.getMessage());
                     }
                 } else {
+                    renderer.displayInfo("The selected fleet is not yours!");
                     System.err.println("A kivalasztott objektum nem a sajat flottad.");
                 }
                 turnManager.setSelectedPosition(null);
                 turnManager.setPlannedPath(null);
             }else {
+                renderer.displayInfo("The fleet is not yours to control!");
                 System.out.println("Nem a te flottad, nem mozgathatod.");
             }
 
@@ -253,12 +263,15 @@ public class GameController {
                 Fleet selectedFleet = (Fleet) selectedObject;
                 if (selectedFleet.getOwner().equals(currentPlayer) && targetFleet.getOwner().equals(currentPlayer) && isAdjacentToFleet(selectedFleet, targetFleet)) {
                     mergeFleets(selectedFleet, targetFleet);
+                    renderer.displayInfo("The merging of fleets has been succsessfull.");
                     System.out.println("Flottak sikeresen osszevonva.");
                 } else if (selectedFleet.getOwner().equals(currentPlayer) && !targetFleet.getOwner().equals(currentPlayer) && isAdjacentToFleet(selectedFleet, targetFleet)) {
                     // Harc
                     //fight(selectedFleet, targetFleet);
+                    renderer.displayInfo("Engaging battle against enemy fleet!");
                     System.out.println("Harc indítva az ellenséges flotta ellen.");
                 }else {
+                    renderer.displayInfo("The selected fleets cannot be merged!");
                     System.out.println("A kivalasztott flottak nem osszevonhatoak.");
                 }
             }
@@ -272,21 +285,25 @@ public class GameController {
                             !targetPlanet.getOwner().equals(currentPlayer)) {
                         targetPlanet.setOwner(currentPlayer);
                         System.out.println("A bolygo elfoglalasa megtortent.");
+                        renderer.displayInfo("The enemy planet has been conquered!");
                     } else if (isAdjacentToPlanet(selectedFleet, targetPlanet) && targetPlanet.getOwner().equals(currentPlayer)) {
                         if (selectedFleet.getTransportedResources() == 0) {
                             int resourceToLoad = Math.min(targetPlanet.getMaterial(), selectedFleet.getMaxTransportedResources());
                             selectedFleet.modifyTransportedResources(resourceToLoad);
                             targetPlanet.setMaterial(targetPlanet.getMaterial() - resourceToLoad);
+                            renderer.displayInfo("The resources of the planet has been transported to the fleet");
                             System.out.println("Nyersanyagok felvetele a bolygorol.");
                         } else {
                             int resourcesToTransfer = selectedFleet.getTransportedResources();
                             targetPlanet.setMaterial(targetPlanet.getMaterial() + resourcesToTransfer);
                             selectedFleet.modifyTransportedResources(-resourcesToTransfer);
+                            renderer.displayInfo("??");
                             System.out.println("Nyersanyagok atadása a bolygonak.");
                         }
                     }
                 } else {
                     System.out.println("A kivalasztott muvelet nem hajthato vegre.");
+                    renderer.displayInfo("The operation cannot be executed!");
                 }
             }
         }
@@ -360,7 +377,9 @@ public class GameController {
             gameState.getSpace().removeFleet(fleet2);
             renderer.apply(gameState, this::handleBoardEvent);
             System.out.println("Flottak sikeresen osszevonva.");
+            renderer.displayInfo("The fleets have been successfully merged!");
         } else {
+            renderer.displayInfo("The merging of fleets has not been successfull...");
             System.out.println("Nem sikerult osszevonni a flottakat.");
         }
     }
