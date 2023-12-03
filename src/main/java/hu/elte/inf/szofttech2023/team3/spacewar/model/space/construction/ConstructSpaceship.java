@@ -22,4 +22,8 @@ public class ConstructSpaceship extends Constructable {
         fleet.addShip(new Spaceship(spaceship));
         planet.getOwner().addFleet(fleet);
     }
+
+    public SpaceshipEnum getSpaceship() {
+        return spaceship;
+    }
 }
