@@ -10,8 +10,16 @@ public abstract class Building {
     protected Planet planet;
     protected int level = 1;
     protected int size = 1;
-    protected  boolean isFunctional = false;
+    protected  boolean isFunctional = true;
+    protected int roundWhenFunctioning;
 
+    public Building(Planet planet, int level, int size, int roundWhenFunctioning )
+    {
+        this.planet = planet;
+        this.level = level;
+        this.size  = size;
+        this.roundWhenFunctioning = roundWhenFunctioning;
+    }
     public Building(Planet planet) {
         this.planet = planet;
     }

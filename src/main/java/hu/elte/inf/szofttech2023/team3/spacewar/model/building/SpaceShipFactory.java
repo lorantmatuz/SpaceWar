@@ -10,6 +10,10 @@ public class SpaceShipFactory extends Building {
         super(planet);
     }
 
+    public SpaceShipFactory(Planet planet, int level, int size, int roundWhenFunctioning )
+    {
+        super( planet , level, size, roundWhenFunctioning );
+    }
     @Override
     public void upgrade() {
         ++level;

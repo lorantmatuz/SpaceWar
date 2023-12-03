@@ -2,6 +2,7 @@ package hu.elte.inf.szofttech2023.team3.spacewar.display;
 
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.*;
@@ -22,6 +23,7 @@ public class SwingDisplayEngine implements DisplayEngine {
     private final SwingObjectDisplay objectDisplay;
     private final SwingFrameDisplay frameDisplay;
     private final SwingTurnInfoDisplay turnInfoDisplay;
+    private int selectedRow;
 
     public SwingDisplayEngine(int rowCount, int columnCount) {
         this.boardDisplay = new SwingBoardDisplay(rowCount, columnCount);
@@ -130,5 +132,30 @@ public class SwingDisplayEngine implements DisplayEngine {
         turnLabel.setText( turnInfo );
     }
 
+    @Override
+    public void applyItemSelector(Boolean erase, String title, Object[] header, Object[][] content )
+    {
+        CollectionPanel collectionPanel = objectDisplay.getCollectionPanel();
+        if( erase )
+        {
+            collectionPanel.removeAll();
+            collectionPanel.revalidate();
+            collectionPanel.repaint();
+        }
+        JLabel panelLabel = collectionPanel.setCollectionPanelLabel();
+        DefaultTableModel model = new DefaultTableModel( content, header);
+        JTable table = new JTable(model);
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                selectedRow = table.rowAtPoint(e.getPoint());
+            }
+        });
+        collectionPanel.add( table );
+        collectionPanel.add( panelLabel );
+    }
+
+    public int getSelectedRow(){ return this.selectedRow; }
 }
 
