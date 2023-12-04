@@ -34,10 +34,12 @@ public class Planet extends SpaceObject {
     }
 
     public Building build(BuildingEnum buildingEnum) {
-        var building = getBuilding(buildingEnum);
+        Building building = getBuilding(buildingEnum);
         if(building == null) {
             building = buildingEnum.build(this);
             buildingMap.put(buildingEnum, building);
+        } else {
+            building.upgrade();
         }
         return building;
     }
