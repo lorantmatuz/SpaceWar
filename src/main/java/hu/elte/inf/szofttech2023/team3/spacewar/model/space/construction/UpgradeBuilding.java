@@ -14,4 +14,8 @@ public class UpgradeBuilding extends Constructable {
     protected void construct() {
         building.upgrade();
     }
+
+    public Building getBuilding() {
+        return building;
+    }
 }
