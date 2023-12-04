@@ -4,6 +4,7 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Asteroid;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.BlackHole;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Fleet;
 import hu.elte.inf.szofttech2023.team3.spacewar.view.FieldPosition;
 
 import java.awt.*;
@@ -50,6 +51,12 @@ public class Space {
             }
             System.out.println();
         }
+    }
+    public void removeFleet(Fleet fleet) {
+        if (fleet == null) return;
+
+        objects.remove(fleet);
+        isSpaceObject[fleet.x][fleet.y] = false;
     }
     
     public void erase() {

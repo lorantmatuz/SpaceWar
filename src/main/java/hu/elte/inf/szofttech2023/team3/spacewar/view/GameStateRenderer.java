@@ -1,9 +1,13 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.view;
 
-import hu.elte.inf.szofttech2023.team3.spacewar.display.*;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.building.*;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.game.TurnManager;
+import hu.elte.inf.szofttech2023.team3.spacewar.display.BoardDisplay;
+import hu.elte.inf.szofttech2023.team3.spacewar.display.DisplayEngine;
+import hu.elte.inf.szofttech2023.team3.spacewar.display.Displayable;
+import hu.elte.inf.szofttech2023.team3.spacewar.display.SpecialAction;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.GameState;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.building.Building;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.building.BuildingEnum;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.game.TurnManager;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Space;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Asteroid;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.BlackHole;
@@ -13,7 +17,11 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Fleet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Spaceship;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.SpaceshipEnum;
 
-import java.util.*;
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class GameStateRenderer {
     
@@ -22,14 +30,17 @@ public class GameStateRenderer {
     public GameStateRenderer(DisplayEngine displayEngine) {
         this.displayEngine = displayEngine;
     }
-    
+
+
     public void apply(GameState gameState, BoardEventListener boardEventListener) {
         BoardDisplay boardDisplay = displayEngine.getBoardDisplay();
         int rowCount = boardDisplay.getRowCount();
         int columnCount = boardDisplay.getColumnCount();
         Displayable[][] displayables = new Displayable[rowCount][columnCount];
         collectSpaceObjects(gameState, displayables);
-        collectPathObjects(gameState, displayables);
+        if( gameState.getSelectedObject()!= null && gameState.getSelectedObject().getClass() == Fleet.class ) {
+            collectPathObjects(gameState, displayables);
+        }
         displayEngine.applyBoard(displayables);
         boardDisplay.setBoardListener((type, position) -> boardEventListener.actionPerformed(new BoardEvent(type, position), gameState));
     }
@@ -58,63 +69,99 @@ public class GameStateRenderer {
         }
     }
 
-    public void apply(Object object , GameState gameState, ActionEventListener actionEventListener) {
+    public void apply(Object object , Boolean showObjectInfo, GameState gameState, ActionEventListener actionEventListener) {
         String title = "";
         List<Map.Entry<String, Integer>> attributeContent = new ArrayList<>();
         String collectionTitle = "";
         ArrayList<String> collectionHeader = new ArrayList<>();
         List<Map.Entry<String, List<Integer>>> collectionContent = new ArrayList<>();
+        String actionsTitle = "";
         List<Map.Entry<String, Runnable >> actionContent = new ArrayList<>();
         if (object instanceof Planet planet) {
-            title = planet.getName();
-            attributeContent.add(Map.entry("energy", planet.getEnergy()));
-            attributeContent.add(Map.entry("material", planet.getMaterial()));
-            attributeContent.add(Map.entry("temperature", planet.getTemperature()));
-            attributeContent.add(Map.entry("space capacity", planet.getMaxSize()));
-            attributeContent.add(Map.entry("used capacity", planet.getSize()));
-            collectionTitle = "Buildings";
-            collectionHeader.add("Building type");
-            collectionHeader.add("Level");
-            collectionHeader.add("Size");
-            Map<BuildingEnum, Building> buildingList = planet.getBuildingMap();
-            for (Map.Entry<BuildingEnum, Building> set : buildingList.entrySet()) {
-                List<Integer> listElementAttributes = new ArrayList<>();
-                listElementAttributes.add(set.getValue().getLevel());
+            title = "Unknown planet";
+            if( showObjectInfo )
+            {
+                title = planet.getName();
+                attributeContent.add(Map.entry("energy", planet.getEnergy()));
+                attributeContent.add(Map.entry("material", planet.getMaterial()));
+                attributeContent.add(Map.entry("temperature", planet.getTemperature()));
+                attributeContent.add(Map.entry("space capacity", planet.getMaxSize()));
+                attributeContent.add(Map.entry("used capacity", planet.getSize()));
+                collectionTitle = "Buildings";
+                collectionHeader.add("Building type");
+                collectionHeader.add("Level");
+                collectionHeader.add("Size");
+                Map<BuildingEnum, Building> buildingList = planet.getBuildingMap();
+                for (Map.Entry<BuildingEnum, Building> set : buildingList.entrySet()) {
+                    List<Integer> listElementAttributes = new ArrayList<>();
+                    listElementAttributes.add(set.getValue().getLevel());
                 listElementAttributes.add(set.getValue().getSize());
-                collectionContent.add(Map.entry( set.getKey().name(), listElementAttributes )
+                    collectionContent.add(Map.entry( set.getKey().name(), listElementAttributes )
+                    );
+                }
+                actionsTitle = "Planet Operations";
+                actionContent.add(
+                        Map.entry(
+                                "Build Building",
+                                createActionEvent(actionEventListener, SpecialAction.BUILD_BUILDING, gameState)
+                        )
+                );
+                actionContent.add(
+                        Map.entry(
+                                "Build Ship",
+                                createActionEvent(actionEventListener, SpecialAction.BUILD_SHIP, gameState)
+                        )
+                );
+                actionContent.add(
+                        Map.entry(
+                                "Transfer Resources",
+                                createActionEvent(actionEventListener, SpecialAction.TRANSFER, gameState)
+                        )
                 );
             }
-            actionContent.add(Map.entry("Build Building", createActionEvent(actionEventListener, SpecialAction.BUILD_BUILDING, gameState)));
-            actionContent.add(Map.entry("Build Ship", createActionEvent(actionEventListener, SpecialAction.BUILD_SHIP, gameState)));
-            actionContent.add(Map.entry("Transfer Resources", createActionEvent(actionEventListener, SpecialAction.TRANSFER, gameState)));
         }
         else if (object instanceof Fleet fleet)
         {
-            title = "Fleet-" + fleet.getId();
-            ArrayList<Spaceship> spaceships = fleet.getSpaceships();
-            attributeContent.add(Map.entry("Total # of ships", fleet.getTotalShipNumber() ));
-            attributeContent.add(Map.entry("Total HP", fleet.getTotalHP() ));
-            attributeContent.add(Map.entry("Total offense", fleet.getTotalOffense() ));
-            attributeContent.add(Map.entry("Total defense", fleet.getTotalDefense() ));
-            attributeContent.add(Map.entry("Speed", fleet.getMinSpeed() ));
-            attributeContent.add(Map.entry("Max Transported resource", fleet.getMaxTransportedResources() ));
-            attributeContent.add(Map.entry("Transported resource", fleet.getTransportedResources() ));
-            // write the number of ships for all ship types
-            collectionTitle = "Ships";
-            collectionHeader.add("Ship type");
-            collectionHeader.add("Number of ship");
-            for (SpaceshipEnum ship : SpaceshipEnum.values() )
-            {
-                List<Integer> listElementAttributes = new ArrayList<>();
-                int numberOfShips = fleet.getNumberOf( ship );
-                if( numberOfShips > 0 )
+                title = "Unknown Fleet";
+                if( showObjectInfo )
                 {
-                    listElementAttributes.add( fleet.getNumberOf( ship ) );
-                    collectionContent.add(Map.entry( ship.name(), listElementAttributes ) );
-                }
+                    title = "Fleet-" + fleet.getId();
+                    ArrayList<Spaceship> spaceships = fleet.getSpaceships();
+                    attributeContent.add(Map.entry("Total # of ships", fleet.getTotalShipNumber() ));
+                    attributeContent.add(Map.entry("Total HP", fleet.getTotalHP() ));
+                    attributeContent.add(Map.entry("Total offense", fleet.getTotalOffense() ));
+                    attributeContent.add(Map.entry("Total defense", fleet.getTotalDefense() ));
+                    attributeContent.add(Map.entry("Speed", fleet.getMinSpeed() ));
+                    attributeContent.add(Map.entry("Max Transported resource", fleet.getMaxTransportedResources() ));
+                    attributeContent.add(Map.entry("Transported resource", fleet.getTransportedResources() ));
+                    // write the number of ships for all ship types
+                    collectionTitle = "Ships";
+                    collectionHeader.add("Ship type");
+                    collectionHeader.add("Number of ship");
+                    for (SpaceshipEnum ship : SpaceshipEnum.values() )
+                    {
+                        List<Integer> listElementAttributes = new ArrayList<>();
+                        int numberOfShips = fleet.getNumberOf( ship );
+                        if( numberOfShips > 0 )
+                        {
+                          listElementAttributes.add( fleet.getNumberOf( ship ) );
+                          collectionContent.add(Map.entry( ship.name(), listElementAttributes ) );
+                        }
+                    }
+                    actionsTitle = "Fleet Operations";
+                    actionContent.add(
+                            Map.entry(
+                                    "Merge fleet",
+                                    createActionEvent(actionEventListener, SpecialAction.MERGE_FLEET, gameState)
+                            )
+                    );
+                    actionContent.add(
+                            Map.entry(
+                                    "Create new fleet",
+                                    createActionEvent(actionEventListener, SpecialAction.CREATE_FLEET, gameState)
+                            )
+                    );
             }
-            actionContent.add(Map.entry("Merge fleet", createActionEvent(actionEventListener, SpecialAction.MERGE_FLEET, gameState)));
-            actionContent.add(Map.entry("Create new fleet", createActionEvent(actionEventListener, SpecialAction.CREATE_FLEET, gameState)));
         }
         else if (object instanceof Asteroid)
         {
@@ -126,20 +173,50 @@ public class GameStateRenderer {
         }
         displayEngine.applyObjectInfo( title , attributeContent );
         displayEngine.applyObjectItemsInfo( true , collectionTitle, collectionHeader , collectionContent );
-        displayEngine.applyObjectActionPalette( actionContent  );
+        displayEngine.applyObjectActionPalette( actionsTitle , actionContent  );
     }
 
-    public void applyBuildSelectAction(GameState gameState , ActionEventListener listener )
-    {
+    public void applyBuildSelectAction(GameState gameState, ActionEventListener listener) {
         System.out.println("Rendering buildings....");
         Planet selectedPlanet = (Planet) gameState.getSelectedObject();
-        Map<BuildingEnum, Building>  buildingMap = selectedPlanet.getBuildingMap();
-        for ( Map.Entry<BuildingEnum, Building> entry : buildingMap.entrySet() )
-        {
-            if ( entry.getValue().getDurationOfUpgrade() > 0 ) return;
+        Map<BuildingEnum, Building> buildingMap = selectedPlanet.getBuildingMap();
+
+        for (BuildingEnum buildingType : BuildingEnum.values()) {
+            // Ellenőrizzük, hogy az adott épület már létezik-e és aktív-e
+            if (!buildingMap.containsKey(buildingType) || !buildingMap.get(buildingType).getFunctionality()) {
+                String buildingName = buildingType.name();
+                System.out.println("Build " + buildingName);
+                JButton buildButton = new JButton("Build " + buildingName);
+                buildButton.addActionListener(e -> {
+                    listener.actionPerformed(new ActionEvent(buildingType), gameState);
+                });
+                // displayEngine.add(buildButton);
+            } else {
+                displayEngine.setInfoLabel(buildingType.name() + " is already built or under construction.");
+            }
         }
     }
 
+
+    public void displayNextTurn(GameState gameState)
+    {
+        TurnManager manager = gameState.getTurnManager();
+        displayInfo("New round for player " + manager.getCurrentPlayer().getName() + "!" );
+        displayTurnInfo( manager );
+    }
+
+    public void displayTurnInfo( TurnManager manager )
+    {
+        displayEngine.setTurnLabel(
+                manager.getTurnCounter() ,
+                manager.getCurrentPlayer().getName() ,
+                manager.getActionPoint()
+        );
+    }
+    public void displayInfo( String theInfo )
+    {
+        displayEngine.setInfoLabel( theInfo );
+    }
     private Runnable createActionEvent(ActionEventListener actionEventListener, Object type, GameState gameState) {
         return () -> actionEventListener.actionPerformed(new ActionEvent(type), gameState);
     }

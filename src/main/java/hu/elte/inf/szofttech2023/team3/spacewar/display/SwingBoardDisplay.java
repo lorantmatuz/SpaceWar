@@ -36,7 +36,7 @@ public class SwingBoardDisplay extends JPanel implements Rectangular, BoardDispl
         this.setCursor(new Cursor(Cursor.HAND_CURSOR));
         MouseAdapter mouseAdapter = new MouseAdapter() {
             @Override public void mouseClicked(MouseEvent e) {
-                handleClick(fieldPositionOf(e));
+                    handleClick(e,fieldPositionOf(e));
             }
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -64,12 +64,19 @@ public class SwingBoardDisplay extends JPanel implements Rectangular, BoardDispl
         drawBoard(g, boardWidth, boardHeight);
     }
 
-    private void handleClick(FieldPosition position) {
+    private void handleClick(MouseEvent event, FieldPosition position) {
         if (boardListener == null) {
             return;
         }
-        
-        boardListener.accept(BoardEventType.CLICK, position);
+        int button = event.getButton();
+        if( button == MouseEvent.BUTTON1 )
+        {
+            boardListener.accept(BoardEventType.LEFT_CLICK, position);
+        }
+        else if( button == MouseEvent.BUTTON3 )
+        {
+            boardListener.accept(BoardEventType.RIGHT_CLICK, position);
+        }
     }
     
     private void handleMove(FieldPosition position) {

@@ -1,34 +1,37 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.controller;
 
-import java.util.*;
-import java.awt.*;
-import java.util.List;
-
 import hu.elte.inf.szofttech2023.team3.spacewar.display.SpecialAction;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.GameState;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.TurnManager;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.space.*;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.GenerateSpace;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Path;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ShortestPath;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Space;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Fleet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Spaceship;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.SpaceshipEnum;
-import hu.elte.inf.szofttech2023.team3.spacewar.view.ActionEvent;
-import hu.elte.inf.szofttech2023.team3.spacewar.view.BoardEvent;
-import hu.elte.inf.szofttech2023.team3.spacewar.view.BoardEventType;
-import hu.elte.inf.szofttech2023.team3.spacewar.view.FieldPosition;
-import hu.elte.inf.szofttech2023.team3.spacewar.view.GameStateRenderer;
+import hu.elte.inf.szofttech2023.team3.spacewar.view.*;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameController {
 
     private final  GameState gameState;
     
     private final GameStateRenderer renderer;
-    
+
+    private final TurnManager turnManager;
+
+
     public GameController(GameState gameState, GameStateRenderer renderer) {
         this.gameState = gameState;
         this.renderer = renderer;
+        turnManager = gameState.getTurnManager();
         initializeGame();
     }
     private void initializeGame() {
@@ -36,17 +39,32 @@ public class GameController {
         Space space = gameState.getSpace();
         GenerateSpace generator = new GenerateSpace(space, gameState.getPlayers());
         generator.run(4, 10, 5, 5);
-
-        // Játékosok és flották létrehozása
+        //updateTurnDisplay(turnManager.getCurrentPlayer());
         createPlayersAndFleets(space);
-
-        // Játékállapot frissítése
         renderer.apply(gameState, this::handleBoardEvent);
+        System.out.println("Elso kor " + turnManager.getCurrentPlayer().getName()+ " "+ turnManager.getTurnCounter() );
+        renderer.displayNextTurn( gameState );
     }
+    private void startTurn() {
+        Player currentPlayer = turnManager.getCurrentPlayer();
+    }
+
+    public void endTurn() {
+        nextTurn();
+        System.out.println("End Turn: " + turnManager.getCurrentPlayer().getName()+ " "+ turnManager.getTurnCounter() );
+    }
+
+    private void nextTurn() {
+        Player currentPlayer = turnManager.nextPlayer();
+        updatePlanetsResourcesForCurrentPlayer(currentPlayer, gameState.getSpace());
+        renderer.displayNextTurn( gameState );
+    }
+
     private Fleet createFleetWithMothership(Point startPosition, Player owner) {
         if (startPosition != null) {
             Fleet fleet = new Fleet(startPosition.x, startPosition.y, owner);
             fleet.addShip(new Spaceship(SpaceshipEnum.MOTHER_SHIP));
+            fleet.addShip(new Spaceship(SpaceshipEnum.SUPPLIER));
             return fleet;
         }
         return null;
@@ -108,8 +126,10 @@ public class GameController {
     
     public void handleBoardEvent(BoardEvent event, GameState state) {
         BoardEventType eventType = event.getType();
-        if (eventType == BoardEventType.CLICK) {
-            handleBoardClick(event.getFieldPosition(), state);
+        if (eventType == BoardEventType.LEFT_CLICK) {
+            handleBoardLeftClick(event.getFieldPosition(), state);
+        } else if (eventType == BoardEventType.RIGHT_CLICK) {
+            handleBoardRightClick(event.getFieldPosition(), state);
         } else if (eventType == BoardEventType.HOVER) {
             handleBoardHover(event.getFieldPosition(), state);
         } else if (eventType == BoardEventType.OUT) {
@@ -119,84 +139,187 @@ public class GameController {
         }
     }
 
-    public void handleBoardClick(FieldPosition position, GameState state) {
+    public void handleBoardLeftClick(FieldPosition position, GameState state) {
+
+        boolean showObjectInfo = false;
         state = gameState;
         TurnManager turnManager = state.getTurnManager();
         FieldPosition selectedPosition = turnManager.getSelectedPosition();
         SpaceObject target = state.getSpace().getObjectAt(position);
+        Player currentPlayer = turnManager.getCurrentPlayer();
+        System.out.println("Most ennek a kore megy felül" + turnManager.getCurrentPlayer().getName());
+
+
+        // FIXME
+        state.getSpace().print();
+        System.out.println(position + " --> " + target);
+
+        gameState.setSelectedObject(target);
+
+        if (target instanceof Fleet) {
+            Fleet fleet = (Fleet) target;
+            if (fleet.getOwner().equals(currentPlayer)) {
+                renderer.displayInfo("Choose target!");
+                showObjectInfo = true;
+                System.out.println("Fleet state:");
+                System.out.println("Spaceships: " + fleet.getSpaceships());
+                System.out.println("Minspeed: " + fleet.getMinSpeed());
+                System.out.println("X: " + fleet.x);
+                System.out.println("Y " + fleet.y);
+                System.out.println("owner" + fleet.getOwner().getName());
+                turnManager.setSelectedPosition(FieldPosition.of(fleet.y, fleet.x));
+            }else {
+                renderer.displayInfo("Hostile fleet.");
+                System.out.println("Hostile fleet");
+                // TODO : check if the enemy fleet is in observation distance
+            }
+        } else if (target instanceof Planet) {
+            Planet planet = (Planet) target;
+            System.out.println("Most ennek a kore megy " + turnManager.getCurrentPlayer().getName());
+            if (planet.getOwner().equals(currentPlayer)) {
+                renderer.displayInfo("Choose planet operations.");
+                showObjectInfo = true;
+                System.out.println("Planet state:");
+                System.out.println("Energy: " + planet.getEnergy());
+                System.out.println("Material: " + planet.getMaterial());
+                System.out.println("Owner: " + planet.getOwner().getName());
+            } else {
+                renderer.displayInfo("Hostile planet.");
+                System.out.println("Hostile planet");
+                // TODO : check if the enemy planet is in observation distance
+            }
+        } else if (target == null) {
+            renderer.displayInfo("There is nothing there.");
+            int row = position.getRow();
+            int column = position.getColumn();
+            System.out.println("Ures urre kattintottak, de nem volt elotte flotta vagy urhajó kattintva: Sor=" + row + ", Oszlop=" + column);
+        }
+
+        renderer.apply(gameState, this::handleBoardEvent);
+
+        if (target != null) {
+            System.out.println(String.format("A(n) %s object was clicked", target.getClass().getSimpleName()));
+            renderer.apply( target, showObjectInfo, gameState, this::handleActionEvent);
+        }
+
+    }
+    public void handleBoardRightClick(FieldPosition position, GameState state) {
+        state = gameState;
+        TurnManager turnManager = state.getTurnManager();
+        FieldPosition selectedPosition = turnManager.getSelectedPosition();
+        SpaceObject target = state.getSpace().getObjectAt(position);
+        Player currentPlayer = turnManager.getCurrentPlayer();
+
         
         // FIXME
         state.getSpace().print();
         System.out.println(position + " --> " + target);
         
         // Player already selected a fleet.
-        if (selectedPosition != null){
-            System.out.println("selectedPosition: " + selectedPosition);
-            if (target instanceof Planet) {
-                // TODO: Ha ellenséges, bolygó akkor támadás, ha saját akkor kilépünk.
-            }else if (target == null) {
-                int row = position.getRow();
-                int column = position.getColumn();
-                System.out.println("Üres űrre kattintottak, és volt előtte flotta vagy űrhajó kattintva: Sor=" + row + ", Oszlop=" + column);
+        if (target == null) {
+            Point targetPoint = new Point(position.getColumn(), position.getRow());
+            Point fleetPoint = new Point(selectedPosition.getColumn(), selectedPosition.getRow());
+            SpaceObject potentialFleet = gameState.getSpace().getObjectAt(selectedPosition);
 
-                Point targetPoint = new Point(column, row);
-                Point fleetPoint = new Point(selectedPosition.getColumn(), selectedPosition.getRow());
+            if (potentialFleet instanceof Fleet) {
+                Fleet selectedFleet = (Fleet) potentialFleet;
+                if (selectedFleet.getOwner().equals(currentPlayer)) {
+                    final var shortestPath = new ShortestPath(gameState.getSpace());
+                    try {
+                        Path path = shortestPath.run(fleetPoint, targetPoint);
+                        int actionCost = (int) path.getTotalCost() * selectedFleet.getMinSpeed();
 
-                SpaceObject potentialFleet = gameState.getSpace().getObjectAt(selectedPosition);
-                if (potentialFleet instanceof Fleet) {
-                    Fleet selectedFleet = (Fleet) potentialFleet;
-                    if (!gameState.getSpace().isSpaceObject[targetPoint.x][targetPoint.y]) {
-                        final var shortestPath = new ShortestPath(gameState.getSpace());
-                        try {
-                            Path path = shortestPath.run(fleetPoint, targetPoint);
-                            System.out.println("Az útvonal pontjai:");
-                            while (path.hasNext()) {
-                                Point point = path.next().node();
-                                System.out.println(point);
-                                gameState.getSpace().moveObject(selectedFleet, point);
-                                renderer.apply(gameState, this::handleBoardEvent);
-                            }
-                        } catch (IllegalArgumentException e) {
-                            System.err.println("Hiba: " + e.getMessage());
+                        if (turnManager.getActionPoint() >= actionCost) {
+                            executeTravel(selectedFleet, path);
+                            turnManager.decreaseActionPointBy(actionCost);
+                            renderer.displayInfo("Travel accomplished.");
+                            renderer.displayTurnInfo( turnManager );
+                        } else {
+
+                            System.out.println("Nincs eleg akciopont az utazashoz.");
+
+                            renderer.displayInfo("Not enough ActionPoints for that travel!");
+                            System.out.println("Nincs eleg akciópont az utazashoz.");
+
                         }
-                    } else {
-                        System.err.println("A cél pont foglalt vagy nem érvényes.");
+                    } catch (IllegalArgumentException e) {
+                        System.err.println("Hiba: " + e.getMessage());
                     }
                 } else {
-                    System.err.println("A kiválasztott objektum nem flotta.");
+                    renderer.displayInfo("The selected fleet is not yours!");
+                    System.err.println("A kivalasztott objektum nem a sajat flottad.");
                 }
                 turnManager.setSelectedPosition(null);
                 turnManager.setPlannedPath(null);
+            }else {
+                renderer.displayInfo("The fleet is not yours to control!");
+                System.out.println("Nem a te flottad, nem mozgathatod.");
             }
-        }
-        else{
-            gameState.setSelectedObject( target );
-            if (target instanceof Fleet) {
-                Fleet fleet = (Fleet) target;
-                System.out.println("Fleet state:");
-                System.out.println("Spaceships: " + fleet.getSpaceships());
-                System.out.println("Minspeed: " + fleet.getMinSpeed());
-                System.out.println("X: " + fleet.x);
-                System.out.println("Y " + fleet.y);
-                turnManager.setSelectedPosition(FieldPosition.of(fleet.y, fleet.x));
-            }else if (target instanceof Planet) {
-                Planet planet = (Planet) target;
-                System.out.println("Planet state:");
-                System.out.println("Energy: " + planet.getEnergy());
-                System.out.println("Material: " + planet.getMaterial());
-            }else if (target == null) {
-                int row = position.getRow();
-                int column = position.getColumn();
-                System.out.println("Ures urre kattintottak, de nem volt előtte flotta vagy űrhajó kattintva: Sor=" + row + ", Oszlop=" + column);
-            }
-        }
-        
-        renderer.apply(gameState, this::handleBoardEvent);
 
-        if (target != null) {
-            System.out.println(String.format("A(n) %s object was clicked", target.getClass().getSimpleName()));
-            renderer.apply(target, gameState, this::handleActionEvent);
         }
+        if (target instanceof Fleet) {
+            Fleet targetFleet = (Fleet) target;
+            SpaceObject selectedObject = gameState.getSelectedObject();
+            if (selectedObject instanceof Fleet) {
+                Fleet selectedFleet = (Fleet) selectedObject;
+                if (selectedFleet.getOwner().equals(currentPlayer) && targetFleet.getOwner().equals(currentPlayer) && isAdjacentToFleet(selectedFleet, targetFleet)) {
+                    mergeFleets(selectedFleet, targetFleet);
+                    renderer.displayInfo("The merging of fleets has been succsessfull.");
+                    System.out.println("Flottak sikeresen osszevonva.");
+                } else if (selectedFleet.getOwner().equals(currentPlayer) && !targetFleet.getOwner().equals(currentPlayer) && isAdjacentToFleet(selectedFleet, targetFleet)) {
+                    // Harc
+                    /*
+                    if (Battle.fight(selectedFleet, targetFleet)){
+                        gameState.getSpace().removeFleet(targetFleet);
+                        renderer.apply(gameState, this::handleBoardEvent);
+                        System.out.println("Megnyerted a csatat!!");
+                    }else{
+                        gameState.getSpace().removeFleet(selectedFleet);
+                        renderer.apply(gameState, this::handleBoardEvent);
+                        System.out.println("Elvesztetted a csatat!!");
+                    }*/
+                    //fight(selectedFleet, targetFleet);
+                    renderer.displayInfo("Engaging battle against enemy fleet!");
+                    System.out.println("Harc indítva az ellenséges flotta ellen.");
+                }else {
+                    renderer.displayInfo("The selected fleets cannot be merged!");
+                    System.out.println("A kivalasztott flottak nem osszevonhatoak.");
+                }
+            }
+        }else if (target instanceof Planet) {
+            Planet targetPlanet = (Planet) target;
+            SpaceObject selectedObject = gameState.getSelectedObject();
+            if (selectedObject instanceof Fleet) {
+                Fleet selectedFleet = (Fleet) selectedObject;
+                if (isAdjacentToPlanet(selectedFleet, targetPlanet)) {
+                    if (targetPlanet.getOwner() == null ||
+                            !targetPlanet.getOwner().equals(currentPlayer)) {
+                        targetPlanet.setOwner(currentPlayer);
+                        System.out.println("A bolygo elfoglalasa megtortent.");
+                        renderer.displayInfo("The enemy planet has been conquered!");
+                    } else if (isAdjacentToPlanet(selectedFleet, targetPlanet) && targetPlanet.getOwner().equals(currentPlayer)) {
+                        if (selectedFleet.getTransportedResources() == 0) {
+                            int resourceToLoad = Math.min(targetPlanet.getMaterial(), selectedFleet.getMaxTransportedResources());
+                            selectedFleet.modifyTransportedResources(resourceToLoad);
+                            targetPlanet.setMaterial(targetPlanet.getMaterial() - resourceToLoad);
+                            renderer.displayInfo("The resources of the planet has been transported to the fleet");
+                            System.out.println("Nyersanyagok felvetele a bolygorol.");
+                        } else {
+                            int resourcesToTransfer = selectedFleet.getTransportedResources();
+                            targetPlanet.setMaterial(targetPlanet.getMaterial() + resourcesToTransfer);
+                            selectedFleet.modifyTransportedResources(-resourcesToTransfer);
+                            renderer.displayInfo("??");
+                            System.out.println("Nyersanyagok atadása a bolygonak.");
+                        }
+                    }
+                } else {
+                    System.out.println("A kivalasztott muvelet nem hajthato vegre.");
+                    renderer.displayInfo("The operation cannot be executed!");
+                }
+            }
+        }
+
+        renderer.apply(gameState, this::handleBoardEvent);
 
     }
 
@@ -246,6 +369,46 @@ public class GameController {
         {
             System.out.println("Build building action");
             renderer.applyBuildSelectAction( gameState, this::handleActionEvent );
+
+        }
+    }
+    private void executeTravel(Fleet fleet, Path path) {
+        while (path.hasNext()) {
+            Point point = path.next().node();
+            gameState.getSpace().moveObject(fleet, point);
+        }
+        renderer.apply(gameState, this::handleBoardEvent);
+    }
+    private boolean isAdjacentToFleet(Fleet fleet, Fleet targetFleet) {
+        int deltaX = Math.abs(fleet.x - targetFleet.x);
+        int deltaY = Math.abs(fleet.y - targetFleet.y);
+        return (deltaX <= 1 && deltaY <= 1);
+    }
+    private void mergeFleets(Fleet fleet1, Fleet fleet2) {
+        if (fleet1.mergeFleet(fleet2)) {
+            gameState.getSpace().removeFleet(fleet2);
+            renderer.apply(gameState, this::handleBoardEvent);
+            System.out.println("Flottak sikeresen osszevonva.");
+            renderer.displayInfo("The fleets have been successfully merged!");
+        } else {
+            renderer.displayInfo("The merging of fleets has not been successfull...");
+            System.out.println("Nem sikerult osszevonni a flottakat.");
+        }
+    }
+    private boolean isAdjacentToPlanet(Fleet fleet, Planet targetPlanet) {
+        int deltaX = Math.abs(fleet.x - targetPlanet.x);
+        int deltaY = Math.abs(fleet.y - targetPlanet.y);
+        return (deltaX <= 1 && deltaY <= 1);
+    }
+    private void updatePlanetsResourcesForCurrentPlayer(Player currentPlayer, Space space) {
+        for (SpaceObject spaceObject : space.getSpaceObjects()) {
+            if (spaceObject instanceof Planet) {
+                Planet planet = (Planet) spaceObject;
+                if (planet.getOwner().equals(currentPlayer)) {
+                    planet.importEnergy();
+                    planet.importMaterial();
+                }
+            }
         }
     }
     

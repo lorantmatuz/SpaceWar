@@ -18,20 +18,20 @@ public class Main {
 
     public static void main(String[] args) {
         Space space = new Space(BOARD_COLUMNS, BOARD_ROWS);
-        
+
         List<Player> players = new ArrayList<>();
-        players.add(new Player(1, "Player A"));
-        players.add(new Player(2, "Player B"));
+        players.add(new Player(1, "Blue"));
+        players.add(new Player(2, "Red"));
         GameState state = new GameState(space, players);
 
         //SwingBoardDisplay display = new SwingBoardDisplay(BOARD_ROWS, BOARD_COLUMNS, FIELD_WIDTH, FIELD_HEIGHT);
         SwingDisplayEngine display = new SwingDisplayEngine(BOARD_ROWS, BOARD_COLUMNS);
-        
+
         GameStateRenderer renderer = new GameStateRenderer(display);
         GameController controller = new GameController(state, renderer);
-        controller.shuffle();
+        ///controller.shuffle();
         JButton shuffleButton = display.getShuffleButton();
-        shuffleButton.addActionListener( ev -> controller.shuffle() );
+        shuffleButton.addActionListener( ev -> controller.endTurn());
     }
 
 }

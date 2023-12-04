@@ -10,7 +10,7 @@ public class TurnManager {
     public final double maxActionPoint = 100;
 
     private Player currentPlayer;
-    private int turnCounter = 0;
+    private int turnCounter = 1;
     private TurnState state = null;
     private int playerIndex = 0;
     private double actionPoint;
@@ -25,16 +25,17 @@ public class TurnManager {
     }
 
     public Player nextPlayer() {
-        currentPlayer = players.get(playerIndex);
-        if(++playerIndex >= players.size()) {
+        if (playerIndex >= players.size()) {
             playerIndex = 0;
             ++turnCounter;
         }
+        currentPlayer = players.get(playerIndex++);
         currentPlayer.checkConstructions();
         state = TurnState.STARTED;
         actionPoint = maxActionPoint;
         targetPoint = null;
         return getCurrentPlayer();
+
     }
 
     public double decreaseActionPointBy(double points) {
@@ -84,5 +85,12 @@ public class TurnManager {
 
     public int getTurnCounter() {
         return turnCounter;
+    }
+
+    public void decreaseActionPointBy(int points) {
+        this.actionPoint -= points;
+        if (this.actionPoint < 0) {
+            this.actionPoint = 0;
+        }
     }
 }

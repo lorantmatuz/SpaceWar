@@ -121,4 +121,8 @@ public class Planet extends SpaceObject {
     public Map<BuildingEnum, Building> getBuildingMap() {
         return buildingMap;
     }
+
+    public void setOwner(Player name) {
+       this.owner = name;
+    }
 }
