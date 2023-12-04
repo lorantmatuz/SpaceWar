@@ -31,6 +31,10 @@ public final class Fleet extends SpaceObject {
         return true;
     }
 
+    public boolean removeShip(Spaceship ship) {
+        return spaceships.remove(ship);
+    }
+
     public boolean mergeFleet(Fleet fleet) {
         boolean retVal = true;
         for(final var ship : fleet.getSpaceships()) {
