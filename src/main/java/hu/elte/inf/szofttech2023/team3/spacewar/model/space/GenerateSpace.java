@@ -4,10 +4,7 @@ import java.awt.Point;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-import hu.elte.inf.szofttech2023.team3.spacewar.model.building.Building;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.building.BuildingEnum;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.building.Mine;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.building.SolarPowerPlant;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.*;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Fleet;
@@ -64,11 +61,10 @@ public class GenerateSpace {
             */
             try {
                 SpaceObject obj = factory.create(p.x, p.y);
-                space.setSpaceObject(p, obj);
+                space.setSpaceObject(obj);
                 //
-                if( obj instanceof Planet)
+                if(obj instanceof Planet planet)
                 {
-                    Planet planet = (Planet) obj;
                     planet.setEnergy(rnd.nextInt());
                     planet.setMaterial(rnd.nextInt());
                     planet.setEnergy(rnd.nextInt());

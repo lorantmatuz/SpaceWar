@@ -3,13 +3,10 @@ package hu.elte.inf.szofttech2023.team3.spacewar.model.space;
 import java.awt.Point;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.List;
 import java.util.Queue;
 import java.util.PriorityQueue;
 import java.util.Comparator;
 import java.util.HashMap;
-
-import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
 
 /**
  * This class contains provides the method called
@@ -22,8 +19,8 @@ public class ShortestPath {
     private static boolean[][] visited;
     private static double[][] dist;
     private static Map<Point,Point> preNodes;
-    private static Path path;
     private final Space space;
+    private Point prevSource;
 
     /**
      * Initializes the ShortestPath object.
@@ -31,6 +28,38 @@ public class ShortestPath {
      */
     public ShortestPath(Space space) {
         this.space = space;
+    }
+
+    /**
+     * Searches the shortest path from start to each {@code Point} in the {@code Space}.
+     * @param s the source {@code Point} of the path to search
+     */
+    public void run(Point s) {
+        prevSource = s;
+        visited = new boolean[space.width][space.height];
+        dist = new double[space.width][space.height];
+        Arrays.stream(dist).forEach(row -> Arrays.fill(row, Double.MAX_VALUE));
+        preNodes = new HashMap<>();
+        Queue<Point> queue = new PriorityQueue<>(Comparator.comparingDouble(a -> dist[a.x][a.y]));
+        queue.add(s);
+        visited[s.x][s.y] = true;
+        dist[s.x][s.y] = 0;
+        preNodes.put(s,null);
+        while(!queue.isEmpty()) {
+            var curr = queue.poll();
+            for(int[] dir : DIRECTIONS) {
+                var next = new Point(curr.x + dir[0],curr.y + dir[1]);
+                if(isValidStep(next)) {
+                    var newDist = dist[curr.x][curr.y] + euclidean(curr,next);
+                    if(!visited[next.x][next.y] || newDist < dist[next.x][next.y]) {
+                        queue.add(next);
+                        visited[next.x][next.y] = true;
+                        dist[next.x][next.y] = newDist;
+                        preNodes.put(next,curr);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -45,36 +74,10 @@ public class ShortestPath {
         if(space.isSpaceObject[t.x][t.y]) {
             throw new IllegalArgumentException("Illegal target point!");
         }
-        visited = new boolean[space.width][space.height];
-        dist = new double[space.width][space.height];
-        Arrays.stream(dist).forEach(row -> Arrays.fill(row, Double.MAX_VALUE));
-        preNodes = new HashMap<>();
-        path = new Path();
-        Queue<Point> queue = new PriorityQueue<>(
-                Comparator.comparingDouble(a -> euclidean(a, t) + dist[a.x][a.y]));
-        queue.add(s);
-        visited[s.x][s.y] = true;
-        dist[s.x][s.y] = 0;
-        preNodes.put(s,null);
-        while(!queue.isEmpty()) {
-            var curr = queue.poll();
-            if (curr.equals(t)) {
-                return decodePath(s,t);
-            }
-            for(int[] dir : DIRECTIONS) {
-                var next = new Point(curr.x + dir[0],curr.y + dir[1]);
-                if(isValidStep(next)) {
-                    var newDist = dist[curr.x][curr.y] + euclidean(curr,next);
-                    if(!visited[next.x][next.y] || newDist < dist[next.x][next.y]) {
-                        queue.add(next);
-                        visited[next.x][next.y] = true;
-                        dist[next.x][next.y] = newDist;
-                        preNodes.put(next,curr);
-                    }
-                }
-            }
+        if(!s.equals(prevSource)) {
+            run(s);
         }
-        return path;
+        return decodePath(s,t);
     }
 
     /**
@@ -106,39 +109,15 @@ public class ShortestPath {
      */
     private static Path decodePath(Point s, Point t) {
         Point p = new Point(t);
+        final var path = new Path();
         path.add(p);
         do {
             p = preNodes.get(p);
             path.add(p);
         }
-        while(!p.equals(s));
+        while(!s.equals(p));
         path.setTotalCost(dist[t.x][t.y]);
         return path;
-    }
-
-    public boolean[][] getVisited() {
-        return visited.clone();
-    }
-
-    // demo usage
-    public static void main(String[] args) {
-        final var space = new Space(10,7);
-        final var players = List.of(new Player(1, "A"), new Player(2, "B"));
-        final var generateSpace = new GenerateSpace(space, players);
-        generateSpace.run(4,7,3,1);
-        final var shortestPath = new ShortestPath(space);
-        try {
-            final var path = shortestPath.run(new Point(0,0), new Point(9,6));
-            path.print(space, shortestPath.getVisited());
-            System.out.println("Path: ");
-            while(path.hasNext()) {
-                System.out.println(path.next());
-            }
-            System.out.println("Length: " + path.getLength());
-            System.out.println("Total cost: " + path.getTotalCost());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
     }
 }
 
