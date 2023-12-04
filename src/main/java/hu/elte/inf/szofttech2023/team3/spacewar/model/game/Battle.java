@@ -1,42 +1,60 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.model.game;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Fleet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Spaceship;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.SpaceshipEnum;
 
 public final class Battle {
     private static final ThreadLocalRandom rnd = ThreadLocalRandom.current();
+    private static List<Spaceship> attackerList;
+    private static List<Spaceship> defenderList;
+    private static int swapCounter = 0;
 
-    public static void fight(Fleet attacker, Fleet defender) {
-        final List<Spaceship> attackerList = fleetToList(attacker);
-        final List<Spaceship> defenderList = fleetToList(defender);
-        Fleet fleet = attacker;
-        while(!attackerList.isEmpty() && !defenderList.isEmpty()) {
-            var att = randomShip(attackerList);
-            var def = randomShip(defenderList);
-            // TODO:
+    public static boolean fight(Fleet attacker, Fleet defender) {
+        if(!attacker.canAttack()) {
+            throw new IllegalArgumentException("Invalid attack, no mother_ship in fleet");
         }
-    }
 
-    private static List<Spaceship> fleetToList(Fleet fleet) {
-        List<Spaceship> res = new ArrayList<>();
-        final var ships = fleet.getSpaceships();
-        for(var ship : ships) {
-            System.out.println(ship);
-            if(ship != null) {
-                res.add(ship);
+        attackerList = attacker.getSpaceships();
+        defenderList = defender.getSpaceships();
+
+        while (true) {
+            final var attackerShip = randomShip(attackerList);
+            final var defenderShip = randomShip(defenderList);
+            if (attackerShip.attack(defenderShip)) {
+                defenderList.remove(defenderShip);
+                if(defenderList.isEmpty()) {
+                    return winner();
+                }
             }
+            swap();
         }
-        return res;
     }
 
     private static Spaceship randomShip(List<Spaceship> list) {
-        if(list.isEmpty()) {
-            return null;
-        }
         return list.get(rnd.nextInt(list.size()));
+    }
+
+    private static void swap() {
+        ++swapCounter;
+        final var temporaryList = attackerList;
+        attackerList = defenderList;
+        defenderList = temporaryList;
+    }
+
+    private static boolean winner() {
+        return swapCounter % 2 == 0;
+    }
+
+    public static void main(String[] args) {
+        Player p = new Player(2, "John");
+        Fleet f1 = new Fleet(0,1, p);
+        f1.addShip(new Spaceship(SpaceshipEnum.MOTHER_SHIP));
+        Fleet f2 = new Fleet(2,3, p);
+        f2.addShip(new Spaceship(SpaceshipEnum.COLONY));
+        System.out.println(Battle.fight(f1,f2));
     }
 }

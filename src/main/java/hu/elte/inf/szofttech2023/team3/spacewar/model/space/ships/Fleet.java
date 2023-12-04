@@ -23,13 +23,6 @@ public final class Fleet extends SpaceObject {
     }
 
     public boolean addShip(Spaceship ship) {
-        /*
-        if(getShip(ship.spaceship) != null) {
-            return false;
-        }
-         */
-        if ( ship == null ) return false;
-        //spaceships[ship.spaceship.ordinal()] = ship;
         spaceships.add( ship );
         totalConsumption += ship.spaceship.consumption;
         if(minSpeed > ship.spaceship.speed) {
@@ -46,23 +39,14 @@ public final class Fleet extends SpaceObject {
         return retVal;
     }
 
-    /*
     public boolean canAttack() {
-        return getShip(SpaceshipEnum.MOTHER_SHIP) != null;
+        for(final var ship : spaceships) {
+            if(ship.spaceship == SpaceshipEnum.MOTHER_SHIP) {
+                return true;
+            }
+        }
+        return false;
     }
-
-    //public boolean canColonize() {
-        return getShip(SpaceshipEnum.COLONY) != null;
-    }
-
-    //public boolean canCarryResources() {
-        return getShip(SpaceshipEnum.SUPPLIER) != null;
-    }
-
-    public Spaceship getShip(SpaceshipEnum ship) {
-        return spaceships[ship.ordinal()];
-    }
-     */
 
     public int getMinSpeed() {
         return minSpeed;
@@ -72,29 +56,21 @@ public final class Fleet extends SpaceObject {
         return totalConsumption;
     }
 
-    /*
-    public Spaceship[] getSpaceships() {
-        return spaceships.clone();
-    }
-     */
     public ArrayList<Spaceship> getSpaceships(){ return (ArrayList<Spaceship>) spaceships.clone(); }
-    /*
-    public int getTotalShipNumber() { return spaceships.length; }
-     */
+
     public int getTotalShipNumber() { return spaceships.size(); }
     public int getTransportedResources(){ return transportedResources; }
 
-    public void modifyTransportedResources( int ammountOfChange )
+    public void modifyTransportedResources( int amountOfChange )
     {
-        this.transportedResources += ammountOfChange;
+        this.transportedResources += amountOfChange;
     }
 
     public int getMaxTransportedResources()
     {
         int capacity = 0;
-        for ( int iship = 0 ; iship < spaceships.size(); ++iship )
-        {
-            capacity += spaceships.get(iship).spaceship.transportCapacity;
+        for (Spaceship spaceship : spaceships) {
+            capacity += spaceship.spaceship.transportCapacity;
         }
         return capacity;
     }
@@ -102,9 +78,8 @@ public final class Fleet extends SpaceObject {
     public int getNumberOf( SpaceshipEnum ship )
     {
         int numberOfShip = 0;
-        for( int iship = 0 ; iship < spaceships.size() ; ++iship )
-        {
-            if( spaceships.get(iship).spaceship == ship ) ++numberOfShip;
+        for (Spaceship spaceship : spaceships) {
+            if (spaceship.spaceship == ship) ++numberOfShip;
         }
         return numberOfShip;
     }
@@ -117,27 +92,24 @@ public final class Fleet extends SpaceObject {
     public int getTotalHP()
     {
         int totalHP = 0;
-        for( int iship = 0 ; iship < spaceships.size() ; ++iship )
-        {
-            totalHP += spaceships.get( iship ).spaceship.getHealthPoint();
+        for (Spaceship spaceship : spaceships) {
+            totalHP += spaceship.getHealthPoint();
         }
         return totalHP;
     }
     public int getTotalOffense()
     {
         int totalOffense = 0;
-        for( int iship = 0 ; iship < spaceships.size() ; ++iship )
-        {
-            totalOffense += spaceships.get( iship ).spaceship.offensiveForce;
+        for (Spaceship spaceship : spaceships) {
+            totalOffense += spaceship.spaceship.offensiveForce;
         }
         return totalOffense;
     }
     public int getTotalDefense()
     {
         int totalDefense = 0;
-        for( int iship = 0 ; iship < spaceships.size() ; ++iship )
-        {
-            totalDefense += spaceships.get( iship ).spaceship.protectiveForce;
+        for (Spaceship spaceship : spaceships) {
+            totalDefense += spaceship.spaceship.protectiveForce;
         }
         return totalDefense;
     }

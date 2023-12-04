@@ -11,7 +11,7 @@ public enum SpaceshipEnum {
     public final int offensiveForce;
     public final int protectiveForce;
     public final int speed;
-    private int healthPoint;
+    public final int maxHealthPoint;
     public final int metalCost;
     public final int consumption;
     public final int minLevelToBuild;
@@ -25,7 +25,7 @@ public enum SpaceshipEnum {
         this.offensiveForce = offensiveForce;
         this.protectiveForce = protectiveForce;
         this.speed = speed;
-        this.healthPoint = healthPoint;
+        this.maxHealthPoint = healthPoint;
         this.metalCost = metalCost;
         this.consumption = consumption;
         this.minLevelToBuild = minLevelToBuild;
@@ -33,14 +33,7 @@ public enum SpaceshipEnum {
         this.turnsToComplete = turnsToComplete;
     }
 
-    public void decreaseHealthPoint(int point) {
-        healthPoint -= point;
-    }
-
-    public int getHealthPoint() {
-        return healthPoint;
-    }
-
+    public int getHealthPoint() { return maxHealthPoint; }
     public int getOffensiveForce(){ return offensiveForce; }
     public int getProtectiveForce(){ return  protectiveForce; }
     public int getSpeed(){ return speed; }
@@ -49,4 +42,5 @@ public enum SpaceshipEnum {
     public int getTransportCapacity() { return transportCapacity; }
     public int getTurnsToComplete(){ return turnsToComplete; }
     public int getMetalCost(){ return metalCost; }
+    
 }
