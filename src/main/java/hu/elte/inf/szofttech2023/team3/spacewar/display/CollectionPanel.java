@@ -14,7 +14,7 @@ public class CollectionPanel extends JPanel {
 
         JLabel setCollectionPanelLabel()
         {
-            JLabel label = new JLabel("Collection Panel");
+            JLabel label = new JLabel();
             label.setHorizontalAlignment(SwingConstants.CENTER);
             label.setBorder(new EmptyBorder(SwingDisplayEngine.BORDER_TOP, SwingDisplayEngine.BORDER_LEFT, SwingDisplayEngine.BORDER_BOTTOM, SwingDisplayEngine.BORDER_RIGHT));
             label.setFont(new Font(Font.MONOSPACED, Font.BOLD, SwingDisplayEngine.FONT_SIZE ));

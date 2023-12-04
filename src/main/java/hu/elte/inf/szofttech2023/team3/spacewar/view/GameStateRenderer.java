@@ -112,12 +112,14 @@ public class GameStateRenderer {
                                 createActionEvent(actionEventListener, SpecialAction.BUILD_SHIP, gameState)
                         )
                 );
+                /*
                 actionContent.add(
                         Map.entry(
                                 "Transfer Resources",
                                 createActionEvent(actionEventListener, SpecialAction.TRANSFER, gameState)
                         )
                 );
+                 */
             }
         }
         else if (object instanceof Fleet fleet)
@@ -148,6 +150,7 @@ public class GameStateRenderer {
                           collectionContent.add(Map.entry( ship.name(), listElementAttributes ) );
                         }
                     }
+                    /*
                     actionsTitle = "Fleet Operations";
                     actionContent.add(
                             Map.entry(
@@ -161,6 +164,7 @@ public class GameStateRenderer {
                                     createActionEvent(actionEventListener, SpecialAction.CREATE_FLEET, gameState)
                             )
                     );
+                     */
             }
         }
         else if (object instanceof Asteroid)
@@ -176,25 +180,104 @@ public class GameStateRenderer {
         displayEngine.applyObjectActionPalette( actionsTitle , actionContent  );
     }
 
-    public void applyBuildSelectAction(GameState gameState, ActionEventListener listener) {
+    public void applyBuildBuildingSelectAction(GameState gameState , ActionEventListener listener )
+    {
         System.out.println("Rendering buildings....");
         Planet selectedPlanet = (Planet) gameState.getSelectedObject();
-        Map<BuildingEnum, Building> buildingMap = selectedPlanet.getBuildingMap();
-
-        for (BuildingEnum buildingType : BuildingEnum.values()) {
-            // Ellenőrizzük, hogy az adott épület már létezik-e és aktív-e
-            if (!buildingMap.containsKey(buildingType) || !buildingMap.get(buildingType).getFunctionality()) {
-                String buildingName = buildingType.name();
-                System.out.println("Build " + buildingName);
-                JButton buildButton = new JButton("Build " + buildingName);
-                buildButton.addActionListener(e -> {
-                    listener.actionPerformed(new ActionEvent(buildingType), gameState);
-                });
-                // displayEngine.add(buildButton);
-            } else {
-                displayEngine.setInfoLabel(buildingType.name() + " is already built or under construction.");
-            }
+        Map<BuildingEnum, Building>  buildingMap = selectedPlanet.getBuildingMap();
+        String collectionTitle = "Buildings to develop";
+        ArrayList<String> collectionHeader = new ArrayList<>();
+        collectionHeader.add("Building type");
+        collectionHeader.add("Level");
+        collectionHeader.add("Cost");
+        collectionHeader.add("Build time");
+        Object[][] collectionContent = new Object[ BuildingEnum.values().length + 1 ][ collectionHeader.size() ];
+        for( int icol = 0; icol < collectionHeader.size() ; ++icol )
+        {
+            collectionContent[ 0 ][ icol ] = collectionHeader.get( icol );
         }
+        int row = 1;
+        for( BuildingEnum building : BuildingEnum.values() )
+        {
+            int icol = 0;
+            collectionContent[ row ][ icol++ ] = building.name();
+            collectionContent[ row ][ icol++ ] = 1;
+            collectionContent[ row ][ icol++ ] = 1;
+            collectionContent[ row ][ icol   ] = 1;
+            for ( Map.Entry<BuildingEnum, Building> entry : buildingMap.entrySet() ) {
+                if (!entry.getValue().getFunctionality()) {
+                    displayEngine.setInfoLabel(entry.getValue().getClass().getSimpleName() + " is under construction!");
+                    return;
+                }
+                if( entry.getKey() == building )
+                {
+                    icol = 0;
+                    collectionContent[ row ][ icol++ ] = entry.getKey().name();
+                    collectionContent[ row ][ icol++ ] = entry.getValue().getLevel() + 1;
+                    collectionContent[ row ][ icol++ ] = entry.getValue().getSize() + 1;
+                    collectionContent[ row ][ icol   ] = entry.getValue().getDurationOfUpgrade() + 1;
+                }
+            }
+            row++;
+        }
+        String actionsTitle = "Development Operations";
+        List<Map.Entry<String, Runnable >> actionContent = new ArrayList<>();
+        actionContent.add(
+                Map.entry(
+                        "Start building",
+                        createActionEvent( listener, SpecialAction.START_BUILDING_CONSTRUCTION, gameState)
+                )
+        );
+        actionContent.add(
+                Map.entry(
+                        "Back",
+                        createActionEvent( listener, SpecialAction.BACK, gameState)
+                )
+        );
+        displayEngine.applyItemSelector(true , collectionTitle, collectionHeader.toArray() , collectionContent );
+        displayEngine.setInfoLabel("Choose a building for development!");
+        displayEngine.applyObjectActionPalette( actionsTitle , actionContent  );
+    }
+    
+    public void applyBuildShipSelectAction(GameState gameState , ActionEventListener listener )
+    {
+        System.out.println("Rendering ships....");
+        String collectionTitle = "Spaceships to build";
+        ArrayList<String> collectionHeader = new ArrayList<>();
+        collectionHeader.add("Ship type");
+        collectionHeader.add("Cost");
+        collectionHeader.add("Build time");
+        Object[][] collectionContent = new Object[ SpaceshipEnum.values().length + 1 ][ collectionHeader.size() ];
+        for( int icol = 0; icol < collectionHeader.size() ; ++icol )
+        {
+            collectionContent[ 0 ][ icol ] = collectionHeader.get( icol );
+        }
+        int row = 1;
+        for( SpaceshipEnum ship : SpaceshipEnum.values() )
+        {
+            int icol = 0;
+            collectionContent[ row ][ icol++ ] = ship.name();
+            collectionContent[ row ][ icol++ ] = ship.getMetalCost();
+            collectionContent[ row ][ icol   ] = ship.getTurnsToComplete();
+            row++;
+        }
+        String actionsTitle = "Development Operations";
+        List<Map.Entry<String, Runnable >> actionContent = new ArrayList<>();
+        actionContent.add(
+                Map.entry(
+                        "Start building",
+                        createActionEvent( listener, SpecialAction.START_SHIP_CONSTRUCTION, gameState)
+                )
+        );
+        actionContent.add(
+                Map.entry(
+                        "Back",
+                        createActionEvent( listener, SpecialAction.BACK, gameState)
+                )
+        );
+        displayEngine.applyItemSelector(true , collectionTitle, collectionHeader.toArray() , collectionContent );
+        displayEngine.setInfoLabel("Choose a spaceship to build");
+        displayEngine.applyObjectActionPalette( actionsTitle , actionContent  );
     }
 
 
@@ -235,4 +318,9 @@ public class GameStateRenderer {
         return new BoardItem(imageName, selected);
     }
 
+    public int getSelectedRow()
+    {
+        System.out.println(" Selected row: " + displayEngine.getSelectedRow() );
+        return displayEngine.getSelectedRow();
+    }
 }

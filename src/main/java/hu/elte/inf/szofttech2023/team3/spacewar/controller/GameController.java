@@ -2,6 +2,8 @@ package hu.elte.inf.szofttech2023.team3.spacewar.controller;
 
 import hu.elte.inf.szofttech2023.team3.spacewar.display.SpecialAction;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.GameState;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.building.Building;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.building.BuildingEnum;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.TurnManager;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.GenerateSpace;
@@ -192,7 +194,7 @@ public class GameController {
             renderer.displayInfo("There is nothing there.");
             int row = position.getRow();
             int column = position.getColumn();
-            System.out.println("Ures urre kattintottak, de nem volt elotte flotta vagy urhajó kattintva: Sor=" + row + ", Oszlop=" + column);
+            System.out.println("Ures urre kattintottak: Sor=" + row + ", Oszlop=" + column);
         }
 
         renderer.apply(gameState, this::handleBoardEvent);
@@ -368,8 +370,47 @@ public class GameController {
         if ( actionEvent.getType() == SpecialAction.BUILD_BUILDING )
         {
             System.out.println("Build building action");
-            renderer.applyBuildSelectAction( gameState, this::handleActionEvent );
-
+            renderer.applyBuildBuildingSelectAction( gameState, this::handleActionEvent );
+        }
+        else if ( actionEvent.getType() == SpecialAction.BUILD_SHIP )
+        {
+            System.out.println("Build ship action");
+            renderer.applyBuildShipSelectAction( gameState , this::handleActionEvent );
+        }
+        else if ( actionEvent.getType() == SpecialAction.START_SHIP_CONSTRUCTION )
+        {
+            int shipID = renderer.getSelectedRow();
+            // TODO: handle spaceship building logic
+            SpaceshipEnum requestedShip = null;
+            for( SpaceshipEnum ship : SpaceshipEnum.values() )
+            {
+                if( shipID == ship.ordinal() + 1 )
+                {
+                    requestedShip = ship;
+                }
+            }
+            renderer.displayInfo( "Development of " + requestedShip + " is requested." );
+            renderer.apply( gameState.getSelectedObject(), true, gameState, this::handleActionEvent);
+        }
+        else if ( actionEvent.getType() == SpecialAction.BACK )
+        {
+            System.out.println("Back action");
+            renderer.apply( gameState.getSelectedObject(), true, gameState, this::handleActionEvent);
+        }
+        else if ( actionEvent.getType() == SpecialAction.START_BUILDING_CONSTRUCTION )
+        {
+            int buildingID = renderer.getSelectedRow();
+            // TODO: handle building logic
+            BuildingEnum requestedBuilding = null;
+            for(BuildingEnum building : BuildingEnum.values() )
+            {
+                if( buildingID == building.ordinal() + 1 )
+                {
+                    requestedBuilding = building;
+                }
+            }
+            renderer.displayInfo( "Development of " + requestedBuilding + " is requested." );
+            renderer.apply( gameState.getSelectedObject(), true, gameState, this::handleActionEvent);
         }
     }
     private void executeTravel(Fleet fleet, Path path) {
