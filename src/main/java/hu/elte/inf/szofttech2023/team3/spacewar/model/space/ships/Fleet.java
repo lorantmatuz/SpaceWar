@@ -2,6 +2,7 @@ package hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships;
 
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
+import hu.elte.inf.szofttech2023.team3.spacewar.view.FieldPosition;
 
 import java.util.ArrayList;
 
@@ -15,7 +16,11 @@ public final class Fleet extends SpaceObject {
     private int transportedResources = 0;
 
     public Fleet(int x, int y, Player owner) {
-        super(x, y);
+        this(FieldPosition.of(y, x), owner);
+    }
+    
+    public Fleet(FieldPosition position, Player owner) {
+        super(position);
         this.owner = owner;
         ++idCounter;
         this.id = idCounter;

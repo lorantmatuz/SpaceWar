@@ -1,14 +1,14 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.controller;
 
+import hu.elte.inf.szofttech2023.team3.spacewar.controller.generator.SpaceGenerator;
+import hu.elte.inf.szofttech2023.team3.spacewar.display.DisplayEngine;
 import hu.elte.inf.szofttech2023.team3.spacewar.display.SpecialAction;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.GameState;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.building.Building;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.building.BuildingEnum;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.TurnManager;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.GenerateSpace;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Path;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ShortestPath;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Space;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
@@ -22,42 +22,41 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameController {
-
-    private final  GameState gameState;
     
     private final GameStateRenderer renderer;
+    
+    private final SpaceGenerator spaceGenerator;
+    
+    private final List<Player> players;
 
-    private final TurnManager turnManager;
+    private GameState gameState = null;
 
 
-    public GameController(GameState gameState, GameStateRenderer renderer) {
-        this.gameState = gameState;
-        this.renderer = renderer;
-        turnManager = gameState.getTurnManager();
+    public GameController(DisplayEngine display, SpaceGenerator spaceGenerator, List<Player> players) {
+        this.renderer = new GameStateRenderer(display);
+        this.spaceGenerator = spaceGenerator;
+        this.players = new ArrayList<>(players);
         initializeGame();
     }
+    
     private void initializeGame() {
-        // Térkép generálása
-        Space space = gameState.getSpace();
-        GenerateSpace generator = new GenerateSpace(space, gameState.getPlayers());
-        generator.run(4, 10, 5, 5);
-        //updateTurnDisplay(turnManager.getCurrentPlayer());
+        Space space = spaceGenerator.generate();
+        gameState = new GameState(space, players);
+        TurnManager turnManager = gameState.getTurnManager();
         createPlayersAndFleets(space);
         renderer.apply(gameState, this::handleBoardEvent);
         System.out.println("Elso kor " + turnManager.getCurrentPlayer().getName()+ " "+ turnManager.getTurnCounter() );
         renderer.displayNextTurn( gameState );
     }
-    private void startTurn() {
-        Player currentPlayer = turnManager.getCurrentPlayer();
-    }
-
+    
     public void endTurn() {
         nextTurn();
+        TurnManager turnManager = gameState.getTurnManager();
         System.out.println("End Turn: " + turnManager.getCurrentPlayer().getName()+ " "+ turnManager.getTurnCounter() );
     }
 
     private void nextTurn() {
-        Player currentPlayer = turnManager.nextPlayer();
+        Player currentPlayer = gameState.getTurnManager().nextPlayer();
         updatePlanetsResourcesForCurrentPlayer(currentPlayer, gameState.getSpace());
         renderer.displayNextTurn( gameState );
     }
@@ -209,6 +208,12 @@ public class GameController {
         state = gameState;
         TurnManager turnManager = state.getTurnManager();
         FieldPosition selectedPosition = turnManager.getSelectedPosition();
+        
+        if (selectedPosition == null) {
+            System.out.println("Nincs kijeloles.");
+            return;
+        }
+        
         SpaceObject target = state.getSpace().getObjectAt(position);
         Player currentPlayer = turnManager.getCurrentPlayer();
 

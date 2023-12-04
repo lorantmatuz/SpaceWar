@@ -39,4 +39,5 @@ public class BuildingTest {
         levelTest(mine,2);
         levelTest(factory,2);
     }
+    
 }
