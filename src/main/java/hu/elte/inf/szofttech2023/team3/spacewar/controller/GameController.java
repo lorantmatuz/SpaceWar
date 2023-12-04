@@ -2,13 +2,12 @@ package hu.elte.inf.szofttech2023.team3.spacewar.controller;
 
 import hu.elte.inf.szofttech2023.team3.spacewar.display.SpecialAction;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.GameState;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.building.Building;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.building.BuildingEnum;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Battle;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.TurnManager;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.GenerateSpace;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Path;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ShortestPath;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Space;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
@@ -177,15 +176,14 @@ public class GameController {
             }
         } else if (target instanceof Planet) {
             Planet planet = (Planet) target;
-            System.out.println("Most ennek a kore megy " + turnManager.getCurrentPlayer().getName());
-            if (planet.getOwner().equals(currentPlayer)) {
-                renderer.displayInfo("Choose planet operations.");
-                showObjectInfo = true;
-                System.out.println("Planet state:");
-                System.out.println("Energy: " + planet.getEnergy());
-                System.out.println("Material: " + planet.getMaterial());
-                System.out.println("Owner: " + planet.getOwner().getName());
-            } else {
+            if (target instanceof Planet) {
+                if (planet.getOwner().equals(currentPlayer)) {
+                    renderer.displayInfo("Choose planet operations.");
+                    showObjectInfo = true;
+                    renderer.apply(state, this::handleBoardEvent);
+                    renderer.apply(planet, showObjectInfo, state, this::handleActionEvent);
+                }
+                } else {
                 renderer.displayInfo("Hostile planet.");
                 System.out.println("Hostile planet");
                 // TODO : check if the enemy planet is in observation distance
@@ -270,20 +268,16 @@ public class GameController {
                     renderer.displayInfo("The merging of fleets has been succsessfull.");
                     System.out.println("Flottak sikeresen osszevonva.");
                 } else if (selectedFleet.getOwner().equals(currentPlayer) && !targetFleet.getOwner().equals(currentPlayer) && isAdjacentToFleet(selectedFleet, targetFleet)) {
-                    // Harc
-                    /*
-                    if (Battle.fight(selectedFleet, targetFleet)){
+                    boolean battleResult = Battle.fight(selectedFleet, targetFleet);
+
+                    if (battleResult) {
                         gameState.getSpace().removeFleet(targetFleet);
-                        renderer.apply(gameState, this::handleBoardEvent);
-                        System.out.println("Megnyerted a csatat!!");
-                    }else{
+                        renderer.displayInfo("Victory!");
+                    } else {
                         gameState.getSpace().removeFleet(selectedFleet);
-                        renderer.apply(gameState, this::handleBoardEvent);
-                        System.out.println("Elvesztetted a csatat!!");
-                    }*/
-                    //fight(selectedFleet, targetFleet);
-                    renderer.displayInfo("Engaging battle against enemy fleet!");
-                    System.out.println("Harc indítva az ellenséges flotta ellen.");
+                        renderer.displayInfo("Defeat!");
+                    }
+                    renderer.apply(gameState, this::handleBoardEvent);
                 }else {
                     renderer.displayInfo("The selected fleets cannot be merged!");
                     System.out.println("A kivalasztott flottak nem osszevonhatoak.");
@@ -399,21 +393,40 @@ public class GameController {
             System.out.println("Back action");
             renderer.apply( gameState.getSelectedObject(), true, gameState, this::handleActionEvent);
         }
-        else if ( actionEvent.getType() == SpecialAction.START_BUILDING_CONSTRUCTION )
-        {
+        else if (actionEvent.getType() == SpecialAction.START_BUILDING_CONSTRUCTION) {
             int buildingID = renderer.getSelectedRow();
-            // TODO: handle building logic
-            BuildingEnum requestedBuilding = null;
-            for(BuildingEnum building : BuildingEnum.values() )
-            {
-                if( buildingID == building.ordinal() + 1 )
-                {
-                    requestedBuilding = building;
-                }
+            BuildingEnum requestedBuilding = BuildingEnum.values()[buildingID - 1]; // Az ID alapján meghatározzuk az épület típusát
+
+            SpaceObject selectedObject = gameState.getSelectedObject();
+            if (selectedObject instanceof Planet) {
+                Planet planet = (Planet) selectedObject;
+                planet.build(requestedBuilding); // Elindítjuk az építési folyamatot a bolygón
+                renderer.displayInfo("Construction of " + requestedBuilding + " started on planet " + planet.getName());
             }
-            renderer.displayInfo( "Development of " + requestedBuilding + " is requested." );
-            renderer.apply( gameState.getSelectedObject(), true, gameState, this::handleActionEvent);
+            renderer.apply(gameState.getSelectedObject(), true, gameState, this::handleActionEvent);
         }
+    }
+    private void handleBuildBuildingAction(GameState state) {
+        SpaceObject selectedObject = state.getSelectedObject();
+        if (selectedObject instanceof Planet) {
+            Planet selectedPlanet = (Planet) selectedObject;
+            renderer.applyBuildBuildingSelectAction(state, this::handleBuildingEvent);
+        } else {
+            renderer.displayInfo("No planet selected for building.");
+        }
+    }
+    private void handleBuildingEvent(ActionEvent actionEvent, GameState state) {
+        BuildingEnum buildingType = (BuildingEnum) actionEvent.getType();
+        Planet selectedPlanet = (Planet) state.getSelectedObject();
+
+        try {
+            selectedPlanet.build(buildingType); // Építési folyamat indítása
+            renderer.displayInfo(buildingType.name() + " building has started construction.");
+        } catch (Exception e) {
+            renderer.displayInfo("Error: Unable to start building construction.");
+        }
+
+        renderer.apply(state, this::handleBoardEvent); // Frissíti a játék állapotát
     }
     private void executeTravel(Fleet fleet, Path path) {
         while (path.hasNext()) {
