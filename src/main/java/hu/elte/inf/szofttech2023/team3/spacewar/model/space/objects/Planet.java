@@ -4,6 +4,7 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.building.*;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.construction.UpgradeBuilding;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.SpaceshipEnum;
+import hu.elte.inf.szofttech2023.team3.spacewar.view.FieldPosition;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +24,11 @@ public class Planet extends SpaceObject {
     private int material = 0;
     private final Map<BuildingEnum, Building> buildingMap = new HashMap<>();
 
+    public Planet(FieldPosition position, Player owner) {
+        super(position);
+        this.owner = owner;
+    }
+    
     public Planet(int x, int y, Player owner) {
         super(x,y);
         this.owner = owner;
