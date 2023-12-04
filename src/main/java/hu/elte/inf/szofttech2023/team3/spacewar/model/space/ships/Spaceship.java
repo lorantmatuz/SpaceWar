@@ -28,6 +28,9 @@ public class Spaceship {
         if(point < 0) {
             System.exit(2);
         }
+        if(healthPoint < 0) {
+            healthPoint = 0;
+        }
         return isDestroyed();
     }
 
@@ -35,7 +38,7 @@ public class Spaceship {
      * @return true if the Spaceship is destroyed
      */
     public boolean isDestroyed() {
-        return healthPoint < 0;
+        return healthPoint <= 0;
     }
 
     public int getHealthPoint() {
