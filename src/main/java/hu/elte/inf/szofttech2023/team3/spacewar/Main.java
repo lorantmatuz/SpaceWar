@@ -37,8 +37,8 @@ public class Main {
     }
     
     private static SpaceGenerator createSpaceGenerator(List<Player> players) {
-        //return new RandomSpaceGenerator(BOARD_COLUMNS, BOARD_ROWS, Random::new, players, new ObjectStatSpecs(4, 10, 5, 5));
-        return new MinimalCaseSpaceGenerator(players);
+        return new RandomSpaceGenerator(BOARD_COLUMNS, BOARD_ROWS, Random::new, players, new ObjectStatSpecs(4, 10, 5, 5));
+        //return new MinimalCaseSpaceGenerator(players);
     }
 
 }
