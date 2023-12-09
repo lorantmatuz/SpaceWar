@@ -52,6 +52,28 @@ public class Space {
             System.out.println();
         }
     }
+    public Point findStartPositionForFleet(Space space, Point nearPoint) {
+        if (!space.isSpaceObject[nearPoint.x][nearPoint.y]) {
+            return nearPoint;
+        }
+        int radius = 1;
+        while (radius < Math.max(space.width, space.height)) {
+            for (int dx = -radius; dx <= radius; dx++) {
+                for (int dy = -radius; dy <= radius; dy++) {
+                    int x = nearPoint.x + dx;
+                    int y = nearPoint.y + dy;
+                    if (x >= 0 && x < space.width && y >= 0 && y < space.height) {
+                        if (!space.isSpaceObject[x][y]) {
+                            return new Point(x, y);
+                        }
+                    }
+                }
+            }
+            radius++;
+        }
+
+        return null;
+    }
     public void removeFleet(Fleet fleet) {
         if (fleet == null) return;
 
