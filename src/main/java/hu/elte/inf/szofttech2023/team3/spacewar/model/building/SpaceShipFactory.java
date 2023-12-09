@@ -19,11 +19,12 @@ public class SpaceShipFactory extends Building {
         ++level;
     }
 
-    public void produce(SpaceshipEnum ship) {
+    public boolean produce(SpaceshipEnum ship) {
         if(ship.minLevelToBuild < level) {
-            return;
+            return false;
         }
         final var player = planet.getOwner();
         player.addConstruction(new ConstructSpaceship(planet,ship));
+        return true;
     }
 }
