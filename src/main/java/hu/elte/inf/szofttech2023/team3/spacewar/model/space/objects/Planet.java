@@ -123,7 +123,7 @@ public class Planet extends SpaceObject {
     public void setEnergy( int energy ){ this.energy = energy; }
     public void setMaterial( int material ){ this.material = material; }
     public void setTemperature( int temperature ){ this.temperature = temperature; }
-    public void setMaxSize( int maSize ){  this.maxSize = maxSize; }
+    public void setMaxSize( int maxSize ){  this.maxSize = maxSize; }
     public void setName( String name ){ this.name = name; }
 
     public Map<BuildingEnum, Building> getBuildingMap() {
