@@ -72,11 +72,10 @@ public class RandomSpaceGenerator implements SpaceGenerator {
                 SpaceObject obj = factory.create(position);
                 space.setSpaceObject(obj);
                 if(obj instanceof Planet planet) {
-                    planet.setEnergy(random.nextInt());
-                    planet.setMaterial(random.nextInt());
-                    planet.setEnergy(random.nextInt());
-                    planet.setMaxSize(random.nextInt());
-                    planet.setTemperature(random.nextInt());
+                    planet.setEnergy(100);
+                    planet.setMaterial(100);
+                    planet.setMaxSize(random.nextInt(10, 1000));
+                    planet.setTemperature(random.nextInt(10, 1000));
                     planet.setName(obj.getClass().getSimpleName() + "-" + (j + 1));
                     planet.build(BuildingEnum.MINE);
                     planet.build(BuildingEnum.SOLAR_POWER_PLANT);

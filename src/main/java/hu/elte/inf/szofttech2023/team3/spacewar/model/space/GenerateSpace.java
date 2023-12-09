@@ -65,11 +65,10 @@ public class GenerateSpace {
                 //
                 if(obj instanceof Planet planet)
                 {
-                    planet.setEnergy(rnd.nextInt());
-                    planet.setMaterial(rnd.nextInt());
-                    planet.setEnergy(rnd.nextInt());
-                    planet.setMaxSize(rnd.nextInt());
-                    planet.setTemperature(rnd.nextInt());
+                    planet.setEnergy(100);
+                    planet.setMaterial(100);
+                    planet.setMaxSize(rnd.nextInt(10, 1000));
+                    planet.setTemperature(rnd.nextInt(10, 1000));
                     planet.setName("Planet-X" );
                     planet.build(BuildingEnum.MINE);
                     planet.build(BuildingEnum.SOLAR_POWER_PLANT);
