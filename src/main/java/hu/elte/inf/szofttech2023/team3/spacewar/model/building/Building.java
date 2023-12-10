@@ -7,14 +7,16 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
  *
  */
 public abstract class Building {
+    protected  BuildingEnum type;
     protected Planet planet;
     protected int level = 1;
     protected int size = 1;
     protected  boolean isFunctional = true;
     protected int roundWhenFunctioning;
 
-    public Building(Planet planet, int level, int size, int roundWhenFunctioning )
+    public Building(BuildingEnum type, Planet planet, int level, int size, int roundWhenFunctioning )
     {
+        this.type = type;
         this.planet = planet;
         this.level = level;
         this.size  = size;
@@ -48,5 +50,7 @@ public abstract class Building {
     }
 
     public Boolean getFunctionality(){ return isFunctional; }
+
+    public String getBuildingType(){ return this.type.toString(); }
 
 }

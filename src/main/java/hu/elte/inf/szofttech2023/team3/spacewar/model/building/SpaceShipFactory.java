@@ -12,7 +12,7 @@ public class SpaceShipFactory extends Building {
 
     public SpaceShipFactory(Planet planet, int level, int size, int roundWhenFunctioning )
     {
-        super( planet , level, size, roundWhenFunctioning );
+        super( BuildingEnum.SPACE_SHIP_FACTORY, planet , level, size, roundWhenFunctioning );
     }
     @Override
     public void upgrade() {

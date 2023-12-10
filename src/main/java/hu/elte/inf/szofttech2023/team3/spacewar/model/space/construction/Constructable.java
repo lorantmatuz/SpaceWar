@@ -12,4 +12,6 @@ public abstract class Constructable {
         }
         return false;
     }
+
+    public int getTimeLeftOfConstruction(){ return this.timeLeftOfConstruction; }
 }

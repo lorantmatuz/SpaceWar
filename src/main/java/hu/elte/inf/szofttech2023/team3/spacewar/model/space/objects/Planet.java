@@ -69,7 +69,8 @@ public class Planet extends SpaceObject {
             addConstructionProject(construction);
         } else {
             constructionTime = building.getLevel()+1; // Frissítés esetén
-            Constructable construction = new UpgradeBuilding(building, constructionTime);
+            //Constructable construction = new UpgradeBuilding(building, constructionTime);
+            Constructable construction = new UpgradeBuilding(buildingEnum, building, constructionTime);
             addConstructionProject(construction);
         }
 
@@ -178,4 +179,6 @@ public class Planet extends SpaceObject {
     public void setOwner(Player name) {
        this.owner = name;
     }
+
+    public List<Constructable> getConstructionProjects(){ return this.constructionProjects; }
 }

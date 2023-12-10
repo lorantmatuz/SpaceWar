@@ -12,6 +12,10 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.game.TurnManager;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.GenerateSpace;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Path;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Space;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.construction.ConstructBuilding;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.construction.ConstructSpaceship;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.construction.Constructable;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.construction.UpgradeBuilding;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Fleet;
@@ -59,6 +63,7 @@ public class GameController {
     
     public void endTurn() {
         nextTurn();
+        renderer.displayNothing("New Round!");
         TurnManager turnManager = gameState.getTurnManager();
         System.out.println("End Turn: " + turnManager.getCurrentPlayer().getName()+ " "+ turnManager.getTurnCounter() );
     }
@@ -173,8 +178,7 @@ public class GameController {
                 System.out.println("Hostile fleet");
                 // TODO : check if the enemy fleet is in observation distance
             }
-        } else if (target instanceof Planet) {
-            Planet planet = (Planet) target;
+        } else if (target instanceof Planet planet) {
             if (target instanceof Planet) {
                 if (planet.getOwner().equals(currentPlayer)) {
                     renderer.displayInfo("Choose planet operations.");
@@ -196,7 +200,7 @@ public class GameController {
                 // TODO : check if the enemy planet is in observation distance
             }
         } else if (target == null) {
-            renderer.displayInfo("There is nothing there.");
+            renderer.displayNothing("There is nothing there.");
             int row = position.getRow();
             int column = position.getColumn();
             System.out.println("Ures urre kattintottak: Sor=" + row + ", Oszlop=" + column);
@@ -274,8 +278,7 @@ public class GameController {
         if (target instanceof Fleet) {
             Fleet targetFleet = (Fleet) target;
             SpaceObject selectedObject = gameState.getSelectedObject();
-            if (selectedObject instanceof Fleet) {
-                Fleet selectedFleet = (Fleet) selectedObject;
+            if (selectedObject instanceof Fleet selectedFleet ) {
                 if (selectedFleet.getOwner().equals(currentPlayer) && targetFleet.getOwner().equals(currentPlayer) && isAdjacentToFleet(selectedFleet, targetFleet)) {
                     if(selectedFleet == targetFleet) {
                         renderer.displayInfo("The selected fleets are the same. Cannot be merged");
@@ -300,13 +303,12 @@ public class GameController {
                     System.out.println("A kivalasztott flottak nem osszevonhatoak.");
                 }
             }
-        }else if (target instanceof Planet) {
-            Planet targetPlanet = (Planet) target;
+        }else if (target instanceof Planet targetPlanet ) {
             SpaceObject selectedObject = gameState.getSelectedObject();
-            if (selectedObject instanceof Fleet) {
-                Fleet selectedFleet = (Fleet) selectedObject;
+            if (selectedObject instanceof Fleet selectedFleet) {
                 if (isAdjacentToPlanet(selectedFleet, targetPlanet)) {
                     if (targetPlanet.getOwner() == null || !targetPlanet.getOwner().equals(currentPlayer)) {
+                        // TODO check colinizer ship
                         targetPlanet.setOwner(currentPlayer);
                         System.out.println("A bolygo elfoglalasa megtortent.");
                         renderer.displayInfo("The enemy planet has been conquered!");
@@ -394,6 +396,7 @@ public class GameController {
             SpaceshipEnum requestedShip = SpaceshipEnum.values()[shipID - 1];
             Planet planet = (Planet) gameState.getSelectedObject();
             planet.buildSpaceship(requestedShip);
+            renderer.apply( gameState.getSelectedObject(), true, gameState, this::handleActionEvent);
             renderer.displayInfo("Construction of " + requestedShip + " started on planet " + planet.getName());
         }
         else if ( actionEvent.getType() == SpecialAction.BACK )
@@ -406,8 +409,8 @@ public class GameController {
             BuildingEnum requestedBuilding = BuildingEnum.values()[buildingID - 1];
 
             SpaceObject selectedObject = gameState.getSelectedObject();
-            if (selectedObject instanceof Planet) {
-                Planet planet = (Planet) selectedObject;
+            if (selectedObject instanceof Planet planet) {
+                System.out.println("requestbuilding");
                 planet.build(requestedBuilding);
                 renderer.displayInfo("Construction of " + requestedBuilding + " started on planet " + planet.getName());
 
