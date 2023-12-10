@@ -238,8 +238,7 @@ public class GameController {
             Point fleetPoint = new Point(selectedPosition.getColumn(), selectedPosition.getRow());
             SpaceObject potentialFleet = gameState.getSpace().getObjectAt(selectedPosition);
 
-            if (potentialFleet instanceof Fleet) {
-                Fleet selectedFleet = (Fleet) potentialFleet;
+            if (potentialFleet instanceof Fleet selectedFleet ) {
                 if (selectedFleet.getOwner().equals(currentPlayer)) {
                     //final var shortestPath = new ShortestPath(gameState.getSpace());
                     final var shortestPath = gameState.getShortestPath();
@@ -275,8 +274,7 @@ public class GameController {
             }
 
         }
-        if (target instanceof Fleet) {
-            Fleet targetFleet = (Fleet) target;
+        if (target instanceof Fleet targetFleet ) {
             SpaceObject selectedObject = gameState.getSelectedObject();
             if (selectedObject instanceof Fleet selectedFleet ) {
                 if (selectedFleet.getOwner().equals(currentPlayer) && targetFleet.getOwner().equals(currentPlayer) && isAdjacentToFleet(selectedFleet, targetFleet)) {
@@ -307,11 +305,37 @@ public class GameController {
             SpaceObject selectedObject = gameState.getSelectedObject();
             if (selectedObject instanceof Fleet selectedFleet) {
                 if (isAdjacentToPlanet(selectedFleet, targetPlanet)) {
-                    if (targetPlanet.getOwner() == null || !targetPlanet.getOwner().equals(currentPlayer)) {
-                        // TODO check colinizer ship
-                        targetPlanet.setOwner(currentPlayer);
-                        System.out.println("A bolygo elfoglalasa megtortent.");
-                        renderer.displayInfo("The enemy planet has been conquered!");
+                    if (targetPlanet.getOwner() == null ){
+                        List<Spaceship> spaceships = selectedFleet.getSpaceships();
+                        int i = 0;
+                        while (spaceships.get(i).getSpaceshipType() != SpaceshipEnum.COLONY) {
+                            i++;
+                        }
+                        if( i < spaceships.size() )
+                        {
+                            targetPlanet.setOwner(currentPlayer);
+                            System.out.println("A bolygo elfoglalasa megtortent.");
+                            renderer.displayInfo("The planet has been colonized!");
+                        }
+                        else {
+                            renderer.displayInfo("Cannot colonize unhabitant planet without COLONY SHIP!");
+                        }
+                    } else if ( !targetPlanet.getOwner().equals(currentPlayer) )
+                    {
+                        List<Spaceship> spaceships = selectedFleet.getSpaceships();
+                        int i = 0;
+                        while (spaceships.get(i).getSpaceshipType() != SpaceshipEnum.MOTHER_SHIP) {
+                            i++;
+                        }
+                        if( i < spaceships.size() )
+                        {
+                            targetPlanet.setOwner(currentPlayer);
+                            System.out.println("A bolygo elfoglalasa megtortent.");
+                            renderer.displayInfo("The enemy planet has been conquered!");
+                        }
+                        else {
+                            renderer.displayInfo("Cannot attack enemy planet without MOTHER SHIP!");
+                        }
                     } else if (isAdjacentToPlanet(selectedFleet, targetPlanet) && targetPlanet.getOwner().equals(currentPlayer)) {
                         if (selectedFleet.getTransportedResources() == 0) {
                             int resourceToLoad = Math.min(targetPlanet.getMaterial(), selectedFleet.getMaxTransportedResources());
