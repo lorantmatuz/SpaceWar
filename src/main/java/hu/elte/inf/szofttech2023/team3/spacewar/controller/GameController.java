@@ -4,6 +4,7 @@ import hu.elte.inf.szofttech2023.team3.spacewar.controller.generator.SpaceGenera
 import hu.elte.inf.szofttech2023.team3.spacewar.display.DisplayEngine;
 import hu.elte.inf.szofttech2023.team3.spacewar.display.SpecialAction;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.GameState;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.building.Building;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.building.BuildingEnum;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Battle;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
@@ -21,6 +22,7 @@ import hu.elte.inf.szofttech2023.team3.spacewar.view.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class GameController {
     
@@ -42,6 +44,11 @@ public class GameController {
     
     private void initializeGame() {
         Space space = spaceGenerator.generate();
+        for(final var object: space.getObjects() ){
+            if(object instanceof Planet){
+                ((Planet) object).updateConstructions();
+            }
+        }
         gameState = new GameState(space, players);
         TurnManager turnManager = gameState.getTurnManager();
         createPlayersAndFleets(space);
@@ -59,9 +66,13 @@ public class GameController {
     private void nextTurn() {
         Player currentPlayer = gameState.getTurnManager().nextPlayer();
         updatePlanetsResourcesForCurrentPlayer(currentPlayer, gameState.getSpace());
+        updateAllPlanetsConstructions(currentPlayer);
         renderer.displayNextTurn( gameState );
+        refreshGameBoard();
     }
-
+    private void refreshGameBoard() {
+        renderer.apply(gameState, this::handleBoardEvent);
+    }
     private Fleet createFleetWithMothership(Point startPosition, Player owner) {
         if (startPosition != null) {
             Fleet fleet = new Fleet(startPosition.x, startPosition.y, owner);
@@ -71,40 +82,27 @@ public class GameController {
         }
         return null;
     }
-    private Point findStartPositionForFleet(Space space, Point nearPoint) {
-        if (space.isSpaceObject[nearPoint.x][nearPoint.y] == false) {
-            // Ha a kezdőpont szabad, akkor azt használjuk
-            return nearPoint;
-        }
-
-        // Spirális keresés a kezdőpont körül
-        int radius = 1;
-        while (radius < Math.max(space.width, space.height)) {
-            for (int dx = -radius; dx <= radius; dx++) {
-                for (int dy = -radius; dy <= radius; dy++) {
-                    int x = nearPoint.x + dx;
-                    int y = nearPoint.y + dy;
-
-                    // Ellenőrizzük, hogy a pont a térképen belül van-e
-                    if (x >= 0 && x < space.width && y >= 0 && y < space.height) {
-                        // Ellenőrizzük, hogy a pont szabad-e
-                        if (!space.isSpaceObject[x][y]) {
-                            return new Point(x, y);
-                        }
-                    }
+    private void updateAllPlanetsConstructions(Player currentPlayer) {
+        Space space = gameState.getSpace();
+        for (SpaceObject spaceObject : new ArrayList<>(space.getSpaceObjects())) {
+            if (spaceObject instanceof Planet) {
+                Planet planet = (Planet) spaceObject;
+                if (planet.getOwner().equals(currentPlayer)) {
+                    planet.updateConstructions();
                 }
             }
-            radius++;
         }
-
-        return null; // Nem találtunk szabad helyet
     }
 
+
+    public void updateGraphics() {
+        renderer.apply(gameState, this::handleBoardEvent);
+    }
     private void createPlayersAndFleets(Space space) {
         Player player1 = gameState.getPlayers().get(0);
         Player player2 = gameState.getPlayers().get(1);
-        Point player1StartPosition = findStartPositionForFleet(space, new Point(space.width - 1, 0));
-        Point player2StartPosition = findStartPositionForFleet(space, new Point(0, space.height - 1));
+        Point player1StartPosition = space.findStartPositionForFleet(space, new Point(space.width - 1, 0));
+        Point player2StartPosition = space.findStartPositionForFleet(space, new Point(0, space.height - 1));
         Fleet fleet1 = createFleetWithMothership(player1StartPosition, player1);
         Fleet fleet2 = createFleetWithMothership(player2StartPosition, player2);
         if (fleet1 != null) {
@@ -152,10 +150,10 @@ public class GameController {
         System.out.println("Most ennek a kore megy felül" + turnManager.getCurrentPlayer().getName());
 
 
-        // FIXME
+       /* // FIXME
         state.getSpace().print();
         System.out.println(position + " --> " + target);
-
+*/
         gameState.setSelectedObject(target);
 
         if (target instanceof Fleet) {
@@ -180,6 +178,14 @@ public class GameController {
             if (target instanceof Planet) {
                 if (planet.getOwner().equals(currentPlayer)) {
                     renderer.displayInfo("Choose planet operations.");
+                    Map<BuildingEnum, Building> buildingMap = planet.getBuildingMap();
+                    for (Map.Entry<BuildingEnum, Building> entry : buildingMap.entrySet()) {
+                        Building building = entry.getValue();
+                        System.out.println("Building Type: " + entry.getKey() +
+                                ", Level: " + building.getLevel() +
+                                ", Size: " + building.getSize() +
+                                ", Functional: " + building.getFunctionality());
+                    }
                     showObjectInfo = true;
                     renderer.apply(state, this::handleBoardEvent);
                     renderer.apply(planet, showObjectInfo, state, this::handleActionEvent);
@@ -219,8 +225,8 @@ public class GameController {
 
         
         // FIXME
-        state.getSpace().print();
-        System.out.println(position + " --> " + target);
+        /*state.getSpace().print();
+        System.out.println(position + " --> " + target);*/
         
         // Player already selected a fleet.
         if (target == null) {
@@ -271,9 +277,13 @@ public class GameController {
             if (selectedObject instanceof Fleet) {
                 Fleet selectedFleet = (Fleet) selectedObject;
                 if (selectedFleet.getOwner().equals(currentPlayer) && targetFleet.getOwner().equals(currentPlayer) && isAdjacentToFleet(selectedFleet, targetFleet)) {
-                    mergeFleets(selectedFleet, targetFleet);
-                    renderer.displayInfo("The merging of fleets has been succsessfull.");
-                    System.out.println("Flottak sikeresen osszevonva.");
+                    if(selectedFleet == targetFleet) {
+                        renderer.displayInfo("The selected fleets are the same. Cannot be merged");
+                    }else {
+                        mergeFleets(selectedFleet, targetFleet);
+                        renderer.displayInfo("The merging of fleets has been succsessfull.");
+                        System.out.println("Flottak sikeresen osszevonva.");
+                    }
                 } else if (selectedFleet.getOwner().equals(currentPlayer) && !targetFleet.getOwner().equals(currentPlayer) && isAdjacentToFleet(selectedFleet, targetFleet)) {
                     boolean battleResult = Battle.fight(selectedFleet, targetFleet);
 
@@ -296,8 +306,7 @@ public class GameController {
             if (selectedObject instanceof Fleet) {
                 Fleet selectedFleet = (Fleet) selectedObject;
                 if (isAdjacentToPlanet(selectedFleet, targetPlanet)) {
-                    if (targetPlanet.getOwner() == null ||
-                            !targetPlanet.getOwner().equals(currentPlayer)) {
+                    if (targetPlanet.getOwner() == null || !targetPlanet.getOwner().equals(currentPlayer)) {
                         targetPlanet.setOwner(currentPlayer);
                         System.out.println("A bolygo elfoglalasa megtortent.");
                         renderer.displayInfo("The enemy planet has been conquered!");
@@ -380,20 +389,12 @@ public class GameController {
             System.out.println("Build ship action");
             renderer.applyBuildShipSelectAction( gameState , this::handleActionEvent );
         }
-        else if ( actionEvent.getType() == SpecialAction.START_SHIP_CONSTRUCTION )
-        {
+        else if (actionEvent.getType() == SpecialAction.START_SHIP_CONSTRUCTION) {
             int shipID = renderer.getSelectedRow();
-            // TODO: handle spaceship building logic
-            SpaceshipEnum requestedShip = null;
-            for( SpaceshipEnum ship : SpaceshipEnum.values() )
-            {
-                if( shipID == ship.ordinal() + 1 )
-                {
-                    requestedShip = ship;
-                }
-            }
-            renderer.displayInfo( "Development of " + requestedShip + " is requested." );
-            renderer.apply( gameState.getSelectedObject(), true, gameState, this::handleActionEvent);
+            SpaceshipEnum requestedShip = SpaceshipEnum.values()[shipID - 1];
+            Planet planet = (Planet) gameState.getSelectedObject();
+            planet.buildSpaceship(requestedShip);
+            renderer.displayInfo("Construction of " + requestedShip + " started on planet " + planet.getName());
         }
         else if ( actionEvent.getType() == SpecialAction.BACK )
         {
@@ -402,17 +403,26 @@ public class GameController {
         }
         else if (actionEvent.getType() == SpecialAction.START_BUILDING_CONSTRUCTION) {
             int buildingID = renderer.getSelectedRow();
-            BuildingEnum requestedBuilding = BuildingEnum.values()[buildingID - 1]; // Az ID alapján meghatározzuk az épület típusát
+            BuildingEnum requestedBuilding = BuildingEnum.values()[buildingID - 1];
 
             SpaceObject selectedObject = gameState.getSelectedObject();
             if (selectedObject instanceof Planet) {
                 Planet planet = (Planet) selectedObject;
-                planet.build(requestedBuilding); // Elindítjuk az építési folyamatot a bolygón
+                planet.build(requestedBuilding);
                 renderer.displayInfo("Construction of " + requestedBuilding + " started on planet " + planet.getName());
+
             }
             renderer.apply(gameState.getSelectedObject(), true, gameState, this::handleActionEvent);
+
         }
+
+
+
     }
+    private void startSpaceshipConstruction(Planet planet, SpaceshipEnum spaceshipType) {
+      planet.buildSpaceship(spaceshipType);
+    }
+
     private void handleBuildBuildingAction(GameState state) {
         SpaceObject selectedObject = state.getSelectedObject();
         if (selectedObject instanceof Planet) {

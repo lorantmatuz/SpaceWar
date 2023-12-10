@@ -1,13 +1,13 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.controller.generator.cases;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import hu.elte.inf.szofttech2023.team3.spacewar.controller.generator.SpaceGenerator;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Space;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 import hu.elte.inf.szofttech2023.team3.spacewar.view.FieldPosition;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MinimalCaseSpaceGenerator implements SpaceGenerator {
     
@@ -20,7 +20,7 @@ public class MinimalCaseSpaceGenerator implements SpaceGenerator {
     @Override
     public Space generate() {
         Space space = new Space(5, 5);
-        space.setSpaceObject(new Planet(FieldPosition.of(1, 2), players.get(0)));
+        space.setSpaceObject(new Planet(FieldPosition.of(1, 2), players.get(0), space));
         return space;
     }
 

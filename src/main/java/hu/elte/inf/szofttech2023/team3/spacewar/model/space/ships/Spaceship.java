@@ -4,6 +4,8 @@ package hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships;
 public class Spaceship {
     public final SpaceshipEnum spaceship;
     private int healthPoint;
+    private SpaceshipEnum type;
+
 
     public Spaceship(SpaceshipEnum spaceship) {
         this.spaceship = spaceship;
@@ -44,4 +46,5 @@ public class Spaceship {
     public int getHealthPoint() {
         return healthPoint;
     }
+
 }

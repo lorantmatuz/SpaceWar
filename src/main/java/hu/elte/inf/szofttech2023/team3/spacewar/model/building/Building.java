@@ -24,6 +24,10 @@ public abstract class Building {
         this.planet = planet;
     }
 
+    public void setFunctional(boolean isFunctional) {
+        this.isFunctional = isFunctional;
+    }
+
     public abstract void upgrade();
 
     public int getLevel() {
@@ -33,7 +37,8 @@ public abstract class Building {
     public int getDurationOfUpgrade() {
         return level;
     }
-    
+
+
     public int getUpgradeCostOfLevel() {
         return (int)Math.pow(2,level);
     }

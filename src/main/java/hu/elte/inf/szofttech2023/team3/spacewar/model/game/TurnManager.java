@@ -25,18 +25,20 @@ public class TurnManager {
     }
 
     public Player nextPlayer() {
+        currentPlayer = players.get(playerIndex++);
+
         if (playerIndex >= players.size()) {
             playerIndex = 0;
             ++turnCounter;
         }
-        currentPlayer = players.get(playerIndex++);
+
         currentPlayer.checkConstructions();
         state = TurnState.STARTED;
         actionPoint = maxActionPoint;
         targetPoint = null;
         return getCurrentPlayer();
-
     }
+
 
     public double decreaseActionPointBy(double points) {
         actionPoint -= points;

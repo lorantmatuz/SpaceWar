@@ -1,11 +1,5 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.controller.generator.random;
 
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.function.Supplier;
-
 import hu.elte.inf.szofttech2023.team3.spacewar.controller.generator.SpaceGenerator;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.building.BuildingEnum;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
@@ -18,6 +12,11 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Fleet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Spaceship;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.SpaceshipEnum;
 import hu.elte.inf.szofttech2023.team3.spacewar.view.FieldPosition;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.function.Supplier;
 
 public class RandomSpaceGenerator implements SpaceGenerator {
     
@@ -50,8 +49,8 @@ public class RandomSpaceGenerator implements SpaceGenerator {
         create(random, space, numOfFleets / 2, p -> createFleet(p, players.get(0)));
         create(random, space, numOfFleets - (numOfFleets / 2), p -> createFleet(p, players.get(1)));
         System.out.println("rendering planets...");
-        create(random, space, numOfPlanets / 2, p -> new Planet(p, players.get(0)));
-        create(random, space, numOfPlanets - (numOfPlanets / 2), p -> new Planet(p.getColumn(), p.getRow(), players.get(1)));
+        create(random, space, numOfPlanets / 2, p -> new Planet(p, players.get(0), space));
+        create(random, space, numOfPlanets - (numOfPlanets / 2), p -> new Planet(p, players.get(1), space));
         System.out.println("rendering blackholes...");
         create(random, space, numOfBlackHoles, BlackHole::new);
         System.out.println("rendering asteroids...");
