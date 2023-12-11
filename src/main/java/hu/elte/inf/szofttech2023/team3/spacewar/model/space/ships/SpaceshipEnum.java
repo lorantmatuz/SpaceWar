@@ -1,7 +1,7 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships;
 
 public enum SpaceshipEnum {
-    MOTHER_SHIP(3,4,10,5,4,4,0, 0,3),
+    MOTHER_SHIP(3,4,10,5,40,4,0, 0,3),
     HUNTER      (3,2,5,2,2,2,1, 0, 1),
     CRUISER     (4,3,1,3,3,3,1, 0, 2),
     FRIGATE     (4,4,10,4,4,4,2, 0, 2),
