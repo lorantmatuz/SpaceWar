@@ -20,7 +20,7 @@ public class Mine extends Building {
 
     public Mine(Planet planet, int level, int size, int roundWhenFunctioning )
     {
-        super( planet , level, size, roundWhenFunctioning );
+        super( BuildingEnum.MINE, planet , level, size, roundWhenFunctioning );
     }
 
     @Override

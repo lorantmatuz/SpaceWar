@@ -24,4 +24,6 @@ public class ConstructBuilding extends Constructable {
             building.upgrade();
         }
     }
+
+    public BuildingEnum getBuildingType(){ return this.buildingType; }
 }

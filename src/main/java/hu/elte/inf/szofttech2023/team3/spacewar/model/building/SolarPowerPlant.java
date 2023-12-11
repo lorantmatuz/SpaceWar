@@ -17,7 +17,7 @@ public class SolarPowerPlant extends Building {
     }
     public SolarPowerPlant(Planet planet, int level, int size, int roundWhenFunctioning )
     {
-        super( planet , level, size, roundWhenFunctioning );
+        super( BuildingEnum.SOLAR_POWER_PLANT, planet , level, size, roundWhenFunctioning );
     }
 
     @Override

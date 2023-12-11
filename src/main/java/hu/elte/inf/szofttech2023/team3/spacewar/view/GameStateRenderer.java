@@ -9,6 +9,10 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.building.Building;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.building.BuildingEnum;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.TurnManager;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Space;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.construction.ConstructBuilding;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.construction.ConstructSpaceship;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.construction.Constructable;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.construction.UpgradeBuilding;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Asteroid;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.BlackHole;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
@@ -30,7 +34,20 @@ public class GameStateRenderer {
         this.displayEngine = displayEngine;
     }
 
-
+    public void displayNothing( String toInfoLabel )
+    {
+        String title = "";
+        List<Map.Entry<String, Integer>> attributeContent = new ArrayList<>();
+        String collectionTitle = "";
+        ArrayList<String> collectionHeader = new ArrayList<>();
+        List<Map.Entry<String, List<Integer>>> collectionContent = new ArrayList<>();
+        String actionsTitle = "";
+        List<Map.Entry<String, Runnable >> actionContent = new ArrayList<>();
+        displayEngine.applyObjectInfo( title , attributeContent );
+        displayEngine.applyObjectItemsInfo( true , collectionTitle, collectionHeader , collectionContent );
+        displayEngine.applyObjectActionPalette( actionsTitle , actionContent  );
+        displayEngine.setInfoLabel( toInfoLabel );
+    }
     public void apply(GameState gameState, BoardEventListener boardEventListener) {
         BoardDisplay boardDisplay = displayEngine.getBoardDisplay();
         int rowCount = boardDisplay.getRowCount();
@@ -69,6 +86,8 @@ public class GameStateRenderer {
     }
 
     public void apply(Object object , Boolean showObjectInfo, GameState gameState, ActionEventListener actionEventListener) {
+        boolean canConstructBuilding = true;
+        boolean canConstructShip = false;
         String title = "";
         List<Map.Entry<String, Integer>> attributeContent = new ArrayList<>();
         String collectionTitle = "";
@@ -90,35 +109,101 @@ public class GameStateRenderer {
                 collectionHeader.add("Building type");
                 collectionHeader.add("Level");
                 collectionHeader.add("Size");
+                List<Constructable> constructables = planet.getConstructionProjects();
+                int levelOfDevelopment = 1;
                 Map<BuildingEnum, Building> buildingList = planet.getBuildingMap();
                 for (Map.Entry<BuildingEnum, Building> set : buildingList.entrySet()) {
+                    if( set.getKey() == BuildingEnum.SPACE_SHIP_FACTORY ) canConstructShip = true;
                     List<Integer> listElementAttributes = new ArrayList<>();
                     listElementAttributes.add(set.getValue().getLevel());
-                listElementAttributes.add(set.getValue().getSize());
-                    collectionContent.add(Map.entry( set.getKey().name(), listElementAttributes )
-                    );
+                    listElementAttributes.add(set.getValue().getSize());
+                    collectionContent.add(Map.entry( set.getKey().name(), listElementAttributes ) );
+                    for (Constructable element : constructables )
+                    {
+                        if ( element instanceof ConstructBuilding constructBuilding ) {
+                            System.out.println(" element : " + constructBuilding.getBuildingType().toString() );
+                            canConstructBuilding = false;
+                            if ( set.getKey().toString().equals( constructBuilding.getBuildingType().toString() ) )
+                            {
+                                levelOfDevelopment = set.getValue().getLevel() + 1;
+                            }
+                        }
+                        if( element instanceof UpgradeBuilding upgradeBuilding )
+                        {
+                            canConstructBuilding = false;
+                            if ( set.getKey().toString().equals( upgradeBuilding.getBuildingType().toString() ) )
+                            {
+                                levelOfDevelopment = set.getValue().getLevel() + 1;
+                            }
+
+                        }
+                        if ( element instanceof ConstructSpaceship) canConstructShip = false;
+                    }
                 }
                 actionsTitle = "Planet Operations";
-                actionContent.add(
-                        Map.entry(
-                                "Build Building",
-                                createActionEvent(actionEventListener, SpecialAction.BUILD_BUILDING, gameState)
-                        )
-                );
-                actionContent.add(
+                if ( canConstructBuilding ) {
+                    actionContent.add(
+                            Map.entry(
+                                    "Build Building",
+                                    createActionEvent(actionEventListener, SpecialAction.BUILD_BUILDING, gameState)
+                            )
+                    );
+                };
+                if( canConstructShip )
+                {
+                    actionContent.add(
                         Map.entry(
                                 "Build Ship",
                                 createActionEvent(actionEventListener, SpecialAction.BUILD_SHIP, gameState)
                         )
-                );
-                /*
-                actionContent.add(
-                        Map.entry(
-                                "Transfer Resources",
-                                createActionEvent(actionEventListener, SpecialAction.TRANSFER, gameState)
-                        )
-                );
-                 */
+                    );
+                }
+                displayEngine.applyObjectInfo( title , attributeContent );
+                displayEngine.applyObjectItemsInfo( true , collectionTitle, collectionHeader , collectionContent );
+                displayEngine.applyObjectActionPalette( actionsTitle , actionContent  );
+                for (Constructable element : constructables )
+                {
+                    if ( element instanceof ConstructBuilding constructBuilding )
+                    {
+                        collectionTitle = "Building under construction";
+                        collectionHeader.clear();
+                        collectionContent.clear();
+                        collectionHeader.add("Building type");
+                        collectionHeader.add("Level");
+                        collectionHeader.add("Rounds to finish");
+                        List<Integer> listElementAttributes = new ArrayList<>();
+                        listElementAttributes.add( levelOfDevelopment );
+                        listElementAttributes.add( element.getTimeLeftOfConstruction() );
+                        collectionContent.add(Map.entry( constructBuilding.getBuildingType().toString(), listElementAttributes ) );
+                        displayEngine.applyObjectItemsInfo( false , collectionTitle, collectionHeader , collectionContent );
+                    }
+                    if ( element instanceof UpgradeBuilding upgradeBuilding )
+                    {
+                        collectionTitle = "Building under construction";
+                        collectionHeader.clear();
+                        collectionContent.clear();
+                        collectionHeader.add("Building type");
+                        collectionHeader.add("Level");
+                        collectionHeader.add("Rounds to finish");
+                        List<Integer> listElementAttributes = new ArrayList<>();
+                        listElementAttributes.add( levelOfDevelopment );
+                        listElementAttributes.add( element.getTimeLeftOfConstruction() );
+                        collectionContent.add(Map.entry( upgradeBuilding.getBuildingType().toString(), listElementAttributes ) );
+                        displayEngine.applyObjectItemsInfo( false , collectionTitle, collectionHeader , collectionContent );
+                    }
+                    if ( element instanceof ConstructSpaceship constructSpaceship )
+                    {
+                        collectionTitle = "Spacehip under construction";
+                        collectionHeader.clear();
+                        collectionContent.clear();
+                        collectionHeader.add("Ship type");
+                        collectionHeader.add("Rounds to finish");
+                        List<Integer> listElementAttributes = new ArrayList<>();
+                        listElementAttributes.add( element.getTimeLeftOfConstruction() );
+                        collectionContent.add(Map.entry( constructSpaceship.getSpaceship().toString(), listElementAttributes ) );
+                        displayEngine.applyObjectItemsInfo( false , collectionTitle, collectionHeader , collectionContent );
+                    }
+                }
             }
         }
         else if (object instanceof Fleet fleet)
@@ -165,18 +250,18 @@ public class GameStateRenderer {
                     );
                      */
             }
+            displayEngine.applyObjectInfo( title , attributeContent );
+            displayEngine.applyObjectItemsInfo( true , collectionTitle, collectionHeader , collectionContent );
+            displayEngine.applyObjectActionPalette( actionsTitle , actionContent  );
         }
         else if (object instanceof Asteroid)
         {
-            title = "An asteroid";
+            displayNothing("An asteroid");
         }
         else if (object instanceof BlackHole)
         {
-            title = "A black hole";
+            displayNothing("A black hole");
         }
-        displayEngine.applyObjectInfo( title , attributeContent );
-        displayEngine.applyObjectItemsInfo( true , collectionTitle, collectionHeader , collectionContent );
-        displayEngine.applyObjectActionPalette( actionsTitle , actionContent  );
     }
 
     public void applyBuildBuildingSelectAction(GameState gameState , ActionEventListener listener )
