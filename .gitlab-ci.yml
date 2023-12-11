@@ -1,0 +1,11 @@
+image:
+  name: openjdk:17-ea-slim
+  entrypoint: ["/bin/bash", "-c"]
+
+stages:
+  - test
+
+test:
+  stage: test
+  script: ./gradlew check
+  when: always
