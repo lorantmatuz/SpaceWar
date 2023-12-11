@@ -8,6 +8,7 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Fleet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.SpaceshipEnum;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,13 +16,15 @@ public class Player
 {
     private final int no;
     private final String name;
+    private final Color color;
     private final List<Planet> planets = new ArrayList<>();
     private final List<Fleet> fleets = new ArrayList<>();
     private final List<Constructable> constructions = new ArrayList<>();
 
-    public Player(int no, String name) {
+    public Player(int no, String name, Color color) {
         this.no = no;
         this.name = name;
+        this.color = color;
     }
 
     public void addConstruction(Constructable construction) {
@@ -50,6 +53,10 @@ public class Player
 
     public String getName() {
         return name;
+    }
+
+    public Color getColor() {
+        return color;
     }
 
     public List<Planet> getPlanets() {

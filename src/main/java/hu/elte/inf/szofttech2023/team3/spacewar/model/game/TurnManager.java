@@ -12,7 +12,7 @@ public class TurnManager {
     private Player currentPlayer;
     private int turnCounter = 1;
     private TurnState state = null;
-    private int playerIndex = 0;
+    private int playerIndex = -1;
     private double actionPoint;
     private Point targetPoint;
     private Player winner = null;
@@ -25,18 +25,24 @@ public class TurnManager {
     }
 
     public Player nextPlayer() {
-        currentPlayer = players.get(playerIndex++);
-
+        playerIndex++;
         if (playerIndex >= players.size()) {
             playerIndex = 0;
-            ++turnCounter;
+            turnCounter++;
         }
+        
+        currentPlayer = players.get(playerIndex);
 
         currentPlayer.checkConstructions();
         state = TurnState.STARTED;
         actionPoint = maxActionPoint;
         targetPoint = null;
         return getCurrentPlayer();
+    }
+    
+    public void setWinFor(Player player) {
+        state = TurnState.WIN;
+        winner = player;
     }
 
 

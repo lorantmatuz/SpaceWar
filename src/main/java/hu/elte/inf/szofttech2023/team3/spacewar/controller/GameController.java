@@ -9,9 +9,11 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.building.BuildingEnum;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Battle;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.TurnManager;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.game.TurnState;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.GenerateSpace;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Path;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Space;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Owned;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Fleet;
@@ -21,8 +23,13 @@ import hu.elte.inf.szofttech2023.team3.spacewar.view.*;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 public class GameController {
     
@@ -58,14 +65,32 @@ public class GameController {
     }
     
     public void endTurn() {
+        TurnManager turnManager = gameState.getTurnManager();
+        Optional<Player> winner = detectWinner();
+        if (winner.isPresent()) {
+            handleWin(winner.get());
+            return;
+        }
+        
         nextTurn();
         renderer.displayNothing("New Round!");
-        TurnManager turnManager = gameState.getTurnManager();
-        System.out.println("End Turn: " + turnManager.getCurrentPlayer().getName()+ " "+ turnManager.getTurnCounter() );
+        System.out.println("End Turn: " + turnManager.getCurrentPlayer().getName()+ " "+ turnManager.getTurnCounter());
+    }
+    
+    private void handleWin(Player player) {
+        gameState.getTurnManager().setWinFor(player);
+        renderer.apply(gameState, this::handleBoardEvent);
+        renderer.displayNothing("Winner: " + player.getName());
+        System.out.println("Player won: " + player.getName());
     }
 
     private void nextTurn() {
-        Player currentPlayer = gameState.getTurnManager().nextPlayer();
+        TurnManager turnManager = gameState.getTurnManager();
+        if (turnManager.getState() == TurnState.WIN) {
+            return;
+        }
+        
+        Player currentPlayer = turnManager.nextPlayer();
         updatePlanetsResourcesForCurrentPlayer(currentPlayer, gameState.getSpace());
         updateAllPlanetsConstructions(currentPlayer);
         renderer.displayNextTurn( gameState );
@@ -126,6 +151,10 @@ public class GameController {
     }
     
     public void handleBoardEvent(BoardEvent event, GameState state) {
+        if (state.getTurnManager().getState() == TurnState.WIN) {
+            return;
+        }
+        
         BoardEventType eventType = event.getType();
         if (eventType == BoardEventType.LEFT_CLICK) {
             handleBoardLeftClick(event.getFieldPosition(), state);
@@ -141,12 +170,9 @@ public class GameController {
     }
 
     public void handleBoardLeftClick(FieldPosition position, GameState state) {
-
         boolean showObjectInfo = false;
-        state = gameState;
-        TurnManager turnManager = state.getTurnManager();
-        FieldPosition selectedPosition = turnManager.getSelectedPosition();
-        SpaceObject target = state.getSpace().getObjectAt(position);
+        TurnManager turnManager = gameState.getTurnManager();
+        SpaceObject target = gameState.getSpace().getObjectAt(position);
         Player currentPlayer = turnManager.getCurrentPlayer();
         System.out.println("Most ennek a kore megy felül" + turnManager.getCurrentPlayer().getName());
 
@@ -187,7 +213,7 @@ public class GameController {
                                 ", Functional: " + building.getFunctionality());
                     }
                     showObjectInfo = true;
-                    renderer.apply(state, this::handleBoardEvent);
+                    renderer.apply(gameState, this::handleBoardEvent);
                     renderer.apply(planet, showObjectInfo, state, this::handleActionEvent);
                 }
                 } else {
@@ -399,6 +425,10 @@ public class GameController {
     }
 
     private void handleActionEvent(ActionEvent actionEvent, GameState state) {
+        if (state.getTurnManager().getState() == TurnState.WIN) {
+            return;
+        }
+        
         // TODO
         System.out.println("ActionEvent: " + actionEvent.getType());
         if ( actionEvent.getType() == SpecialAction.BUILD_BUILDING )
@@ -450,9 +480,6 @@ public class GameController {
             }
             renderer.apply(gameState.getSelectedObject(), true, gameState, this::handleActionEvent);
         }
-
-
-
     }
     private void startSpaceshipConstruction(Planet planet, SpaceshipEnum spaceshipType) {
       planet.buildSpaceship(spaceshipType);
@@ -518,6 +545,24 @@ public class GameController {
                 }
             }
         }
+    }
+    
+    private Optional<Player> detectWinner() {
+        Set<Player> foundPlayers = Collections.newSetFromMap(new IdentityHashMap<>());
+        for (SpaceObject spaceObject : gameState.getSpace().getObjects()) {
+            if (spaceObject instanceof Owned owned) {
+                foundPlayers.add(owned.getOwner());
+                if (foundPlayers.size() > 1) {
+                    return Optional.empty();
+                }
+            }
+        }
+        
+        if (foundPlayers.size() != 1) {
+            return Optional.empty();
+        }
+
+        return Optional.of(foundPlayers.iterator().next());
     }
     
 }

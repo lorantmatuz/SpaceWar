@@ -14,7 +14,7 @@ import java.util.*;
 
 import static hu.elte.inf.szofttech2023.team3.spacewar.model.building.BuildingEnum.*;
 
-public class Planet extends SpaceObject {
+public class Planet extends SpaceObject implements Owned {
     
     private String name = "";
     private int maxSize = 3 * 1024;
@@ -159,6 +159,7 @@ public class Planet extends SpaceObject {
         return material;
     }
 
+    @Override
     public Player getOwner() {
         return owner;
     }

@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.awt.Color;
+
 import hu.elte.inf.szofttech2023.team3.spacewar.model.building.*;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Space;
@@ -13,7 +15,7 @@ public class PlanetTest {
 
     @BeforeEach
     public void beforeEach() {
-        planet = new Planet(0, 0, new Player(1, "Test Player"), new Space(5, 5));
+        planet = new Planet(0, 0, new Player(1, "Test Player", Color.WHITE), new Space(5, 5));
     }
 
     @Test

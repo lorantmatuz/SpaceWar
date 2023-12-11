@@ -7,7 +7,9 @@ import hu.elte.inf.szofttech2023.team3.spacewar.display.SpecialAction;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.GameState;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.building.Building;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.building.BuildingEnum;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.TurnManager;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.game.TurnState;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Space;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.construction.ConstructBuilding;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.construction.ConstructSpaceship;
@@ -57,6 +59,11 @@ public class GameStateRenderer {
         if( gameState.getSelectedObject()!= null && gameState.getSelectedObject().getClass() == Fleet.class ) {
             collectPathObjects(gameState, displayables);
         }
+        TurnManager turnManager = gameState.getTurnManager();
+        if (turnManager.getState() == TurnState.WIN) {
+            Player winner = turnManager.getWinner();
+            displayEngine.applyWinner(winner.getName(), winner.getColor());
+        }
         displayEngine.applyBoard(displayables);
         boardDisplay.setBoardListener((type, position) -> boardEventListener.actionPerformed(new BoardEvent(type, position), gameState));
     }
@@ -85,7 +92,7 @@ public class GameStateRenderer {
         }
     }
 
-    public void apply(Object object , Boolean showObjectInfo, GameState gameState, ActionEventListener actionEventListener) {
+    public void apply(Object object , boolean showObjectInfo, GameState gameState, ActionEventListener actionEventListener) {
         boolean canConstructBuilding = true;
         boolean canConstructShip = false;
         String title = "";

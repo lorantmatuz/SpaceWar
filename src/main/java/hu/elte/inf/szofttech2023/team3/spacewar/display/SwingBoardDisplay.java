@@ -13,6 +13,8 @@ import hu.elte.inf.szofttech2023.team3.spacewar.view.FieldPosition;
 
 public class SwingBoardDisplay extends JPanel implements Rectangular, BoardDisplay {
 
+    private static final long serialVersionUID = 1L;
+    
     private final int boardWidth;
     private final int boardHeight;
     private final int rowCount;
@@ -23,6 +25,9 @@ public class SwingBoardDisplay extends JPanel implements Rectangular, BoardDispl
     private Displayable[][] content = new Displayable[0][0];
     private BiConsumer<BoardEventType, FieldPosition> boardListener;
     private FieldPosition previousFieldPosition = null;
+    
+    private String winnerName = null;
+    private Color winnerColor = null;
     
     public SwingBoardDisplay(int rowCount, int columnCount) {
 
@@ -61,7 +66,7 @@ public class SwingBoardDisplay extends JPanel implements Rectangular, BoardDispl
 
     @Override
     protected void paintComponent(Graphics g) {
-        drawBoard(g, boardWidth, boardHeight);
+        drawBoard((Graphics2D) g, boardWidth, boardHeight);
     }
 
     private void handleClick(MouseEvent event, FieldPosition position) {
@@ -109,8 +114,7 @@ public class SwingBoardDisplay extends JPanel implements Rectangular, BoardDispl
     public void setContent( Displayable[][] newContent ){ this.content = newContent; }
 
 
-    private void drawBoard(Graphics g, int width, int height) {
-        Graphics2D g2d = (Graphics2D) g;
+    private void drawBoard(Graphics2D g2d, int width, int height) {
         g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, width, height);
         int countOfRows = Math.min(rowCount, content.length);
@@ -120,6 +124,24 @@ public class SwingBoardDisplay extends JPanel implements Rectangular, BoardDispl
                 drawDisplayable(row, column, g2d);
             }
         }
+        drawWinnerIfNecessary(g2d, width, height);
+    }
+
+    private void drawWinnerIfNecessary(Graphics2D g2d, int width, int height) {
+        if (winnerName == null) {
+            return;
+        }
+        
+        Color overlayColor = new Color(winnerColor.getRed(), winnerColor.getGreen(), winnerColor.getBlue(), 150);
+        g2d.setColor(overlayColor);
+        g2d.fillRect(width / 10, height / 10, 8 * width / 10, 8 * height / 10);
+
+        int fontSize = height / 8;
+        Font font = new Font(Font.MONOSPACED, Font.ITALIC | Font.BOLD, fontSize);
+        g2d.setColor(Color.WHITE);
+        g2d.setFont(font);
+        g2d.drawString("Winner:", width / 5, 2 * height / 5);
+        g2d.drawString(winnerName, width / 5, (2 * height / 5) + (8 * fontSize / 5));
     }
 
     private void drawDisplayable(int row, int column, Graphics2D g2d) {
@@ -152,6 +174,12 @@ public class SwingBoardDisplay extends JPanel implements Rectangular, BoardDispl
         int row = y / fieldHeight;
         int column = x / fieldWidth;
         return FieldPosition.of(row, column);
+    }
+    
+    @Override
+    public void setWinner(String name, Color color) {
+        winnerName = name;
+        winnerColor = color;
     }
 
     @Override

@@ -1,12 +1,14 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships;
 
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Owned;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
 import hu.elte.inf.szofttech2023.team3.spacewar.view.FieldPosition;
 
+import java.awt.Color;
 import java.util.ArrayList;
 
-public final class Fleet extends SpaceObject {
+public final class Fleet extends SpaceObject implements Owned {
     private static int idCounter = -1;
     private final int id;
     private final ArrayList<Spaceship> spaceships;
@@ -94,6 +96,7 @@ public final class Fleet extends SpaceObject {
         return numberOfShip;
     }
 
+    @Override
     public Player getOwner() {
         return owner;
     }
@@ -129,7 +132,7 @@ public final class Fleet extends SpaceObject {
     }
 
     public static void main(String[] args) {
-        var fleet = new Fleet(1, 3, new Player(1, "John"));
+        var fleet = new Fleet(1, 3, new Player(1, "John", Color.WHITE));
         fleet.addShip(new Spaceship(SpaceshipEnum.MOTHER_SHIP));
         fleet.replace(2,3);
     }

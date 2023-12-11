@@ -10,6 +10,8 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Space;
 
 import javax.swing.*;
+
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -21,8 +23,8 @@ public class Main {
 
     public static void main(String[] args) {
         List<Player> players = new ArrayList<>();
-        players.add(new Player(1, "Blue"));
-        players.add(new Player(2, "Red"));
+        players.add(new Player(1, "Blue", Color.BLUE));
+        players.add(new Player(2, "Red", Color.RED));
 
         SpaceGenerator spaceGenerator = createSpaceGenerator(players);
         
