@@ -64,6 +64,7 @@ public class Planet extends SpaceObject {
 
         if (building == null) {
             building = buildingEnum.build(this);
+            buildingMap.put(buildingEnum, building);
             constructionTime = 0; // Új épület esetén
             Constructable construction = new ConstructBuilding(this, buildingEnum, constructionTime);
             addConstructionProject(construction);
