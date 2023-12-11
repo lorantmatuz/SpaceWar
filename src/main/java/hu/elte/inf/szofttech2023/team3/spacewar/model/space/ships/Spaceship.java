@@ -3,9 +3,12 @@ package hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships;
 
 public class Spaceship {
     public final SpaceshipEnum spaceship;
+    private int healthPoint;
+
 
     public Spaceship(SpaceshipEnum spaceship) {
         this.spaceship = spaceship;
+        this.healthPoint = spaceship.maxHealthPoint;
     }
 
     /**
@@ -13,8 +16,7 @@ public class Spaceship {
      * @return true if the defender is destroyed after the attack
      */
     public boolean attack(Spaceship defender) {
-        defender.spaceship.decreaseHealthPoint(spaceship.offensiveForce);
-        return defender.isDestroyed();
+        return defender.defend(this);
     }
 
     /**
@@ -22,13 +24,27 @@ public class Spaceship {
      * @return true if the defender is destroyed after the attack
      */
     public boolean defend(Spaceship attacker) {
-        return attacker.attack(this);
+        final var point = attacker.spaceship.offensiveForce + 2 - spaceship.protectiveForce;
+        healthPoint -= point;
+        if(point < 0) {
+            System.exit(2);
+        }
+        if(healthPoint < 0) {
+            healthPoint = 0;
+        }
+        return isDestroyed();
     }
 
     /**
      * @return true if the Spaceship is destroyed
      */
     public boolean isDestroyed() {
-        return spaceship.getHealthPoint() < 0;
+        return healthPoint <= 0;
     }
+
+    public int getHealthPoint() {
+        return healthPoint;
+    }
+
+    public SpaceshipEnum getSpaceshipType(){ return this.spaceship; }
 }

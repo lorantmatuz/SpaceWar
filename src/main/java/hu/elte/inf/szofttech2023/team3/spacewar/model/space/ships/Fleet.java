@@ -1,31 +1,45 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships;
 
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Owned;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
+import hu.elte.inf.szofttech2023.team3.spacewar.view.FieldPosition;
 
-public final class Fleet extends SpaceObject {
-    private static int id = -1;
-    private final Spaceship[] spaceships = new Spaceship[SpaceshipEnum.values().length];
+import java.awt.Color;
+import java.util.ArrayList;
+
+public final class Fleet extends SpaceObject implements Owned {
+    private static int idCounter = -1;
+    private final int id;
+    private final ArrayList<Spaceship> spaceships;
     private Player owner;
     private int totalConsumption = 0;
     private int minSpeed = Integer.MAX_VALUE;
+    private int transportedResources = 0;
 
     public Fleet(int x, int y, Player owner) {
-        super(x, y);
+        this(FieldPosition.of(y, x), owner);
+    }
+    
+    public Fleet(FieldPosition position, Player owner) {
+        super(position);
         this.owner = owner;
-        ++id;
+        ++idCounter;
+        this.id = idCounter;
+        spaceships = new ArrayList<>();
     }
 
     public boolean addShip(Spaceship ship) {
-        if(getShip(ship.spaceship) != null) {
-            return false;
-        }
-        spaceships[ship.spaceship.ordinal()] = ship;
+        spaceships.add( ship );
         totalConsumption += ship.spaceship.consumption;
         if(minSpeed > ship.spaceship.speed) {
             minSpeed = ship.spaceship.speed;
         }
         return true;
+    }
+
+    public boolean removeShip(Spaceship ship) {
+        return spaceships.remove(ship);
     }
 
     public boolean mergeFleet(Fleet fleet) {
@@ -37,19 +51,12 @@ public final class Fleet extends SpaceObject {
     }
 
     public boolean canAttack() {
-        return getShip(SpaceshipEnum.MOTHER_SHIP) != null;
-    }
-
-    public boolean canColonize() {
-        return getShip(SpaceshipEnum.COLONY) != null;
-    }
-
-    public boolean canCarryResources() {
-        return getShip(SpaceshipEnum.SUPPLIER) != null;
-    }
-
-    public Spaceship getShip(SpaceshipEnum ship) {
-        return spaceships[ship.ordinal()];
+        for(final var ship : spaceships) {
+            if(ship.spaceship == SpaceshipEnum.MOTHER_SHIP) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public int getMinSpeed() {
@@ -60,12 +67,64 @@ public final class Fleet extends SpaceObject {
         return totalConsumption;
     }
 
-    public Spaceship[] getSpaceships() {
-        return spaceships.clone();
+
+    public ArrayList<Spaceship> getSpaceships(){ return (ArrayList<Spaceship>) spaceships.clone(); }
+
+    public int getTotalShipNumber() { return spaceships.size(); }
+    public int getTransportedResources(){ return transportedResources; }
+
+    public void modifyTransportedResources( int amountOfChange )
+    {
+        this.transportedResources += amountOfChange;
     }
 
+    public int getMaxTransportedResources()
+    {
+        int capacity = 0;
+        for (Spaceship spaceship : spaceships) {
+            capacity += spaceship.spaceship.transportCapacity;
+        }
+        return capacity;
+    }
+
+    public int getNumberOf( SpaceshipEnum ship )
+    {
+        int numberOfShip = 0;
+        for (Spaceship spaceship : spaceships) {
+            if (spaceship.spaceship == ship) ++numberOfShip;
+        }
+        return numberOfShip;
+    }
+
+    @Override
     public Player getOwner() {
         return owner;
+    }
+
+    public int getId(){ return this.id; }
+    public int getTotalHP()
+    {
+        int totalHP = 0;
+        for (Spaceship spaceship : spaceships) {
+            totalHP += spaceship.getHealthPoint();
+        }
+        return totalHP;
+    }
+    public int getTotalOffense()
+    {
+        int totalOffense = 0;
+        for (Spaceship spaceship : spaceships) {
+            totalOffense += spaceship.spaceship.offensiveForce;
+        }
+        return totalOffense;
+    }
+    public int getTotalDefense()
+    {
+        int totalDefense = 0;
+        for (Spaceship spaceship : spaceships) {
+            totalDefense += spaceship.spaceship.protectiveForce;
+        }
+        return totalDefense;
     }
 
     public void setOwner(Player owner) {
@@ -73,7 +132,7 @@ public final class Fleet extends SpaceObject {
     }
 
     public static void main(String[] args) {
-        var fleet = new Fleet(1, 3, new Player(1, "John"));
+        var fleet = new Fleet(1, 3, new Player(1, "John", Color.WHITE));
         fleet.addShip(new Spaceship(SpaceshipEnum.MOTHER_SHIP));
         fleet.replace(2,3);
     }

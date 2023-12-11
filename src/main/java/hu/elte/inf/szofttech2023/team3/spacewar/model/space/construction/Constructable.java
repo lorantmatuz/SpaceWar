@@ -6,10 +6,12 @@ public abstract class Constructable {
     protected abstract void construct();
 
     public boolean isEndOfConstruction() {
-        if(--timeLeftOfConstruction == 0) {
+        if(--timeLeftOfConstruction <= 0) {
             construct();
             return true;
         }
         return false;
     }
+
+    public int getTimeLeftOfConstruction(){ return this.timeLeftOfConstruction; }
 }

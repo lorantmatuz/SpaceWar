@@ -1,18 +1,20 @@
 package hu.elte.inf.szofttech2023.team3.spacewar.model.space;
 
-import java.awt.Point;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-
-import hu.elte.inf.szofttech2023.team3.spacewar.model.building.Building;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.building.BuildingEnum;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.building.Mine;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.building.SolarPowerPlant;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.game.Player;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.*;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Asteroid;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.BlackHole;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Fleet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Spaceship;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.SpaceshipEnum;
+
+import java.awt.*;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * This class provides a method called {@code run()} to generate the {@code Space} class.
@@ -36,8 +38,8 @@ public class GenerateSpace {
         create(numOfFleets / 2, (r, c) -> createFleet(r, c, players.get(0)));
         create(numOfFleets - (numOfFleets / 2), (r, c) -> createFleet(r, c, players.get(1)));
         System.out.println("rendering planets...");
-        create(numOfPlanets / 2, (r, c) -> new Planet(r, c, players.get(0)));
-        create(numOfPlanets - (numOfPlanets / 2), (r, c) -> new Planet(r, c, players.get(1)));
+        create(numOfPlanets / 2, (r, c) -> new Planet(r, c, players.get(0), space));
+        create(numOfPlanets - (numOfPlanets / 2), (r, c) -> new Planet(r, c, players.get(1), space));
         System.out.println("rendering blackholes...");
         create(numOfBlackHoles, BlackHole::new);
         System.out.println("rendering asteroids...");
@@ -64,19 +66,17 @@ public class GenerateSpace {
             */
             try {
                 SpaceObject obj = factory.create(p.x, p.y);
-                space.setSpaceObject(p, obj);
+                space.setSpaceObject(obj);
                 //
-                if( obj instanceof Planet)
+                if(obj instanceof Planet planet)
                 {
-                    Planet planet = (Planet) obj;
-                    planet.setEnergy(rnd.nextInt());
-                    planet.setMaterial(rnd.nextInt());
-                    planet.setEnergy(rnd.nextInt());
-                    planet.setMaxSize(rnd.nextInt());
-                    planet.setTemperature(rnd.nextInt());
+                    planet.setEnergy(100);
+                    planet.setMaterial(100);
+                    planet.setMaxSize(rnd.nextInt(10, 1000));
+                    planet.setTemperature(rnd.nextInt(10, 1000));
                     planet.setName("Planet-X" );
-                    planet.build(BuildingEnum.MINE);
-                    planet.build(BuildingEnum.SOLAR_POWER_PLANT);
+                    planet.getBuildingMap().put(BuildingEnum.MINE, new Mine(planet));
+                    planet.getBuildingMap().put(BuildingEnum.SOLAR_POWER_PLANT, new SolarPowerPlant(planet));
                 }
                 //
             } catch (Exception e) {

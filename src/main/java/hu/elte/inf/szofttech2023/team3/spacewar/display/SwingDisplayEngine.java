@@ -2,6 +2,9 @@ package hu.elte.inf.szofttech2023.team3.spacewar.display;
 
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+
+import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.*;
@@ -9,25 +12,32 @@ import java.util.List;
 
 public class SwingDisplayEngine implements DisplayEngine {
 
-    public static final int FIELD_WIDTH = 40;
-    public static final int FIELD_HEIGHT = 40;
+    public static final int FIELD_WIDTH = 35;
+    public static final int FIELD_HEIGHT = 35;
 
     public static final int BORDER_TOP = 10;
     public static final int BORDER_BOTTOM = 10;
     public static final int BORDER_LEFT = 10;
     public static final int BORDER_RIGHT = 10;
-    public static final int FONT_SIZE = 20;
+    public static final int FONT_SIZE = 15;
 
     private final SwingBoardDisplay boardDisplay;
     private final SwingObjectDisplay objectDisplay;
     private final SwingFrameDisplay frameDisplay;
     private final SwingTurnInfoDisplay turnInfoDisplay;
+    private int selectedRow;
 
     public SwingDisplayEngine(int rowCount, int columnCount) {
         this.boardDisplay = new SwingBoardDisplay(rowCount, columnCount);
         this.objectDisplay = new SwingObjectDisplay(rowCount, columnCount);
         this.turnInfoDisplay = new SwingTurnInfoDisplay( boardDisplay.getPreferredSize().width + objectDisplay.getPreferredSize().width );
         this.frameDisplay = new SwingFrameDisplay(boardDisplay, objectDisplay, turnInfoDisplay);
+    }
+
+    @Override
+    public void applyWinner(String name, Color color) {
+        this.boardDisplay.setWinner(name, color);
+        this.boardDisplay.repaint();
     }
 
     @Override
@@ -56,8 +66,9 @@ public class SwingDisplayEngine implements DisplayEngine {
         outText = outText + "</html>";
         panelLabel.setText( outText );
     }
+    
     @Override
-    public void applyObjectItemsInfo(Boolean erase, String title, List<String> header, List<Map.Entry< String,List<Integer> > > content)
+    public void applyObjectItemsInfo(boolean erase, String title, List<String> header, List< Map.Entry<String, List<Integer>> > content)
     {
         CollectionPanel collectionPanel = objectDisplay.getCollectionPanel();
         if( erase )
@@ -89,8 +100,9 @@ public class SwingDisplayEngine implements DisplayEngine {
     }
 
     @Override
-    public void applyObjectActionPalette(List< Map.Entry<String, Runnable >> content )
-    {
+    public void applyObjectActionPalette(String title, List< Map.Entry<String, Runnable> > content) {
+        JLabel actionPanelLabel = objectDisplay.getActionPanel().getActionPanelLabel();
+        actionPanelLabel.setText( title );
         JPanel actionPanel = objectDisplay.getActionPanel().getContentPanel();
         actionPanel.removeAll();
         actionPanel.revalidate();
@@ -114,8 +126,48 @@ public class SwingDisplayEngine implements DisplayEngine {
     public SwingBoardDisplay getBoardDisplay() {
         return this.boardDisplay;
     }
-    public JButton getShuffleButton(){ return this.turnInfoDisplay.getShuffleButton(); }
+    
+    public JButton getShuffleButton(){
+        return this.turnInfoDisplay.getShuffleButton();
+    }
 
+    @Override
+    public void setInfoLabel( String info ){
+        JLabel infoLabel = this.turnInfoDisplay.getInfoLabel();
+        infoLabel.setText( info );
+    }
+    @Override
+    public void setTurnLabel( int turnNumber, String player, double actionPoint ){
+        JLabel turnLabel = this.turnInfoDisplay.getTurnLabel();
+        String turnInfo = "Turn: " + turnNumber + ", Player: " + player + ", Action point: " + actionPoint;
+        turnLabel.setText( turnInfo );
+    }
 
+    @Override
+    public void applyItemSelector(boolean erase, String title, Object[] header, Object[][] content) {
+        CollectionPanel collectionPanel = objectDisplay.getCollectionPanel();
+        if (erase) {
+            collectionPanel.removeAll();
+            collectionPanel.revalidate();
+            collectionPanel.repaint();
+        }
+        JLabel panelLabel = collectionPanel.setCollectionPanelLabel();
+        DefaultTableModel model = new DefaultTableModel( content, header);
+        JTable table = new JTable(model);
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                selectedRow = table.rowAtPoint(e.getPoint());
+            }
+        });
+        collectionPanel.add( table );
+        collectionPanel.add( panelLabel );
+    }
+
+    public int getSelectedRow() {
+        return this.selectedRow;
+    }
+    
 }
 

@@ -9,6 +9,7 @@ import java.awt.*;
 public class SwingFrameDisplay extends JFrame implements Rectangular {
 
     public SwingFrameDisplay(SwingBoardDisplay boardPanel, SwingObjectDisplay objectPanel, SwingTurnInfoDisplay turnInfoDisplay) {
+        setTitle("Space War");
         JPanel contentPanel = new JPanel(new BorderLayout());
         JLabel titleLabel = new JLabel("Space War");
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);

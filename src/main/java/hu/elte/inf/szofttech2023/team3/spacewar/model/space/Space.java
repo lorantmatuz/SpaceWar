@@ -4,6 +4,7 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Asteroid;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.BlackHole;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
+import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Fleet;
 import hu.elte.inf.szofttech2023.team3.spacewar.view.FieldPosition;
 
 import java.awt.*;
@@ -51,6 +52,34 @@ public class Space {
             System.out.println();
         }
     }
+    public Point findStartPositionForFleet(Space space, Point nearPoint) {
+        if (!space.isSpaceObject[nearPoint.x][nearPoint.y]) {
+            return nearPoint;
+        }
+        int radius = 1;
+        while (radius < Math.max(space.width, space.height)) {
+            for (int dx = -radius; dx <= radius; dx++) {
+                for (int dy = -radius; dy <= radius; dy++) {
+                    int x = nearPoint.x + dx;
+                    int y = nearPoint.y + dy;
+                    if (x >= 0 && x < space.width && y >= 0 && y < space.height) {
+                        if (!space.isSpaceObject[x][y]) {
+                            return new Point(x, y);
+                        }
+                    }
+                }
+            }
+            radius++;
+        }
+
+        return null;
+    }
+    public void removeFleet(Fleet fleet) {
+        if (fleet == null) return;
+
+        objects.remove(fleet);
+        isSpaceObject[fleet.x][fleet.y] = false;
+    }
     
     public void erase() {
         objects.clear();
@@ -77,13 +106,11 @@ public class Space {
 
     /**
      * Sets a {@code SpaceObject} to the given index
-     * @param p the {@code Point}, i.e. the place of the {@code SpaceObject}
-     *         in the grid
      * @param object the {@code SpaceObject} to set
      */
-    public void setSpaceObject(Point p, SpaceObject object) {
+    public void setSpaceObject(SpaceObject object) {
         objects.add(object);
-        isSpaceObject[p.x][p.y] = true;
+        isSpaceObject[object.x][object.y] = true;
     }
 
     /**

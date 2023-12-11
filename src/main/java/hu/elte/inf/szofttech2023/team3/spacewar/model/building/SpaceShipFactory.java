@@ -10,16 +10,21 @@ public class SpaceShipFactory extends Building {
         super(planet);
     }
 
+    public SpaceShipFactory(Planet planet, int level, int size, int roundWhenFunctioning )
+    {
+        super( BuildingEnum.SPACE_SHIP_FACTORY, planet , level, size, roundWhenFunctioning );
+    }
     @Override
     public void upgrade() {
         ++level;
     }
 
     public void produce(SpaceshipEnum ship) {
-        if(ship.minLevelToBuild < level) {
-            return;
+        if (ship.minLevelToBuild <= level) {
+            int constructionTime = ship.getTurnsToComplete();
+            final var player = planet.getOwner();
+            player.addConstruction(new ConstructSpaceship(planet, ship, constructionTime));
         }
-        final var player = planet.getOwner();
-        player.addConstruction(new ConstructSpaceship(planet,ship));
     }
+
 }

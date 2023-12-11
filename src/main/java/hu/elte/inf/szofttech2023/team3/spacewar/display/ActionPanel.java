@@ -9,10 +9,10 @@ import java.util.ArrayList;
 
 public class ActionPanel extends JPanel {
 
+    private static final long serialVersionUID = 1L;
+    
     JLabel actionPanelLabel;
     JPanel contentPanel;
-    private int actionPanelWidth;
-    private int actionPanelHeight;
 
     private JButton moveAttackButton;
     private JButton buildBuildingButton;
@@ -23,13 +23,12 @@ public class ActionPanel extends JPanel {
     private JButton backButton;
 
     private ArrayList<JButton> buttons;
-    public ActionPanel( int actionPanelWidth, int actionPanelHeight){
-
-        super(new GridLayout(2,1) );
-        this.actionPanelWidth = actionPanelWidth;
-        this.actionPanelHeight = actionPanelHeight;
+    
+    public ActionPanel(int actionPanelWidth, int actionPanelHeight) {
+        super(new GridLayout(2, 1));
         setPreferredSize(new Dimension( actionPanelWidth, actionPanelHeight ));
-        actionPanelLabel = new JLabel("Actions");
+        //actionPanelLabel = new JLabel("Actions");
+        actionPanelLabel = new JLabel();
         actionPanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
         actionPanelLabel.setBorder(new EmptyBorder( SwingDisplayEngine.BORDER_TOP, SwingDisplayEngine.BORDER_LEFT, SwingDisplayEngine.BORDER_BOTTOM, SwingDisplayEngine.BORDER_RIGHT));
         actionPanelLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, SwingDisplayEngine.FONT_SIZE ));
@@ -133,5 +132,6 @@ public class ActionPanel extends JPanel {
 
     ArrayList<JButton> getButtons(){ return this.buttons; }
     public JPanel getContentPanel(){ return this.contentPanel; }
+    public JLabel getActionPanelLabel(){ return this.actionPanelLabel; }
 
 }

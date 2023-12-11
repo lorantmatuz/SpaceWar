@@ -18,6 +18,11 @@ public class Mine extends Building {
         super(planet);
     }
 
+    public Mine(Planet planet, int level, int size, int roundWhenFunctioning )
+    {
+        super( BuildingEnum.MINE, planet , level, size, roundWhenFunctioning );
+    }
+
     @Override
     public void upgrade() {
         ++level;
