@@ -65,6 +65,7 @@ public final class Fleet extends SpaceObject {
         return totalConsumption;
     }
 
+
     public ArrayList<Spaceship> getSpaceships(){ return (ArrayList<Spaceship>) spaceships.clone(); }
 
     public int getTotalShipNumber() { return spaceships.size(); }

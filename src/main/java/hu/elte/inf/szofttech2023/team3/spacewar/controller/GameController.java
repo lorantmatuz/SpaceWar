@@ -12,10 +12,6 @@ import hu.elte.inf.szofttech2023.team3.spacewar.model.game.TurnManager;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.GenerateSpace;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Path;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.Space;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.space.construction.ConstructBuilding;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.space.construction.ConstructSpaceship;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.space.construction.Constructable;
-import hu.elte.inf.szofttech2023.team3.spacewar.model.space.construction.UpgradeBuilding;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.Planet;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.objects.SpaceObject;
 import hu.elte.inf.szofttech2023.team3.spacewar.model.space.ships.Fleet;
@@ -419,9 +415,16 @@ public class GameController {
             int shipID = renderer.getSelectedRow();
             SpaceshipEnum requestedShip = SpaceshipEnum.values()[shipID - 1];
             Planet planet = (Planet) gameState.getSelectedObject();
-            planet.buildSpaceship(requestedShip);
-            renderer.apply( gameState.getSelectedObject(), true, gameState, this::handleActionEvent);
-            renderer.displayInfo("Construction of " + requestedShip + " started on planet " + planet.getName());
+
+            if (planet.getMaterial() >= requestedShip.getMetalCost()) {
+                planet.buildSpaceship(requestedShip);
+                planet.setMaterial(planet.getMaterial() - requestedShip.getMetalCost()); // Levonjuk a nyersanyagot
+                renderer.displayInfo("Construction of " + requestedShip + " started on planet " + planet.getName());
+            } else {
+                renderer.displayInfo("Not enough materials for building " + requestedShip);
+            }
+
+            renderer.apply(gameState.getSelectedObject(), true, gameState, this::handleActionEvent);
         }
         else if ( actionEvent.getType() == SpecialAction.BACK )
         {
@@ -431,16 +434,21 @@ public class GameController {
         else if (actionEvent.getType() == SpecialAction.START_BUILDING_CONSTRUCTION) {
             int buildingID = renderer.getSelectedRow();
             BuildingEnum requestedBuilding = BuildingEnum.values()[buildingID - 1];
-
             SpaceObject selectedObject = gameState.getSelectedObject();
             if (selectedObject instanceof Planet planet) {
-                System.out.println("requestbuilding");
-                planet.build(requestedBuilding);
-                renderer.displayInfo("Construction of " + requestedBuilding + " started on planet " + planet.getName());
+                Building building = planet.getBuilding(requestedBuilding);
 
+                int cost = (building == null) ? Building.getBaseMaterialCost() : building.getConstructionCost();
+
+                if (planet.getMaterial() >= cost) {
+                    planet.build(requestedBuilding);
+                    planet.setMaterial(planet.getMaterial() - cost); // Levonjuk az anyagot
+                    renderer.displayInfo("Construction of " + requestedBuilding + " started on planet " + planet.getName());
+                } else {
+                    renderer.displayInfo("Not enough materials for building " + requestedBuilding);
+                }
             }
             renderer.apply(gameState.getSelectedObject(), true, gameState, this::handleActionEvent);
-
         }
 
 
