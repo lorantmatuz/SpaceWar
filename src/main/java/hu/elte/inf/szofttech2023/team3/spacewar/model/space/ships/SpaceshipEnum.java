@@ -6,7 +6,7 @@ public enum SpaceshipEnum {
     CRUISER     (4,3,1,3,3,3,1, 0, 2),
     FRIGATE     (4,4,10,4,4,4,2, 0, 2),
     COLONY      (2,3,10,4,3,3,2, 0, 1),
-    SUPPLIER    (2,2,10,2,1,2,2, 50, 1);
+    SUPPLIER    (2,2,10,2,1,2,2, 5, 1);
 
     public final int offensiveForce;
     public final int protectiveForce;
