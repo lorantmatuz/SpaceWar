@@ -20,7 +20,7 @@ public class MinimalCaseSpaceGenerator implements SpaceGenerator {
     @Override
     public Space generate() {
         Space space = new Space(5, 5);
-        space.setSpaceObject(new Planet(FieldPosition.of(1, 2), players.get(0), space));
+        space.setSpaceObject(new Planet(FieldPosition.of(1, 2), players.get(1), space));
         return space;
     }
 

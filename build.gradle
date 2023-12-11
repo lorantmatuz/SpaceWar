@@ -29,9 +29,12 @@ repositories {
     mavenLocal()
 }
 
+def integrationTest = sourceSets.create('integrationTest')
+
+configurations[integrationTest.implementationConfigurationName].extendsFrom(configurations.testImplementation)
+configurations[integrationTest.runtimeOnlyConfigurationName].extendsFrom(configurations.testRuntimeOnly)
+
 dependencies {
-    // TODO
-    
     implementation 'org.slf4j:slf4j-api:1.7.36'
     
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
@@ -39,6 +42,8 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.7.1'
     testImplementation 'org.assertj:assertj-core:3.24.2'
+    
+    integrationTestImplementation project
 }
 
 compileJava.options.release = 17
@@ -77,6 +82,21 @@ test {
         showStackTraces true
         showStandardStreams false
     }
+}
+
+def integrationTestTask = tasks.register('integrationTest', Test) {
+    description = 'Runs integration tests.'
+    group = 'verification'
+    useJUnitPlatform()
+
+    testClassesDirs = integrationTest.output.classesDirs
+    classpath = configurations[integrationTest.runtimeClasspathConfigurationName] + integrationTest.output
+
+    shouldRunAfter(tasks.named('test'))
+}
+
+tasks.named('check') {
+    dependsOn(integrationTestTask)
 }
 
 defaultTasks 'build'

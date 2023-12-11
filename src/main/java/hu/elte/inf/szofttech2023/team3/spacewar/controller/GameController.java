@@ -64,6 +64,10 @@ public class GameController {
         renderer.displayNextTurn( gameState );
     }
     
+    public GameState getGameState() {
+        return gameState;
+    }
+    
     public void endTurn() {
         TurnManager turnManager = gameState.getTurnManager();
         Optional<Player> winner = detectWinner();
