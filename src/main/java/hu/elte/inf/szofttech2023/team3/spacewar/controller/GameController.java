@@ -308,7 +308,7 @@ public class GameController {
                     if (targetPlanet.getOwner() == null ){
                         List<Spaceship> spaceships = selectedFleet.getSpaceships();
                         int i = 0;
-                        while (spaceships.get(i).getSpaceshipType() != SpaceshipEnum.COLONY) {
+                        while (i < spaceships.size() && spaceships.get(i).getSpaceshipType() != SpaceshipEnum.COLONY) {
                             i++;
                         }
                         if( i < spaceships.size() )
@@ -324,7 +324,7 @@ public class GameController {
                     {
                         List<Spaceship> spaceships = selectedFleet.getSpaceships();
                         int i = 0;
-                        while (spaceships.get(i).getSpaceshipType() != SpaceshipEnum.MOTHER_SHIP) {
+                        while (i < spaceships.size() && spaceships.get(i).getSpaceshipType() != SpaceshipEnum.MOTHER_SHIP) {
                             i++;
                         }
                         if( i < spaceships.size() )
